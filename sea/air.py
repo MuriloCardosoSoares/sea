@@ -47,7 +47,7 @@ class AirProperties():
         gam = cp / cv               # specific heat constant ratio
         # Air density
         self.rho0 = self.p_atm / (R * temp_kelvin) \
-            - (1/R - 1/rvp) * self.hr/100 * pvp/temp_kelvin
+            - (1/R - 1/rvp) * self.humid/100 * pvp/temp_kelvin
         # Air sound speed
         self.c0 = (gam * self.p_atm/self.rho0)**0.5
     
