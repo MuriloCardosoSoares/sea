@@ -19,7 +19,7 @@ class AirProperties():
         self.c0 = np.array(c0)
         self.rho0 = np.array(rho0)
         self.temperature = np.array(temperature, dtype = np.float32)
-        self.hr = np.array(humid, dtype = np.float32)
+        self.humid = np.array(humid, dtype = np.float32)
         self.p_atm = np.array(p_atm, dtype = np.float32)
        
     def standardized_c0_rho0(self,):
