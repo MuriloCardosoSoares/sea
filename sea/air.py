@@ -21,8 +21,8 @@ class AirProperties():
         self.temperature = np.array(temperature, dtype = np.float32)
         self.hr = np.array(humid, dtype = np.float32)
         self.p_atm = np.array(p_atm, dtype = np.float32)
-        
-     def standardized_c0_rho0(self,):
+       
+    def standardized_c0_rho0(self,):
         '''
         This method is used to calculate the standardized value of the sound speed and
         air density based on measurements of temperature, humidity and atm pressure.
