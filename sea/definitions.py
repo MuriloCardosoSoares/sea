@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time, sys
 
-class AirProperties():
+class Air():
     
     def __init__(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
         '''
@@ -54,3 +54,44 @@ class AirProperties():
     def __str__(self):
         return "Air sound speed =" + str(self.c0) + " | Air density =" + str(self.rho0) + \
                 " | Temperature =" + str(self.temperature) + " | Humid =" + str(self.humid) + " | Atmospheric pressure =" + str(self.p_atm)
+    
+    
+class Algorithm():
+    
+    def __init__(self, c0, freq_init = 20.0, freq_end = 200.0, freq_step = 1, freq_vec = []):
+        '''
+        Set up algorithm controls. You set-up your frequency span:
+        Inputs:
+            freq_init (default - 100 Hz)
+            freq_end (default - 10000 Hz)
+            freq_step (default - 10 Hz)
+        '''
+        freq_vec = np.array(freq_vec)
+        if freq_vec.size == 0:
+            self.freq_init = np.array(freq_init)
+            self.freq_end = np.array(freq_end)
+            self.freq_step = np.array(freq_step)
+            self.freq = np.arange(self.freq_init, self.freq_end + self.freq_step, self.freq_step)
+        else:
+            self.freq_init = np.array(freq_vec[0])
+            self.freq_end = np.array(freq_vec[-1])
+            self.freq = freq_vec
+        self.w = 2.0 * np.pi * self.freq
+        self.k0 = self.w / c0
+
+class Source():
+    '''
+    A sound source class to initialize the following sound source properties.
+    :
+    Inputs:
+        wavetype - Incident Pressure Field Type - "spherical" or "plane"
+        cood - 3D coordinates of a single spherical source or wave direction for single plane wave
+        q - volume velocity [m^3/s]
+        
+    '''
+    def __init__(self, wavetype = "spherical" ,coord = [0.0, 0.0, 1.0], q = [1.0]):
+        self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
+        self.q = np.array([q], dtype = np.float32)
+        self.wavetype = wavetype
+        
+class Receiver ()
