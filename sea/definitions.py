@@ -58,7 +58,7 @@ class Air():
     
 class Algorithm():
     
-    def __init__(self, c0, freq_init = 20.0, freq_end = 200.0, freq_step = 1, freq_vec = []):
+    def __init__(self, c0, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
         '''
         Set up algorithm controls. You set-up your frequency span:
         Inputs:
@@ -84,14 +84,38 @@ class Source():
     A sound source class to initialize the following sound source properties.
     :
     Inputs:
-        wavetype - Incident Pressure Field Type - "spherical" or "plane"
-        cood - 3D coordinates of a single spherical source or wave direction for single plane wave
+        cood - 3D coordinates of the sound sources
         q - volume velocity [m^3/s]
+        source_type - use "monopole" if you are considering omnidiretional sound sources. 
+                      Use "direciotinal" to use the spherical harmonics technique to consider the sources directivities
         
     '''
-    def __init__(self, wavetype = "spherical" ,coord = [0.0, 0.0, 1.0], q = [1.0]):
-        self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
+    def __init__(self, q, coord=[0.0, 0.0, 1.0], q = [1.0], source_type="monopole"):
+        self.coord = np.array(coord, dtype = np.float32)
         self.q = np.array([q], dtype = np.float32)
-        self.wavetype = wavetype
+        self.type = source_type
         
-class Receiver ()
+    def __str__(self):
+        for i in len(self.coord)
+            return "Source" + str(i) + "coordinate is" + str(self.coord[i,:]) 
+
+        
+class Receiver():
+    '''
+    A receiver class to initialize the following receiver properties:
+    coord - 3D coordinates of a receiver
+    '''
+    def __init__(self, coord = [1.0, 0.0, 0.0]):
+        '''
+        The class constructor initializes a single receiver with a given 3D coordinates
+        The default is a height of 1 [cm]. User must be sure that the receiver lies out of
+        the sample being emulated. This can go wrong if we allow the sample to have a thickness
+        going on z>0
+        '''
+        self.coord = np.array(coord, dtype = np.float32)
+       
+    def __str__(self):
+        for i in len(self.coord)
+            return "Receiver" + str(i) + "coordinate is" + str(self.coord[i,:]) 
+
+    
