@@ -93,13 +93,12 @@ class Source():
         
     '''
     def __init__(self, coord=[0.0, 0.0, 1.0], q = [1.0], source_type="monopole"):
-        self.coord = np.array(coord, dtype = np.float32)
+        self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
         self.q = np.array([q], dtype = np.float32)
         self.type = source_type
         
     def __str__(self):
-        for i in np.arange(len(self.coord)):
-            return "Source" + str(i) + "coordinate is" + str(self.coord[i,:]) 
+        return "Source coordinate is" + str(self.coord) 
 
         
 class Receiver():
@@ -114,10 +113,9 @@ class Receiver():
         the sample being emulated. This can go wrong if we allow the sample to have a thickness
         going on z>0
         '''
-        self.coord = np.array(coord, dtype = np.float32)
+        self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
        
     def __str__(self):
-        for i in np.arange(len(self.coord)):
-            return "Receiver" + str(i) + "coordinate is" + str(self.coord[i,:]) 
+        return "Receiver coordinate is" + str(self.coord) 
 
     
