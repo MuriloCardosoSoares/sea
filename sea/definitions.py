@@ -96,7 +96,7 @@ class Source():
         self.type = source_type
         
     def __str__(self):
-        for i in len(self.coord)
+        for i in len(self.coord):
             return "Source" + str(i) + "coordinate is" + str(self.coord[i,:]) 
 
         
@@ -115,7 +115,7 @@ class Receiver():
         self.coord = np.array(coord, dtype = np.float32)
        
     def __str__(self):
-        for i in len(self.coord)
+        for i in len(self.coord):
             return "Receiver" + str(i) + "coordinate is" + str(self.coord[i,:]) 
 
     
