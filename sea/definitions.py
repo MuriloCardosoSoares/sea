@@ -90,7 +90,7 @@ class Source():
                       Use "direciotinal" to use the spherical harmonics technique to consider the sources directivities
         
     '''
-    def __init__(self, q, coord=[0.0, 0.0, 1.0], q = [1.0], source_type="monopole"):
+    def __init__(self, coord=[0.0, 0.0, 1.0], q = [1.0], source_type="monopole"):
         self.coord = np.array(coord, dtype = np.float32)
         self.q = np.array([q], dtype = np.float32)
         self.type = source_type
