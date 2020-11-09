@@ -79,7 +79,7 @@ class Algorithm():
         self.w = 2.0 * np.pi * self.freq
      
     def __str__(self):
-        return "Simulation algotithm will run from " + str(self.freq_init) + "Hz up to " + str(self.freq_end) + " Hz, with a step of " + str(self.freq_step) + " Hz"
+        return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz and a step of " + str(self.freq_step) + " Hz"
 
 class Source():
     '''
