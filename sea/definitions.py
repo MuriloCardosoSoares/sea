@@ -98,7 +98,7 @@ class Source():
         self.type = source_type
         
     def __str__(self):
-        return "Source coordinate is" + str(self.coord) 
+        return "Source coordinate is " + str(self.coord) 
 
         
 class Receiver():
@@ -116,6 +116,6 @@ class Receiver():
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
        
     def __str__(self):
-        return "Receiver coordinate is" + str(self.coord) 
+        return "Receiver coordinate is " + str(self.coord) 
 
     
