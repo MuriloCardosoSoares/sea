@@ -174,7 +174,7 @@ def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
         theta -> angle of incidence
     """
     
-    theta_t_1 = np.arctan(c1*np.sin(theta)/c0)
+    theta_t1 = np.arctan(c1*np.sin(theta)/c0)
     z_si = (-1j*zs2*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))) + (zc1)**2) / (zs2*(np.cos(theta_t1))**2 - 1j*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))))
 
     return z_si
