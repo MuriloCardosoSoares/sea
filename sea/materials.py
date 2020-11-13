@@ -166,7 +166,8 @@ class Material():
         
         elif self.absorber_type == "membrane":
             return ("Membrane absorber. The mass per unit area of the membrane is " + str(self.mass_per_unit_area) + " [kg/m^2]. \n The total cavity depth is " 
-            + str(self.cavity_depth) + " [m], being " + str(self.porous_layer_thickness) + " [m] of porous a porous material with flow resistivity = " + str(self.flow_resistivity))
+            + str(self.cavity_depth) + " [m], being " + str(self.porous_layer_thickness) + " [m] of porous a porous material with flow resistivity = " 
+            + str(self.flow_resistivity) + " [rayl/m]")
         
         
 def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
