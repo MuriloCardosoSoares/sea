@@ -61,6 +61,7 @@ class Material():
         theta_t = np.arctan(self.characteristic_c*np.sin(self.theta)/c0)
 
         self.surface_impedance = -1j*(self.characteristic_impedance)/(np.cos(theta_t))/np.tan((self.characteristic_k)*np.cos(theta_t)*self.thickness) 
+        self.admittance = (rho0*c0)/np.conj(self.surface_impedance)
     
     def __str__(self):
         
