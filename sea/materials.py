@@ -38,7 +38,7 @@ class Material():
             theta -> angle of incidence
         """
         
-        if self.freq_vec == []
+        if self.freq_vec == []:
             raise ValueError("Frequency vector is empty") 
         
         self.absorber_type = "porous"
@@ -87,7 +87,7 @@ class Material():
             theta -> angle of incidence
         """
         
-        if self.freq_vec == []
+        if self.freq_vec == []:
             raise ValueError("Frequency vector is empty") 
         
         self.flow_resistivity = parameters[0]
@@ -133,7 +133,7 @@ class Material():
                      to facilitate the interaction with another methods
         """
 
-        if self.freq_vec == []
+        if self.freq_vec == []:
             raise ValueError("Frequency vector is empty") 
             
         self.mass_per_unit_area = parameters[0]
