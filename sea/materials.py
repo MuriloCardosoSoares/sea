@@ -89,7 +89,7 @@ class Material():
         self.c0 = c0
         self.theta = theta
        
-        porous([self.flow_resistivity, self.thickness], self.rho0, self.c0, self.theta)
+        Material.porous([self.flow_resistivity, self.thickness], self.rho0, self.c0, self.theta)
 
         theta_t_1 = np.arctan(self.characteristic_c*np.sin(self.theta)/self.c0)
         theta_t_2 = np.arctan(self.c0*np.sin(theta_t_1)/self.characteristic_c)
