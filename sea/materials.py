@@ -96,10 +96,10 @@ class Material():
 
         air_surf_imp = -1j*(self.rho0*self.c0)/(np.cos(theta_t_2))/np.tan((self.w/self.c0)*np.cos(theta_t_2)*self.air_cavity_depth)
 
-        self.surface_impedance = (-1j*air_surf_imp*self.characteristic_impedance*np.cos(theta_t1)*1/(np.tan(self.characteristic_k*np.cos(theta_t1)*(self.thickness))) + \
+        self.surface_impedance = (-1j*air_surf_imp*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))) + \
                                  (self.characteristic_impedance)**2) / \
-                                 (air_surf_imp*(np.cos(theta_t1))**2 - \
-                                 1j*self.characteristic_impedance*np.cos(theta_t1)*1/(np.tan(self.characteristic_k*np.cos(theta_t1)*(self.thickness))))
+                                 (air_surf_imp*(np.cos(theta_t_1))**2 - \
+                                 1j*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))))
 
 
         self.absorber_type = "porous with air cavity"
