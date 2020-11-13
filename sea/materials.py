@@ -104,44 +104,46 @@ class Material():
 
         air_surf_imp = -1j*(self.rho0*self.c0)/(np.cos(theta_t_2))/np.tan((self.w/self.c0)*np.cos(theta_t_2)*self.air_cavity_depth)
 
-        self.surface_impedance = (-1j*air_surf_imp*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))) + \
-                                 (self.characteristic_impedance)**2) / \
-                                 (air_surf_imp*(np.cos(theta_t_1))**2 - \
-                                 1j*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))))
+        self.surface_impedance = double_layer(air_surf_imp, self.characteristic_impedance, self.characteristic_c, self.characteristic_k, self.thickness, self.c0, self.theta)
+        
+        #self.surface_impedance = (-1j*air_surf_imp*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))) + \
+         #                        (self.characteristic_impedance)**2) / \
+          #                       (air_surf_imp*(np.cos(theta_t_1))**2 - \
+           #                      1j*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))))
 
         self.admittance = (self.rho0*self.c0)/np.conj(self.surface_impedance)
         
         self.absorber_type = "porous with air cavity"
 
         
-    def membrane (parameters, f_range, theta=0):
+    def membrane (parameters, rho0, c0, theta=0):
 
         """
             Computes the surface impedance for a membrane absorber;
 
             *All the parameters of the absorber should be given together in an array*
 
-            m -> mass per unit area of the membrane  [kg/m**2]
-            d -> depth of the cavity (air + porous absorber) [m] 
+            parameters -> [m, d, rf, d_porous], where
+                m -> mass per unit area of the membrane  [kg/m**2]
+                d -> depth of the cavity (air + porous absorber) [m] 
+                rf -> flow resistivity of the porous absorber layer [rayl/m]
+                d_porous -> thickness of the porous absorber layer [m]
 
-            rf -> flow resistivity of the porous absorber layer [rayl/m]
-            d_porous -> thickness of the porous absorber layer [m]
-
-            f_range -> frequencies in Hz
             theta -> angle of incidence. Here, it is assumed to be 0 degrees. It is considered an argument just 
-                     to facilitate the interaction with another functions
+                     to facilitate the interaction with another methods
         """
 
-        m = parameters[0]
-        d = parameters[1]
-        rf = parameters[2]
-        d_porous = parameters[3]
+        if self.freq_vec == []
+            raise ValueError("Frequency vector is empty") 
+            
+        self.mass_per_unit_area = parameters[0]
+        self.cavity_depth = parameters[1]
+        self.flow_resistivity = parameters[2]
+        self.porous_layer_thickness = parameters[3]
+        self.k0 = self.w/c0
 
 
-        w = 2*np.pi*f_range
-        k0 = w/c0
-
-        z_s_porous = porous([rf, d_porous], f_range, 0)
+        self.porous([self.flow_resistivity, self.thickness], self.rho0, self.c0, self.theta)
 
         z_si = double_layer_absorber(z_s_porous, rho0*c0, k0,  (d - d_porous), 0)
 
@@ -159,4 +161,21 @@ class Material():
                     material thickness = " + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m]"
         
         
+ def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
+    
+    """
+        Computes the surface impedance for a double layer absorber with rigid back end
+        
+        zs2 -> surface impedance of the second layer
+        zc1 -> characteristic impedance of the firts layer
+        c1 -> characteristic velocity in the firts layer medium
+        k1 -> wave number in the firts layer medium
+        d1 -> thickness of the first layer
+        theta -> angle of incidence
+    """
+    
+    theta_t_1 = np.arctan(c1*np.sin(theta)/c0)
+    z_si = (-1j*zs2*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))) + (zc1)**2) / (zs2*(np.cos(theta_t1))**2 - 1j*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))))
+
+    return z_si
         
