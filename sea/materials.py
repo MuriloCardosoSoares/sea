@@ -147,7 +147,7 @@ class Material():
 
         self.porous([self.flow_resistivity, self.thickness], self.rho0, self.c0, self.theta)
 
-        z_si = double_layer(self.surface_impedance, self.rho0*self.c0, self.c0,, self.k0,  (self.cavity_depth - self.porous_layer_thickness), self.c0, 0)
+        z_si = double_layer(self.surface_impedance, self.rho0*self.c0, self.c0, self.k0,  (self.cavity_depth - self.porous_layer_thickness), self.c0, 0)
 
         self.surface_impedance = 1j*self.w*self.mass_per_unit_area + z_si
 
