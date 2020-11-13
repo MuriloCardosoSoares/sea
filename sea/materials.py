@@ -116,7 +116,7 @@ class Material():
         self.absorber_type = "porous with air cavity"
 
         
-    def membrane (parameters, rho0, c0, theta=0):
+    def membrane (self, parameters, rho0, c0, theta=0):
 
         """
             Computes the surface impedance for a membrane absorber;
@@ -124,7 +124,7 @@ class Material():
             *All the parameters of the absorber should be given together in an array*
 
             parameters -> [m, d, rf, d_porous], where
-                m -> mass per unit area of the membrane  [kg/m**2]
+                m -> mass per unit area of the membrane  [kg/m^2]
                 d -> depth of the cavity (air + porous absorber) [m] 
                 rf -> flow resistivity of the porous absorber layer [rayl/m]
                 d_porous -> thickness of the porous absorber layer [m]
@@ -150,7 +150,9 @@ class Material():
         z_si = double_layer(self.surface_impedance, self.rho0*self.c0, self.c0, self.k0,  (self.cavity_depth - self.porous_layer_thickness), self.c0, 0)
 
         self.surface_impedance = 1j*self.w*self.mass_per_unit_area + z_si
-
+        self.admittance = (self.rho0*self.c0)/np.conj(self.surface_impedance)
+        
+        self.absorber_type = "membrane"
 
     def __str__(self):
         
@@ -161,6 +163,10 @@ class Material():
         elif self.absorber_type == "porous with air cavity":
             return ("Porous absorber with air cavity back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and material thickness = " 
             + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m]")
+        
+        elif self.absorber_type == "membrane":
+            return ("Membrane absorber. The mass per unit area of the membrane is" + str(self.mass_per_unit_area) + " [kg/m^2]. The total cavity depth is " 
+            + str(self.cavity_depth) + "[m], being " + str(self.porous_layer_thickness) + "[m] of porous a porous material with flow resistivity = " + str(self.flow_resistivity))
         
         
 def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
