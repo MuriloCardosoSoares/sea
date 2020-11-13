@@ -23,7 +23,7 @@ class Material():
         self.bands = np.array(bands, dtype = np.float32)
         self.admittance = np.array(admittance, dtype = np.complex64)
         self.freq_vec = np.array(freq_vec, dtype = np.float32)
-        self.w = 2*np.pi*freq_vec
+        self.w = 2*np.pi*self.freq_vec
         
     def porous(self, parameters, freq_vec, rho0, c0, theta):
 
