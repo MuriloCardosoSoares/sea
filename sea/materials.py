@@ -161,7 +161,7 @@ class Material():
                     material thickness = " + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m]"
         
         
- def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
+def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
     
     """
         Computes the surface impedance for a double layer absorber with rigid back end
