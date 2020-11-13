@@ -25,6 +25,7 @@ class Material():
         self.freq_vec = np.array(freq_vec, dtype = np.float32)
         self.w = 2*np.pi*self.freq_vec
         
+        
     def porous(self, parameters, rho0, c0, theta):
 
         """
@@ -40,6 +41,8 @@ class Material():
         self.absorber_type = "porous"
         self.flow_resistivity = parameters[0]
         self.thickness = parameters[1]
+        self.rho0 = rho0
+        self.c0 = c0
         self.theta = theta
 
         c1=0.0978
@@ -51,22 +54,66 @@ class Material():
         c7=0.087
         c8=0.723
 
-        X = self.freq_vec*rho0/self.flow_resistivity
-        self.characteristic_c = c0/(1+c1*np.power(X,-c2) -1j*c3*np.power(X,-c4))
-        self.characteristic_rho = (rho0*c0/self.characteristic_c)*(1+c5*np.power(X,-c6)-1j*c7*np.power(X,-c8))
+        X = self.freq_vec*self.rho0/self.flow_resistivity
+        self.characteristic_c = self.c0/(1+c1*np.power(X,-c2) -1j*c3*np.power(X,-c4))
+        self.characteristic_rho = (self.rho0*self.c0/self.characteristic_c)*(1+c5*np.power(X,-c6)-1j*c7*np.power(X,-c8))
 
         self.characteristic_impedance = self.characteristic_rho*self.characteristic_c
         self.characteristic_k = self.w/self.characteristic_c
 
-        theta_t = np.arctan(self.characteristic_c*np.sin(self.theta)/c0)
+        theta_t = np.arctan(self.characteristic_c*np.sin(self.theta)/self.c0)
 
         self.surface_impedance = -1j*(self.characteristic_impedance)/(np.cos(theta_t))/np.tan((self.characteristic_k)*np.cos(theta_t)*self.thickness) 
-        self.admittance = (rho0*c0)/np.conj(self.surface_impedance)
+        self.admittance = (self.rho0*self.c0)/np.conj(self.surface_impedance)
+        
+        self.absorber_type = "porous"
     
+    
+    def porous_with_air_cavity (self, parameters, rho0, c0, theta):
+    
+        """
+            Computes the surface impedance for a single layer porous absorber with rigid back end
+
+            *All the parameters of the absorber should be given together in an array*
+
+            parameters -> [flow resistivity [rayl/m], thickness of the porous absorber layer [m], depth of the air cavity]
+
+            f_range -> the frequencies in Hz
+            theta -> angle of incidence
+        """
+        
+        self.flow_resistivity = parameters[0]
+        self.thickness = parameters[1]
+        self.air_cavity_depth = parameters[2]
+        self.rho0 = rho0
+        self.c0 = c0
+        self.theta = theta
+       
+        porous([self.flow_resistivity, self.thickness], self.rho0, self.c0, self.theta)
+
+        theta_t_1 = np.arctan(self.characteristic_c*np.sin(self.theta)/self.c0)
+        theta_t_2 = np.arctan(self.c0*np.sin(theta_t_1)/self.characteristic_c)
+
+        air_surf_imp = -1j*(self.rho0*self.c0)/(np.cos(theta_t_2))/np.tan((self.w/self.c0)*np.cos(theta_t_2)*self.air_cavity_depth)
+
+        self.surface_impedance = double_layer_absorber(zs2, zc1, k1, d_porous, theta_t_1)
+        self.surface_impedance = (-1j*air_surf_imp*self.characteristic_impedance*np.cos(theta_t1)*1/(np.tan(self.characteristic_k*np.cos(theta_t1)*(self.thickness))) + 
+                                 (self.characteristic_impedance)**2) / 
+                                 (air_surf_imp*(np.cos(theta_t1))**2 - 
+                                 1j*self.characteristic_impedance*np.cos(theta_t1)*1/(np.tan(self.characteristic_k*np.cos(theta_t1)*(self.thickness))))
+
+
+        self.absorber_type = "porous with air cavity"
+
+
     def __str__(self):
         
         if self.absorber_type == "porous":
             return "Single layer porous absorber with rigid back end. Flow resistivity  = " + str(self.flow_resistivity) + " and  thickness = " + str(self.thickness) 
+        
+        elif self.absorber_type == "porous with air cavity":
+            return "Porous absorber with air cavity back end. Flow resistivity  = " + str(self.flow_resistivity) + " and  material thickness = " + str(self.thickness) \
+                    + ". Air cavity depth = " + str(self.air_cavity_depth)
         
         
         
