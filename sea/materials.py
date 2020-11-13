@@ -153,12 +153,12 @@ class Material():
     def __str__(self):
         
         if self.absorber_type == "porous":
-            return "Single layer porous absorber with rigid back end. Flow resistivity  = " + str(self.flow_resistivity) + " [rayl/m] \
-                    and  thickness = " + str(self.thickness) + " [m]" 
+            return "Single layer porous absorber with rigid back end. Flow resistivity  = " + str(self.flow_resistivity) + " [rayl/m] and  thickness = " 
+                    + str(self.thickness) + " [m]" 
         
         elif self.absorber_type == "porous with air cavity":
-            return "Porous absorber with air cavity back end. Flow resistivity  = " + str(self.flow_resistivity) + " [rayl/m] and  \
-                    material thickness = " + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m]"
+            return "Porous absorber with air cavity back end. Flow resistivity  = " + str(self.flow_resistivity) + " [rayl/m] and material thickness = " 
+                    + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m]"
         
         
 def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
