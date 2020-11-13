@@ -50,7 +50,7 @@ class Material():
         c7=0.087
         c8=0.723
 
-        X = self.freq_vec*rho0/rf
+        X = self.freq_vec*rho0/self.flow_resistivity
         self.characteristic_c = c0/(1+C1*np.power(X,-C2) -1j*C3*np.power(X,-C4))
         self.characteristic_rho = (rho0*c0/cc)*(1+C5*np.power(X,-C6)-1j*C7*np.power(X,-C8))
 
