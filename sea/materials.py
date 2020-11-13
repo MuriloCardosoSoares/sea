@@ -21,7 +21,7 @@ class Material():
         
         self.absorption = np.array(absorption, dtype = np.float32)
         self.bands = np.array(bands, dtype = np.float32)
-        self.admittance = np.array(admittance, dtype = np.complex32)
+        self.admittance = np.array(admittance, dtype = np.complex64)
         self.freq_vec = np.array(freq_vec, dtype = np.float32)
         self.w = 2*np.pi*freq_vec
         
