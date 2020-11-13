@@ -165,7 +165,7 @@ class Material():
             + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m]")
         
         elif self.absorber_type == "membrane":
-            return ("Membrane absorber. The mass per unit area of the membrane is " + str(self.mass_per_unit_area) + " [kg/m^2]. \n The total cavity depth is " 
+            return ("Membrane absorber. The mass per unit area of the membrane is " + str(self.mass_per_unit_area) + " [kg/m^2].\nThe total cavity depth is " 
             + str(self.cavity_depth) + " [m], being " + str(self.porous_layer_thickness) + " [m] of porous a porous material with flow resistivity = " 
             + str(self.flow_resistivity) + " [rayl/m]")
         
