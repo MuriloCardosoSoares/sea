@@ -25,7 +25,7 @@ class Material():
         self.freq_vec = np.array(freq_vec, dtype = np.float32)
         self.w = 2*np.pi*self.freq_vec
         
-    def porous(self, parameters, freq_vec, rho0, c0, theta):
+    def porous(self, parameters, rho0, c0, theta):
 
         """
             Computes the surface admittance for a single layer porous absorber with rigid back end
@@ -34,7 +34,6 @@ class Material():
 
             rf -> flow resistivity [rayl/m]
             d -> thickness of material [m]
-            f_range -> the frequencies in Hz
             theta -> angle of incidence
         """
         
@@ -51,7 +50,7 @@ class Material():
         c7=0.087
         c8=0.723
 
-        X = f_range*rho0/rf
+        X = self.freq_vec*rho0/rf
         self.characteristic_c = c0/(1+C1*np.power(X,-C2) -1j*C3*np.power(X,-C4))
         self.characteristic_rho = (rho0*c0/cc)*(1+C5*np.power(X,-C6)-1j*C7*np.power(X,-C8))
 
