@@ -32,11 +32,14 @@ class Material():
             Computes the surface admittance for a single layer porous absorber with rigid back end
 
             *All the parameters of the absorber should be given together in an array*
-
-            rf -> flow resistivity [rayl/m]
-            d -> thickness of material [m]
+            parameters -> [rf, d], where
+                rf -> flow resistivity [rayl/m]
+                d -> thickness of material [m]
             theta -> angle of incidence
         """
+        
+        if self.freq_vec == []
+            raise ValueError("Frequency vector is empty") 
         
         self.absorber_type = "porous"
         self.flow_resistivity = parameters[0]
@@ -76,11 +79,16 @@ class Material():
 
             *All the parameters of the absorber should be given together in an array*
 
-            parameters -> [flow resistivity [rayl/m], thickness of the porous absorber layer [m], depth of the air cavity]
+            parameters -> [rf, d, d_air], where
+                rf -> flow resistivity [rayl/m]
+                d -> thickness of the porous absorber layer [m]
+                d_air -> depth of the air cavity]
 
-            f_range -> the frequencies in Hz
             theta -> angle of incidence
         """
+        
+        if self.freq_vec == []
+            raise ValueError("Frequency vector is empty") 
         
         self.flow_resistivity = parameters[0]
         self.thickness = parameters[1]
@@ -105,15 +113,50 @@ class Material():
         
         self.absorber_type = "porous with air cavity"
 
+        
+    def membrane (parameters, f_range, theta=0):
+
+        """
+            Computes the surface impedance for a membrane absorber;
+
+            *All the parameters of the absorber should be given together in an array*
+
+            m -> mass per unit area of the membrane  [kg/m**2]
+            d -> depth of the cavity (air + porous absorber) [m] 
+
+            rf -> flow resistivity of the porous absorber layer [rayl/m]
+            d_porous -> thickness of the porous absorber layer [m]
+
+            f_range -> frequencies in Hz
+            theta -> angle of incidence. Here, it is assumed to be 0 degrees. It is considered an argument just 
+                     to facilitate the interaction with another functions
+        """
+
+        m = parameters[0]
+        d = parameters[1]
+        rf = parameters[2]
+        d_porous = parameters[3]
+
+
+        w = 2*np.pi*f_range
+        k0 = w/c0
+
+        z_s_porous = porous([rf, d_porous], f_range, 0)
+
+        z_si = double_layer_absorber(z_s_porous, rho0*c0, k0,  (d - d_porous), 0)
+
+        z_s = 1j*w*m + z_si
+
 
     def __str__(self):
         
         if self.absorber_type == "porous":
-            return "Single layer porous absorber with rigid back end. Flow resistivity  = " + str(self.flow_resistivity) + " and  thickness = " + str(self.thickness) 
+            return "Single layer porous absorber with rigid back end. Flow resistivity  = " + str(self.flow_resistivity) + " [rayl/m] \
+                    and  thickness = " + str(self.thickness) + " [m]" 
         
         elif self.absorber_type == "porous with air cavity":
-            return "Porous absorber with air cavity back end. Flow resistivity  = " + str(self.flow_resistivity) + " and  material thickness = " + str(self.thickness) \
-                    + ". Air cavity depth = " + str(self.air_cavity_depth)
+            return "Porous absorber with air cavity back end. Flow resistivity  = " + str(self.flow_resistivity) + " [rayl/m] and  \
+                    material thickness = " + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m]"
         
         
         
