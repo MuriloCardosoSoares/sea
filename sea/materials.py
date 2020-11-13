@@ -40,6 +40,7 @@ class Material():
         self.absorber_type = "porous"
         self.flow_resistivity = parameters[0]
         self.thickness = parameters[1]
+        self.theta = theta
 
         c1=0.0978
         c2=0.7
@@ -51,15 +52,15 @@ class Material():
         c8=0.723
 
         X = self.freq_vec*rho0/self.flow_resistivity
-        self.characteristic_c = c0/(1+C1*np.power(X,-C2) -1j*C3*np.power(X,-C4))
-        self.characteristic_rho = (rho0*c0/cc)*(1+C5*np.power(X,-C6)-1j*C7*np.power(X,-C8))
+        self.characteristic_c = c0/(1+c1*np.power(X,-c2) -1j*c3*np.power(X,-c4))
+        self.characteristic_rho = (rho0*c0/cc)*(1+c5*np.power(X,-c6)-1j*c7*np.power(X,-c8))
 
         self.characteristic_impedance = self.characteristic_rho*self.characteristic_c
         self.characteristic_k = self.w/self.characteristic_c
 
-        theta_t = np.arctan(cc*np.sin(theta)/c0)
+        theta_t = np.arctan(self.characteristic_c*np.sin(self.theta)/c0)
 
-        self.surface_impedance = -1j*(z_c)/(np.cos(theta_t))/np.tan((k_c)*np.cos(theta_t)*d) 
+        self.surface_impedance = -1j*(self.characteristic_impedance)/(np.cos(theta_t))/np.tan((self.characteristic_k)*np.cos(theta_t)*self.thickness) 
     
     def __str__(self):
         
