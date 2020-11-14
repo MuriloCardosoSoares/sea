@@ -155,6 +155,48 @@ class Material():
         self.absorber_type = "membrane"
 
         
+    def impedance2alpha_thomasson(self, freq_vec, a=11**0.5, b=11**0.5):
+
+        """
+        Computes absorption coeffients from complex impedances using Thomasson
+        """
+
+        self.k0 = self.w/c0
+
+        alpha_s = np.zeros(len(z_s))
+
+        for z_si, zs in enumerate (z_s):
+
+            def alpha_fun(theta):
+
+                mi = np.sin(theta)
+                ke = (2*k[z_si]*a*b) / (a+b)
+                kappa = 0.956 / ke
+                z_h = 1 / ((1 + (kappa-1j*mi)**2)**(1/2))
+
+                def h(q):
+                    h = np.log((1+q**2)**(1/2) + q) - ((1+q**2)**(1/2)-1)/(3*q)
+                    return h
+
+                z_l = (2*k[z_si]*a*b / np.pi) + 1j*(2*k[z_si] / np.pi) * (b*h(a/b) + a*h(b/a))
+
+                z_r = 1 / ((1/(z_l.real**2))**(1/2) + (1/(z_h.real**2))**(1/2))
+
+
+                z_hi0 = 0.67/ke
+                z_i0 = 1 / ((1/(z_l.imag**3))**(1/3) + (1/(z_hi0**3))**(1/3))
+                z_i = np.max((z_i0, z_h.imag))
+
+                z_radiation = z_r + 1j*z_i
+
+                alpha_fun = zs.real*np.sin(theta) / (abs(zs + z_radiation))**2
+
+                return alpha_fun
+
+            alpha_s[z_si] = 8 * abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
+
+        
+        
     def __str__(self):
         
         if self.absorber_type == "porous":
