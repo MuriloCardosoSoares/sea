@@ -20,7 +20,7 @@ class Material():
         '''
         
         self.statistical_alpha = np.array(statistical_alpha, dtype = np.float32)
-        self.bands = np.array(bands, dtype = np.float32)
+        self.octave_bands = np.array(octave_bands, dtype = np.float32)
         self.admittance = np.array(admittance, dtype = np.complex64)
         self.surface_impedance = np.array(surface_impedance, dtype = np.complex64)
         self.freq = np.array(freq_vec, dtype = np.float32)
