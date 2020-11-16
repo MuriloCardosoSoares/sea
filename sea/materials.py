@@ -7,7 +7,7 @@ from random import uniform
 
 class Material():
     
-    def __init__(self, absorption=[], bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
+    def __init__(self, statistical_alpha=[], octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
         Inputs:
@@ -19,14 +19,14 @@ class Material():
             Obs: all these quantities might be input data or be calculated by one of the methods
         '''
         
-        self.absorption = np.array(absorption, dtype = np.float32)
+        self.statistical_alpha = np.array(statistical_alpha, dtype = np.float32)
         self.bands = np.array(bands, dtype = np.float32)
         self.admittance = np.array(admittance, dtype = np.complex64)
         self.surface_impedance = np.array(surface_impedance, dtype = np.complex64)
-        self.freq_vec = np.array(freq_vec, dtype = np.float32)
+        self.freq = np.array(freq_vec, dtype = np.float32)
         self.rho0 = rho0
         self.c0 = c0
-        self.w = 2*np.pi*self.freq_vec
+        self.w = 2*np.pi*self.freq
         self.k0 = self.w/self.c0
         
         
@@ -42,7 +42,7 @@ class Material():
             theta -> angle of incidence
         """
         
-        if self.freq_vec == []:
+        if self.freq == []:
             raise ValueError("Frequency vector is empty") 
         
         self.absorber_type = "porous"
@@ -59,7 +59,7 @@ class Material():
         c7=0.087
         c8=0.723
 
-        X = self.freq_vec*self.rho0/self.flow_resistivity
+        X = self.freq*self.rho0/self.flow_resistivity
         self.characteristic_c = self.c0/(1+c1*np.power(X,-c2) -1j*c3*np.power(X,-c4))
         self.characteristic_rho = (self.rho0*self.c0/self.characteristic_c)*(1+c5*np.power(X,-c6)-1j*c7*np.power(X,-c8))
 
@@ -89,7 +89,7 @@ class Material():
             theta -> angle of incidence
         """
         
-        if self.freq_vec == []:
+        if self.freq == []:
             raise ValueError("Frequency vector is empty") 
         
         self.flow_resistivity = parameters[0]
@@ -133,7 +133,7 @@ class Material():
                      to facilitate the interaction with another methods
         """
 
-        if self.freq_vec == []:
+        if self.freq == []:
             raise ValueError("Frequency vector is empty") 
             
         self.mass_per_unit_area = parameters[0]
@@ -157,7 +157,7 @@ class Material():
         Computes absorption coeffients from complex impedances (or admittances) using Thomasson formulation or the Paris Formula
         """
         
-        if self.freq_vec == []:
+        if self.freq == []:
             raise ValueError("Frequency vector is empty") 
             
         if self.admittance == []: 
@@ -218,7 +218,28 @@ class Material():
 
                     self.statistical_alpha[zsi] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
         
+     
+    def plot(self):
         
+        if octave_bands == []:
+            if self.statistical_alpha == []:
+                if self.surface_impedance == [] and self.admittance == []:
+                    raise ValueError("There is no information about this material yet.")
+                else:
+                    pass
+            else:
+                plt.plot (self.freq, self.statistical_alpha, '.')
+                plt.title('Absorption coefficients')
+                plt.xscale('log')
+                plt.ylim((0,1))
+                plt.show()
+            
+        elif self.statistical_alpha == []:
+            raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
+        
+        else:
+            pass
+    
     def __str__(self):
         
         if self.absorber_type == "porous":
