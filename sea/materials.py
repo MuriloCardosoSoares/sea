@@ -42,7 +42,7 @@ class Material():
             theta -> angle of incidence
         """
         
-        if self.freq == []:
+        if self.freq.size == 0:
             raise ValueError("Frequency vector is empty") 
         
         self.absorber_type = "porous"
@@ -89,7 +89,7 @@ class Material():
             theta -> angle of incidence
         """
         
-        if self.freq == []:
+        if self.freq.size == 0:
             raise ValueError("Frequency vector is empty") 
         
         self.flow_resistivity = parameters[0]
@@ -133,7 +133,7 @@ class Material():
                      to facilitate the interaction with another methods
         """
 
-        if self.freq == []:
+        if self.freq.size == 0:
             raise ValueError("Frequency vector is empty") 
             
         self.mass_per_unit_area = parameters[0]
@@ -157,14 +157,14 @@ class Material():
         Computes absorption coeffients from complex impedances (or admittances) using Thomasson formulation or the Paris Formula
         """
         
-        if self.freq == []:
+        if self.freq.size == 0:
             raise ValueError("Frequency vector is empty") 
             
-        if self.admittance == []: 
-            if self.surface_impedance == []:
+        if self.admittance.size == 0: 
+            if self.surface_impedance.size == 0:
                 raise ValueError("There is no information about the surface impedance (or admittance) of this material yet.") 
         else:
-            if self.surface_impedance == []:
+            if self.surface_impedance.size == 0:
                 self.surface_impedance = (self.rho0*self.c0)/np.conj(self.admittance)
             
             
@@ -221,9 +221,9 @@ class Material():
      
     def plot(self):
         
-        if self.octave_bands == np.array([], dtype = np.float32):
-            if self.statistical_alpha == np.array([], dtype = np.float32):
-                if self.surface_impedance == np.array([], dtype = np.float32) and self.admittance == np.array([], dtype = np.float32):
+        if self.octave_bands.size == 0:
+            if self.statistical_alpha.size == 0:
+                if self.surface_impedance.size == 0 and self.admittance.size == 0:
                     raise ValueError("There is no information about this material yet.")
                 else:
                     print("You are beautiful")
@@ -235,7 +235,7 @@ class Material():
                 plt.ylim((0,1))
                 plt.show()
             
-        elif self.statistical_alpha == np.array([], dtype = np.float32):
+        elif self.statistical_alpha.size == 0:
             raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
         
         else:
