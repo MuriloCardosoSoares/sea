@@ -7,7 +7,7 @@ from random import uniform
 
 class Material():
     
-    def __init__(self, absorption=[], bands=[], admittance=[], freq_vec=[]):
+    def __init__(self, absorption=[], bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
         Inputs:
@@ -22,11 +22,15 @@ class Material():
         self.absorption = np.array(absorption, dtype = np.float32)
         self.bands = np.array(bands, dtype = np.float32)
         self.admittance = np.array(admittance, dtype = np.complex64)
+        self.surface_impedance = np.array(surface_impedance, dtype = np.complex64)
         self.freq_vec = np.array(freq_vec, dtype = np.float32)
+        self.rho0 = rho0
+        self.c0 = c0
         self.w = 2*np.pi*self.freq_vec
+        self.k0 = self.w/self.c0
         
         
-    def porous(self, parameters, rho0, c0, theta):
+    def porous(self, parameters, theta):
 
         """
             Computes the surface admittance for a single layer porous absorber with rigid back end
@@ -44,8 +48,6 @@ class Material():
         self.absorber_type = "porous"
         self.flow_resistivity = parameters[0]
         self.thickness = parameters[1]
-        self.rho0 = rho0
-        self.c0 = c0
         self.theta = theta
 
         c1=0.0978
@@ -72,7 +74,7 @@ class Material():
         self.absorber_type = "porous"
     
     
-    def porous_with_air_cavity (self, parameters, rho0, c0, theta):
+    def porous_with_air_cavity (self, parameters, theta):
     
         """
             Computes the surface impedance for a single layer porous absorber with rigid back end
@@ -93,8 +95,6 @@ class Material():
         self.flow_resistivity = parameters[0]
         self.thickness = parameters[1]
         self.air_cavity_depth = parameters[2]
-        self.rho0 = rho0
-        self.c0 = c0
         self.theta = theta
        
         self.porous([self.flow_resistivity, self.thickness], self.rho0, self.c0, self.theta)
@@ -116,7 +116,7 @@ class Material():
         self.absorber_type = "porous with air cavity"
 
         
-    def membrane (self, parameters, rho0, c0, theta=0):
+    def membrane (self, parameters, theta=0):
 
         """
             Computes the surface impedance for a membrane absorber;
@@ -140,10 +140,6 @@ class Material():
         self.cavity_depth = parameters[1]
         self.flow_resistivity = parameters[2]
         self.porous_layer_thickness = parameters[3]
-        self.rho0 = rho0
-        self.c0 = c0
-        self.k0 = self.w/c0
-
 
         self.porous([self.flow_resistivity, self.porous_layer_thickness], self.rho0, self.c0, 0)
 
@@ -155,17 +151,26 @@ class Material():
         self.absorber_type = "membrane"
 
         
-    def impedance2alpha_thomasson(self, freq_vec, a=11**0.5, b=11**0.5):
+    def impedance2alpha_thomasson(self, a=11**0.5, b=11**0.5):
 
         """
-        Computes absorption coeffients from complex impedances using Thomasson
+        Computes absorption coeffients from complex impedances (or admittances) using Thomasson
         """
+        
+        if self.freq_vec == []:
+            raise ValueError("Frequency vector is empty") 
+            
+        if self.admittance == []: 
+            if self.surface_impedance == []:
+                raise ValueError("There is no information about the surface impedance (or admittance) of this material yet.") 
+        else:
+            if self.surface_impedance == []:
+                self.surface_impedance = (self.rho0*self.c0)/np.conj(self.admittance)
+            
+            
+        self.statistical_alpha = np.zeros(len(self.surface_impedance))
 
-        self.k0 = self.w/c0
-
-        alpha_s = np.zeros(len(z_s))
-
-        for z_si, zs in enumerate (z_s):
+        for zsi, zs in enumerate (self.surface_impedance):
 
             def alpha_fun(theta):
 
@@ -193,7 +198,7 @@ class Material():
 
                 return alpha_fun
 
-            alpha_s[z_si] = 8 * abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
+            self.statistical_alpha[zsi] = 8 * abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
 
         
         
