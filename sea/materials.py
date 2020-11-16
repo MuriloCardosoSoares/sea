@@ -69,7 +69,9 @@ class Material():
         theta_t = np.arctan(self.characteristic_c*np.sin(self.theta)/self.c0)
 
         self.surface_impedance = -1j*(self.characteristic_impedance)/(np.cos(theta_t))/np.tan((self.characteristic_k)*np.cos(theta_t)*self.thickness) 
-        self.admittance = (self.rho0*self.c0)/np.conj(self.surface_impedance)
+        
+        self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
+        self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
         self.absorber_type = "porous"
     
@@ -111,7 +113,8 @@ class Material():
           #                       (air_surf_imp*(np.cos(theta_t_1))**2 - \
            #                      1j*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))))
 
-        self.admittance = (self.rho0*self.c0)/np.conj(self.surface_impedance)
+        self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
+        self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
         self.absorber_type = "porous with air cavity"
 
@@ -146,7 +149,9 @@ class Material():
         z_si = double_layer(self.surface_impedance, self.rho0*self.c0, self.c0, self.k0, (self.cavity_depth - self.porous_layer_thickness), self.c0, 0)
 
         self.surface_impedance = 1j*self.w*self.mass_per_unit_area + z_si
-        self.admittance = (self.rho0*self.c0)/np.conj(self.surface_impedance)
+        
+        self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
+        self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
         self.absorber_type = "membrane"
 
@@ -161,10 +166,10 @@ class Material():
             raise ValueError("Frequency vector is empty") 
             
         if self.admittance.size == 0: 
-            if self.surface_impedance.size == 0:
+            if self.normalized_surface_impedance.size == 0:
                 raise ValueError("There is no information about the surface impedance (or admittance) of this material yet.") 
         else:
-            if self.surface_impedance.size == 0:
+            if self.normalized_surface_impedance.size == 0:
                 self.surface_impedance = (self.rho0*self.c0)/np.conj(self.admittance)
             
             
@@ -172,7 +177,7 @@ class Material():
             
             self.statistical_alpha = np.zeros(len(self.surface_impedance))
 
-            for zsi, zs in enumerate (self.surface_impedance):
+            for zsi, zs in enumerate (self.normalized_surface_impedance):
 
                 def alpha_fun(theta):
 
@@ -204,9 +209,9 @@ class Material():
             
         if method == "paris":
                 
-            self.statistical_alpha = np.zeros(len(self.surface_impedance))
+            self.statistical_alpha = np.zeros(len(self.normalized_surface_impedance))
 
-            for zsi, zs in enumerate (self.surface_impedance):
+            for zsi, zs in enumerate (self.normalized_surface_impedance):
 
                 def alpha_fun(theta):
 
