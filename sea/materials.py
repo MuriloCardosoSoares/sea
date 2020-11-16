@@ -7,7 +7,7 @@ from random import uniform
 
 class Material():
     
-    def __init__(self, statistical_alpha=[], self.normal_alpha=[], octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
+    def __init__(self, statistical_alpha=[], normal_alpha=[], octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
         Inputs:
