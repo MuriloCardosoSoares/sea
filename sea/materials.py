@@ -206,7 +206,7 @@ class Material():
                 
                 self.statistical_alpha = np.zeros(len(self.surface_impedance))
     
-                for zsi, zs in enumerate (self.surface_impedance):=
+                for zsi, zs in enumerate (self.surface_impedance):
 
                     def alpha_fun(theta):
 
