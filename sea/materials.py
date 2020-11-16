@@ -168,7 +168,7 @@ class Material():
                 self.surface_impedance = (self.rho0*self.c0)/np.conj(self.admittance)
             
             
-         if method == "thomasson":
+        if method == "thomasson":
             
             self.statistical_alpha = np.zeros(len(self.surface_impedance))
 
@@ -201,7 +201,7 @@ class Material():
                     return alpha_fun
 
                 self.statistical_alpha[zsi] = 8 * abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
-
+            
             if method == "paris":
                 
                 self.statistical_alpha = np.zeros(len(self.surface_impedance))
