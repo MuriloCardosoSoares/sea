@@ -221,7 +221,7 @@ class Material():
      
     def plot(self):
         
-        if octave_bands == []:
+        if self.octave_bands == []:
             if self.statistical_alpha == []:
                 if self.surface_impedance == [] and self.admittance == []:
                     raise ValueError("There is no information about this material yet.")
