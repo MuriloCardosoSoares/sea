@@ -233,7 +233,7 @@ class Material():
                 else:
                     print(1)
             else:
-                plt.plot (self.freq, self.statistical_alpha, '.')
+                plt.plot (self.freq, self.statistical_alpha)
                 plt.title('Absorption coefficients')
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Absorption coefficient [-]')
