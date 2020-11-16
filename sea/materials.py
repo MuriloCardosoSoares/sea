@@ -99,7 +99,7 @@ class Material():
         self.air_cavity_depth = parameters[2]
         self.theta = theta
        
-        self.porous([self.flow_resistivity, self.thickness], self.rho0, self.c0, self.theta)
+        self.porous([self.flow_resistivity, self.thickness], self.theta)
 
         theta_t_1 = np.arctan(self.characteristic_c*np.sin(self.theta)/self.c0)
         theta_t_2 = np.arctan(self.c0*np.sin(theta_t_1)/self.characteristic_c)
