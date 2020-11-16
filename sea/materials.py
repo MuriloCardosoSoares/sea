@@ -228,6 +228,7 @@ class Material():
                 else:
                     pass
             else:
+                print("You are beautiful")
                 plt.plot (self.freq, self.statistical_alpha, '.')
                 plt.title('Absorption coefficients')
                 plt.xscale('log')
