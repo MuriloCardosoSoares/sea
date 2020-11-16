@@ -185,7 +185,7 @@ class Material():
                         h = np.log((1+q**2)**(1/2) + q) - ((1+q**2)**(1/2)-1)/(3*q)
                         return h
 
-                    z_l = (2*k[zsi]*a*b / np.pi) + 1j*(2*k[zsi] / np.pi) * (b*h(a/b) + a*h(b/a))
+                    z_l = (2*self.k0[zsi]*a*b / np.pi) + 1j*(2*self.k0k[zsi] / np.pi) * (b*h(a/b) + a*h(b/a))
 
                     z_r = 1 / ((1/(z_l.real**2))**(1/2) + (1/(z_h.real**2))**(1/2))
 
