@@ -177,7 +177,7 @@ class Material():
                 def alpha_fun(theta):
 
                     mi = np.sin(theta)
-                    ke = (2*self.k0[z_si]*a*b) / (a+b)
+                    ke = (2*self.k0[zsi]*a*b) / (a+b)
                     kappa = 0.956 / ke
                     z_h = 1 / ((1 + (kappa-1j*mi)**2)**(1/2))
 
@@ -185,7 +185,7 @@ class Material():
                         h = np.log((1+q**2)**(1/2) + q) - ((1+q**2)**(1/2)-1)/(3*q)
                         return h
 
-                    z_l = (2*k[z_si]*a*b / np.pi) + 1j*(2*k[z_si] / np.pi) * (b*h(a/b) + a*h(b/a))
+                    z_l = (2*k[zsi]*a*b / np.pi) + 1j*(2*k[zsi] / np.pi) * (b*h(a/b) + a*h(b/a))
 
                     z_r = 1 / ((1/(z_l.real**2))**(1/2) + (1/(z_h.real**2))**(1/2))
 
