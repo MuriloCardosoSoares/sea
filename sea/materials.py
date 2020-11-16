@@ -202,21 +202,21 @@ class Material():
 
                 self.statistical_alpha[zsi] = 8 * abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
             
-            if method == "paris":
+        if method == "paris":
                 
-                self.statistical_alpha = np.zeros(len(self.surface_impedance))
-    
-                for zsi, zs in enumerate (self.surface_impedance):
+            self.statistical_alpha = np.zeros(len(self.surface_impedance))
 
-                    def alpha_fun(theta):
+            for zsi, zs in enumerate (self.surface_impedance):
 
-                        vp =  (zs*np.cos(theta) - 1)/(zs*np.cos(theta) + 1)    
-                        alpha = 1 - (abs(vp))**2
-                        alpha_s = alpha*np.sin(2*theta)
+                def alpha_fun(theta):
 
-                        return alpha_s
+                    vp =  (zs*np.cos(theta) - 1)/(zs*np.cos(theta) + 1)    
+                    alpha = 1 - (abs(vp))**2
+                    alpha_s = alpha*np.sin(2*theta)
 
-                    self.statistical_alpha[zsi] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
+                    return alpha_s
+
+                self.statistical_alpha[zsi] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
         
      
     def plot(self):
