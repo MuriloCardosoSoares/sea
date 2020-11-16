@@ -241,7 +241,7 @@ class Material():
                 else:
                     pass #to be implemented
             else:
-                if type == "statistical"
+                if type == "statistical":
                     plt.plot (self.freq, self.statistical_alpha)
                     plt.title('Statistical absorption coefficients')
                     plt.xlabel('Frequency [Hz]')
@@ -250,7 +250,7 @@ class Material():
                     plt.ylim((0,1.1))
                     plt.show()
                     
-                elif type == "normal incidence"
+                elif type == "normal incidence":
                     plt.plot (self.freq, self.normal_alpha)
                     plt.title('Normal incidence absorption coefficients')
                     plt.xlabel('Frequency [Hz]')
