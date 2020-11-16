@@ -179,8 +179,7 @@ class Material():
 
             vp =  (zs - 1)/(zs + 1)    
             self.normal_alpha[zsi] = 1 - (abs(vp))**2
-    
-    return alpha
+            
             
         if method == "thomasson":
             
