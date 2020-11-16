@@ -226,9 +226,9 @@ class Material():
                 if self.surface_impedance == [] and self.admittance == []:
                     raise ValueError("There is no information about this material yet.")
                 else:
-                    pass
+                    print("You are beautiful")
             else:
-                print("You are beautiful")
+                print("You are very beautiful")
                 plt.plot (self.freq, self.statistical_alpha, '.')
                 plt.title('Absorption coefficients')
                 plt.xscale('log')
@@ -239,7 +239,7 @@ class Material():
             raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
         
         else:
-            pass
+            print("You are very, very beautiful")
     
     def __str__(self):
         
