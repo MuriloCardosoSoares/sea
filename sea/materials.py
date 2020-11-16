@@ -221,10 +221,9 @@ class Material():
      
     def plot(self):
         
-        if self.octave_bands == []:
-            print("you")
-            if self.statistical_alpha == []:
-                if self.surface_impedance == [] and self.admittance == []:
+        if self.octave_bands == np.array([], dtype = np.float32):
+            if self.statistical_alpha == np.array([], dtype = np.float32):
+                if self.surface_impedance == np.array([], dtype = np.float32) and self.admittance == np.array([], dtype = np.float32):
                     raise ValueError("There is no information about this material yet.")
                 else:
                     print("You are beautiful")
@@ -236,7 +235,7 @@ class Material():
                 plt.ylim((0,1))
                 plt.show()
             
-        elif self.statistical_alpha == []:
+        elif self.statistical_alpha == np.array([], dtype = np.float32):
             raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
         
         else:
