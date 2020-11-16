@@ -7,7 +7,7 @@ from random import uniform
 
 class Material():
     
-    def __init__(self, statistical_alpha=[], octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
+    def __init__(self, statistical_alpha=[], self.normal_alpha=[], octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
         Inputs:
@@ -20,6 +20,7 @@ class Material():
         '''
         
         self.statistical_alpha = np.array(statistical_alpha, dtype = np.float32)
+        self.normal_alpha = np.array(normal_alpha, dtype = np.float32)
         self.octave_bands = np.array(octave_bands, dtype = np.float32)
         self.admittance = np.array(admittance, dtype = np.complex64)
         self.surface_impedance = np.array(surface_impedance, dtype = np.complex64)
@@ -170,8 +171,16 @@ class Material():
                 raise ValueError("There is no information about the surface impedance (or admittance) of this material yet.") 
         else:
             if self.normalized_surface_impedance.size == 0:
-                self.surface_impedance = (self.rho0*self.c0)/np.conj(self.admittance)
-            
+                self.surface_impedance = 1/np.conj(self.admittance)
+        
+        self.normal_alpha = np.zeros(len(self.surface_impedance))
+        
+        for zsi, zs in enumerate (self.normalized_surface_impedance):
+
+            vp =  (zs - 1)/(zs + 1)    
+            self.normal_alpha[zsi] = 1 - (abs(vp))**2
+    
+    return alpha
             
         if method == "thomasson":
             
@@ -224,28 +233,38 @@ class Material():
                 self.statistical_alpha[zsi] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
         
      
-    def plot(self):
+    def plot(self, type="statistical"):
         
         if self.octave_bands.size == 0:
-            if self.statistical_alpha.size == 0:
+            if self.statistical_alpha.size == 0 or self.normal_alpha.size == 0:
                 if self.surface_impedance.size == 0 and self.admittance.size == 0:
                     raise ValueError("There is no information about this material yet.")
                 else:
-                    print(1)
+                    pass #to be implemented
             else:
-                plt.plot (self.freq, self.statistical_alpha)
-                plt.title('Absorption coefficients')
-                plt.xlabel('Frequency [Hz]')
-                plt.ylabel('Absorption coefficient [-]')
-                plt.xscale('log')
-                plt.ylim((0,1.1))
-                plt.show()
+                if type == "statistical"
+                    plt.plot (self.freq, self.statistical_alpha)
+                    plt.title('Statistical absorption coefficients')
+                    plt.xlabel('Frequency [Hz]')
+                    plt.ylabel('Statistical absorption coefficient [-]')
+                    plt.xscale('log')
+                    plt.ylim((0,1.1))
+                    plt.show()
+                    
+                elif type == "normal incidence"
+                    plt.plot (self.freq, self.normal_alpha)
+                    plt.title('Normal incidence absorption coefficients')
+                    plt.xlabel('Frequency [Hz]')
+                    plt.ylabel('Normal incidence absorption coefficient [-]')
+                    plt.xscale('log')
+                    plt.ylim((0,1.1))
+                    plt.show()
             
         elif self.statistical_alpha.size == 0:
             raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
         
         else:
-            print(2)
+            pass #to be implemented
     
     def __str__(self):
         
