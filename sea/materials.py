@@ -238,7 +238,7 @@ class Material():
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Absorption coefficient [-]')
                 plt.xscale('log')
-                plt.ylim((0,1))
+                plt.ylim((0,1.1))
                 plt.show()
             
         elif self.statistical_alpha.size == 0:
