@@ -203,7 +203,7 @@ class Material():
         self.absorber_type = "perforated panel"
         
         
-    def micro_perforated_panel (parameters, f_range, theta = 0, mi0=1.84e-5):
+    def micro_perforated_panel (parameters, mi0=1.84e-5, theta = 0, ):
 
         """
             Computes the surface impedance for a microperforated panel absorber;
