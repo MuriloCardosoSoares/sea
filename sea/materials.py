@@ -376,12 +376,6 @@ class Material():
             + ". \nThe total cavity depth is " + str(self.cavity_depth) + " [m] and the porous absorver layer thickness is " + str(self.cavity_depth) 
             + " [m].\nThe flow resistivity of the porous absorber is " + str(self.flow_resistivity) + " [rayl/m].")
         
-        self.panel_thickness = parameters[0]
-        self.openings_radius = parameters[1]
-        self.perforation_rate = parameters[2]
-        self.air_cavity_depth = parameters[3]
-        self.air_dynamic_viscosity = mi0 
-        
         elif self.absorber_type == "microperforated panel":
             return ("Microperforated panel absorber. The panel thickness is " + str(self.panel_thickness) + " [m].\nThe opening radius is " 
             + str(self.openings_radius) + " [m], being the perforation rate " + str(self.perforation_rate) 
