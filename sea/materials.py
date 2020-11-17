@@ -202,6 +202,46 @@ class Material():
         
         self.absorber_type = "perforated panel"
         
+        
+    def micro_perforated_panel (parameters, f_range, theta = 0, mi0=1.84e-5):
+
+        """
+            Computes the surface impedance for a microperforated panel absorber;
+
+            *All the parameters of the absorber should be given together in an array*
+            
+            parameters -> [h, a, p, d_air], where
+                h -> panel thickness [m]
+                a -> radius of the circular openings [m] 
+                p -> perforation rate
+                d_air -> width of the air cavity [m]
+
+            theta -> angle of incidence. Here, it is assumed to be 0 degrees. It is considered an argument just 
+                     to facilitate the interaction with another functions
+
+            mi0 -> dynamic viscosity of air [Pa*s]
+        """
+        
+        self.panel_thickness = parameters[0]
+        self.openings_radius = parameters[1]
+        self.perforation_rate = parameters[2]
+        self.air_cavity_depth = parameters[3]
+        self.air_dynamic_viscosity = mi0       
+
+        y = 2*self.openings_radius*(self.w*self.rho0/(4*self.air_dynamic_viscosity))**(1/2)
+
+        r = 32*self.air_dynamic_viscosity*self.panel_thickness/(self.perforation_rate*(2*self.openings_radius)**2) \
+            * ((1+y**2/32)**(1/2) + 2**(1/2)/32*y*2*self.openings_radius/self.panel_thickness)
+
+        m = self.rho0*self.panel_thickness/self.perforation_rate * (1 + (9+y**2/2)**(1/2) + 0.85*2*self.openings_radius/self.panel_thickness)
+
+        self.surface_impedance = r + 1j*self.w*m - 1j*(self.rho0*self.c0)*1/(np.tan((self.k0)*self.air_cavity_depth)) 
+        
+        self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
+        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        
+        self.absorber_type = "microperforated panel"   
+        
     
     def impedance2alpha(self, method="thomasson", a=11**0.5, b=11**0.5):
 
@@ -333,8 +373,19 @@ class Material():
         elif self.absorber_type == "perforated panel":
             return ("Perforated panel absorber. The panel thickness is " + str(self.panel_thickness) + " [m].\nThe opening radius is " 
             + str(self.openings_radius) + " [m], being the perforation rate " + str(self.perforation_rate) 
-            + "\nThe total cavity depth is " + str(self.cavity_depth) + " [m] and the porous absorver layer thickness is " + str(self.cavity_depth) 
-            + "[m].\nThe flow resistivity of the porous absorber is " + str(self.flow_resistivity) + " [rayl/m]")
+            + ". \nThe total cavity depth is " + str(self.cavity_depth) + " [m] and the porous absorver layer thickness is " + str(self.cavity_depth) 
+            + " [m].\nThe flow resistivity of the porous absorber is " + str(self.flow_resistivity) + " [rayl/m].")
+        
+        self.panel_thickness = parameters[0]
+        self.openings_radius = parameters[1]
+        self.perforation_rate = parameters[2]
+        self.air_cavity_depth = parameters[3]
+        self.air_dynamic_viscosity = mi0 
+        
+        elif self.absorber_type == "microperforated panel":
+            return ("Microperforated panel absorber. The panel thickness is " + str(self.panel_thickness) + " [m].\nThe opening radius is " 
+            + str(self.openings_radius) + " [m], being the perforation rate " + str(self.perforation_rate) 
+            + ".\nThe air cavity depth is " + str(self.air_cavity_depth) + " [m].")
         
         
 def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
