@@ -157,6 +157,52 @@ class Material():
         self.absorber_type = "membrane"
 
         
+    def perforated_panel (self, parameters, theta=0):
+
+        """
+            Computes the surface impedance for a perforated panel absorber;
+
+            *All the parameters of the absorber should be given together in an array*
+            
+            parameters -> [h, a, p, d, rf, d_porous], where
+                h -> panel thickness [m]
+                a -> radius of the circular openings [m] 
+                p -> perforation rate
+                d -> depth of the cavity (air + porous absorber) [m]
+
+                rf -> flow resistivity of the porous absorber layer [rayl/m]
+                d_porous -> thickness of the porous absorber layer [m]
+
+            theta -> angle of incidence. Here, it is assumed to be 0 degrees. It is considered an argument just 
+                     to facilitate the interaction with another functions
+
+        """
+
+        self.panel_thickness = parameters[0]
+        self.openings_radius = parameters[1]
+        self.perforation_rate = parameters[2]
+        self.cavity_depth = parameters[3]
+        self.flow_resistivity = parameters[4]
+        self.porous_layer_thickness = parameters[5]
+
+        m = self.rho0*self.perforation_rate*(self.panel_thickness + 1.7*self.openings_radius)       # superficial density of the gas in each perfuration
+        z_t = 1j*self.w*m                 # impedance of a single opening
+
+        # cavity impedance 
+        self.porous([self.flow_resistivity, self.porous_layer_thickness], 0)
+
+        zs2 = -1j*(self.rho0*self.c0) * 1/(np.tan((self.w/self.c0)*(self.cavity_depth-self.porous_layer_thickness)))
+        z_cav = double_layer_absorber(zs2, self.characteristic_c, self.characteristic_k, self.porous_layer_thickness, 0)
+
+        # The total impedance is the sum:
+        self.surface_impedance = z_t/self.perforation_rate + z_cav
+        
+        self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
+        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        
+        self.absorber_type = "perforated panel"
+        
+    
     def impedance2alpha(self, method="thomasson", a=11**0.5, b=11**0.5):
 
         """
@@ -283,6 +329,12 @@ class Material():
             return ("Membrane absorber. The mass per unit area of the membrane is " + str(self.mass_per_unit_area) + " [kg/m^2].\nThe total cavity depth is " 
             + str(self.cavity_depth) + " [m], being " + str(self.porous_layer_thickness) + " [m] of porous a porous material with flow resistivity = " 
             + str(self.flow_resistivity) + " [rayl/m]")
+        
+        elif self.absorber_type == "perforated panel":
+            return ("Perforated panel absorber. The panel thickness is " + str(self.panel_thickness) + " [m].\nThe opening radius is " 
+            + str(self.openings_radius) + " [m], being the perforation rate " + str(self.perforation_rate) 
+            + "\nThe total cavity depth is " + str(self.cavity_depth) + " [m] and the porous absorver layer thickness is " + str(self.cavity_depth) 
+            + "[m].\nThe flow resistivity of the porous absorber is " + str(self.flow_resistivity) + " [rayl/m]")
         
         
 def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
