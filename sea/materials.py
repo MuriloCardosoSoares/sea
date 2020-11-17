@@ -192,7 +192,7 @@ class Material():
         self.porous([self.flow_resistivity, self.porous_layer_thickness], 0)
 
         zs2 = -1j*(self.rho0*self.c0) * 1/(np.tan((self.w/self.c0)*(self.cavity_depth-self.porous_layer_thickness)))
-        z_cav = double_layer_absorber(zs2, self.characteristic_c, self.characteristic_k, self.porous_layer_thickness, 0)
+        z_cav = double_layer(zs2, self.characteristic_impedance, self.characteristic_c, self.characteristic_k, self.porous_layer_thickness, self.c0, 0)
 
         # The total impedance is the sum:
         self.surface_impedance = z_t/self.perforation_rate + z_cav
