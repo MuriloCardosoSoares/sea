@@ -233,6 +233,9 @@ class Material():
         
      
     def plot(self, type="statistical"):
+        """
+        Plots the absorption coeffients. If it is not yet defined, it is plotted the complex surface impedance (to be implemented)
+        """
         
         if self.octave_bands.size == 0:
             if self.statistical_alpha.size == 0 or self.normal_alpha.size == 0:
@@ -265,6 +268,7 @@ class Material():
         else:
             pass #to be implemented
     
+    
     def __str__(self):
         
         if self.absorber_type == "porous":
@@ -293,6 +297,9 @@ def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
         d1 -> thickness of the first layer
         theta -> angle of incidence
     """
+    #porous =        double_layer(air_surf_imp, self.characteristic_impedance, self.characteristic_c, self.characteristic_k, self.thickness, self.c0, self.theta)
+    #membrane =      double_layer(self.surface_impedance, self.rho0*self.c0, self.c0, self.k0, (self.cavity_depth - self.porous_layer_thickness), self.c0, 0)
+    #membrane_orig = double_layer_absorber(z_s_porous, rho0*c0, k0,  (d - d_porous), 0)
     
     theta_t1 = np.arctan(c1*np.sin(theta)/c0)
     z_si = (-1j*zs2*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))) + (zc1)**2) / (zs2*(np.cos(theta_t1))**2 - 1j*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))))
