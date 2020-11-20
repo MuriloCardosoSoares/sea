@@ -357,7 +357,67 @@ class Material():
 
                 self.statistical_alpha[zsi] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
         
-     
+    
+    def alpha_in_bands (self):
+    
+    """
+    Given data and it's corresponding frequencies, calculates these data in octave or third-octave bands.
+    It is done directly: the value of a band is simply the mean value of all data inside this band.
+    """
+    
+    upper = {
+                0 : np.array([22,44,88,177,355,710,1420,2840,5680,11360,22720])
+                1: np.array([14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780,22390])
+                }
+        
+    center = {
+                0 : np.array([16,31.5,63,125,250,500,1000,2000,4000,8000,16000])
+                1 : np.array([12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000])
+                }
+        
+    data_in_bands = {}
+    aux = 0
+    while self.freq[0] > upper_limit[aux]:
+        aux = aux + 1
+
+    for i in np.arange(len(upper))
+        
+        upper_lim = [i]
+        center_freq = [i]
+    
+        f_aux = 0
+        for fi, f in enumerate(sel.freq):
+
+            if f < upper_limit[aux]:
+
+                if fi == (len(f_range) - 1):
+
+                    data_in_bands [center_freq[aux]] = np.mean(data[f_aux:fi+1])
+
+                else:
+                    pass   
+
+            else:
+                data_in_bands [center_freq[aux]] = np.mean(data[f_aux:fi])
+
+                aux = aux + 1
+                f_aux = fi
+
+                if fi == (len(f_range) - 1): 
+
+                    data_in_bands [center_freq[aux]] = data[fi]
+
+                while f > upper_limit[aux]:
+
+                    aux = aux + 1
+                    print('oi')
+
+        lists = sorted(data_in_bands.items()) # sorted by key, return a list of tuples
+        bands, data_in_bands = zip(*lists) # unpack a list of pairs into two tuples
+        bands = np.array(bands)
+        data_in_bands = np.array(data_in_bands)    
+
+    
     def plot(self, type="statistical"):
         """
         Plots the absorption coeffients. If it is not yet defined, it is plotted the complex surface impedance (to be implemented)
@@ -392,7 +452,13 @@ class Material():
             raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
         
         else:
-            pass #to be implemented
+                plt.plot (self.freq, self.statistical_alpha)
+                plt.title('Statistical absorption coefficients')
+                plt.xlabel('Frequency [Hz]')
+                plt.ylabel('Statistical absorption coefficient [-]')
+                plt.xscale('log')
+                plt.ylim((0,1.1))
+                plt.show()
     
     
     def __str__(self):
