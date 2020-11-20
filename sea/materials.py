@@ -203,7 +203,7 @@ class Material():
         self.absorber_type = "perforated panel"
         
         
-    def microperforated_panel (self, parameters, mi0=1.84e-5, theta=0):
+    def microperforated_panel_eric (self, parameters, mi0=1.84e-5, theta=0):
 
         """
             Computes the surface impedance for a microperforated panel absorber;
@@ -241,6 +241,46 @@ class Material():
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
         self.absorber_type = "microperforated panel"   
+        
+        
+    def microperforated_panel (self, parameters, mi0=18.13e-6, theta=0):
+
+        """
+            Computes the surface impedance for a microperforated panel absorber;
+
+            *All the parameters of the absorber should be given together in an array*
+            
+            parameters -> [h, a, p, d_air], where
+                h -> panel thickness [m]
+                a -> radius of the circular openings [m] 
+                p -> perforation rate
+                d_air -> width of the air cavity [m]
+
+            theta -> angle of incidence. Here, it is assumed to be 0 degrees. It is considered an argument just 
+                     to facilitate the interaction with another functions
+
+            mi0 -> dynamic viscosity of air [Pa*s]
+        """
+        
+        self.panel_thickness = parameters[0]
+        self.openings_radius = parameters[1]
+        self.perforation_rate = parameters[2]
+        self.air_cavity_depth = parameters[3]
+        self.air_dynamic_viscosity = mi0       
+
+        s_2 = (self.rho0*self.w*self.openings_radius**2) / (self.air_dynamic_viscosity) 
+        
+        z_t = ((32*self.air_dynamic_viscosity*self.panel_thickness)/(4*self.openings_radius**2) * (1+s_2/32)**0.5 \
+                + 1j*self.w*self.rho0*self.panel_thickness*(1 + (9+s_2/2)**(-0.5)))/(self.rho0*self.c0)
+        
+        z_e = (((self.rho0*self.air_dynamic_viscosity*self.w)/2)**0.5 + 1j*1.7*self.rho0*self.w*self.openings_radius)/(self.rho0*self.c0)
+        
+        self.normalized_surface_impedance = (z_t+z_e)/self.perforation_rate - 1j*1/(np.tan((self.k0)*self.air_cavity_depth))
+        
+        self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
+        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        
+        self.absorber_type = "microperforated panel"  
         
     
     def impedance2alpha(self, method="thomasson", a=11**0.5, b=11**0.5):
