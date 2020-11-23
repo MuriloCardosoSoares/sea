@@ -436,28 +436,25 @@ class Material():
                 self.third_octave_bands_statistical_alpha = np.array(data_in_bands)  
 
     
-    def plot(self, type="statistical"):
+    def plot(self, type="statistical in octave bands"):
         """
         Plots the absorption coeffients. If it is not yet defined, it is plotted the complex surface impedance (to be implemented)
         """
         
-        if self.octave_bands.size == 0:
+        if self.octave_bands.size == 0 and type="statistical in octave bands":
+            raise ValueError("Statistical absorption coefficient in octave bands is not defined yet.")
+            
+        if self.third_octave_bands.size == 0 and type="statistical in third octave bands":
+            raise ValueError("Statistical absorption coefficient in third octave bands is not defined yet.")
+            
+        if self.octave_bands.size == 0 or self.third_octave_bands.size == 0 or type="statistical" or type="normal incidence":
             if self.statistical_alpha.size == 0 or self.normal_inidence_alpha.size == 0:
                 if self.surface_impedance.size == 0 and self.admittance.size == 0:
                     raise ValueError("There is no information about this material yet.")
                 else:
                     pass #to be implemented
             else:
-                if type == "statistical":
-                    plt.plot (self.freq, self.statistical_alpha)
-                    plt.title('Statistical absorption coefficients')
-                    plt.xlabel('Frequency [Hz]')
-                    plt.ylabel('Statistical absorption coefficient [-]')
-                    plt.xscale('log')
-                    plt.ylim((0,1.1))
-                    plt.show()
-                    
-                elif type == "normal incidence":
+                if type == "normal incidence":
                     plt.plot (self.freq, self.normal_inidence_alpha)
                     plt.title('Normal incidence absorption coefficients')
                     plt.xlabel('Frequency [Hz]')
@@ -465,12 +462,34 @@ class Material():
                     plt.xscale('log')
                     plt.ylim((0,1.1))
                     plt.show()
-            
-        elif self.statistical_alpha.size == 0:
+                else: 
+                    plt.plot (self.freq, self.statistical_alpha)
+                    plt.title('Statistical absorption coefficients')
+                    plt.xlabel('Frequency [Hz]')
+                    plt.ylabel('Statistical absorption coefficient [-]')
+                    plt.xscale('log')
+                    plt.ylim((0,1.1))
+                    plt.show()
+
+        elif self.octave_bands_statistical_alpha.size == 0 and type="statistical in octave bands":
             raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
-        
+            
+        elif self.third_octave_bands_statistical_alpha.size == 0 and type="statistical in third octave bands":
+            raise ValueError("Third octave bands have been defined, but not the corresponding statistical absorption coefficients.")
+            
         else:
-                plt.plot (self.octave_bands, self.octave_bands_statistical_alpha, 'o-')
+            if type="statistical in third octave bands":
+                
+                plt.plot (self.third_octave_bands, self.third_octave_bands_statistical_alpha)
+                plt.title('Statistical absorption coefficients in third-octave bands')
+                plt.xlabel('Frequency [Hz]')
+                plt.ylabel('Statistical absorption coefficient [-]')
+                plt.xscale('log')
+                plt.ylim((0,1.1))
+                plt.show()
+                
+            else:
+                plt.plot (self.octave_bands, self.octave_bands_statistical_alpha)
                 plt.title('Statistical absorption coefficients in octave bands')
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Statistical absorption coefficient [-]')
