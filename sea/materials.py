@@ -340,8 +340,9 @@ class Material():
                     return alpha_fun
 
                 self.statistical_alpha[zsi] = 8 * abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
+                
             
-        if method == "paris":
+        elif method == "paris":
                 
             self.statistical_alpha = np.zeros(len(self.normalized_surface_impedance))
 
@@ -357,6 +358,10 @@ class Material():
 
                 self.statistical_alpha[zsi] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
         
+        else:
+            raise ValueError("Method is not valid.")
+        
+        self.alpha_in_bands()
     
     def alpha_in_bands (self):
     
