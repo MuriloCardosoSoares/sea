@@ -394,7 +394,7 @@ class Material():
             
             data_in_bands = {}
             f_aux = 0
-            for fi, f in enumerate(sel.freq):
+            for fi, f in enumerate(self.freq):
 
                 if f < upper_limit[aux]:
 
