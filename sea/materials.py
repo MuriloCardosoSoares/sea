@@ -480,7 +480,7 @@ class Material():
         else:
             if type == "statistical in third octave bands":
                 
-                plt.plot (self.third_octave_bands, self.third_octave_bands_statistical_alpha)
+                plt.plot (self.third_octave_bands, self.third_octave_bands_statistical_alpha, 'o-')
                 plt.title('Statistical absorption coefficients in third-octave bands')
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Statistical absorption coefficient [-]')
@@ -489,7 +489,7 @@ class Material():
                 plt.show()
                 
             else:
-                plt.plot (self.octave_bands, self.octave_bands_statistical_alpha)
+                plt.plot (self.octave_bands, self.octave_bands_statistical_alpha, 'o-')
                 plt.title('Statistical absorption coefficients in octave bands')
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Statistical absorption coefficient [-]')
