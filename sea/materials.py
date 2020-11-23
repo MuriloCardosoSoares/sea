@@ -400,20 +400,20 @@ class Material():
 
                     if fi == (len(self.freq) - 1):
 
-                        data_in_bands [center_freq[aux]] = np.mean(data[f_aux:fi+1])
+                        data_in_bands [center_freq[aux]] = np.mean(self.statistical_alpha[f_aux:fi+1])
 
                     else:
                         pass   
 
                 else:
-                    data_in_bands [center_freq[aux]] = np.mean(data[f_aux:fi])
+                    data_in_bands [center_freq[aux]] = np.mean(self.statistical_alpha[f_aux:fi])
 
                     aux = aux + 1
                     f_aux = fi
 
                     if fi == (len(self.freq) - 1): 
 
-                        data_in_bands [center_freq[aux]] = data[fi]
+                        data_in_bands [center_freq[aux]] = self.statistical_alpha[fi]
 
                     while f > upper_limit[aux]:
 
