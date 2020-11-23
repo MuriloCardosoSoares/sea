@@ -453,7 +453,7 @@ class Material():
                     plt.show()
                     
                 elif type == "normal incidence":
-                    plt.plot (self.freq, self.normal_inidence_alpha, 'o-')
+                    plt.plot (self.freq, self.normal_inidence_alpha)
                     plt.title('Normal incidence absorption coefficients')
                     plt.xlabel('Frequency [Hz]')
                     plt.ylabel('Normal incidence absorption coefficient [-]')
@@ -465,7 +465,7 @@ class Material():
             raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
         
         else:
-                plt.plot (self.octave_bands, self.octave_bands_statistical_alpha)
+                plt.plot (self.octave_bands, self.octave_bands_statistical_alpha, 'o-')
                 plt.title('Statistical absorption coefficients in octave bands')
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Statistical absorption coefficient [-]')
