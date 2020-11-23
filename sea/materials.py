@@ -359,7 +359,7 @@ class Material():
                 self.statistical_alpha[zsi] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
         
         else:
-            raise ValueError("Method is not valid. You must use "paris" or "thomasson".")
+            raise ValueError("Method is not valid. You must use \"paris\" or \"thomasson\".")
         
         self.alpha_in_bands()
     
