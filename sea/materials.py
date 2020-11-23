@@ -453,7 +453,7 @@ class Material():
                     plt.show()
                     
                 elif type == "normal incidence":
-                    plt.plot (self.freq, self.normal_inidence_alpha)
+                    plt.plot (self.freq, self.normal_inidence_alpha, 'o-')
                     plt.title('Normal incidence absorption coefficients')
                     plt.xlabel('Frequency [Hz]')
                     plt.ylabel('Normal incidence absorption coefficient [-]')
