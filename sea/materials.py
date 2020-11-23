@@ -465,8 +465,8 @@ class Material():
             raise ValueError("Octave bands have been defined, but not the corresponding statistical absorption coefficients.")
         
         else:
-                plt.plot (self.freq, self.statistical_alpha)
-                plt.title('Statistical absorption coefficients')
+                plt.plot (self.octave_bands, self.octave_bands_statistical_alpha)
+                plt.title('Statistical absorption coefficients in octave bands')
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Statistical absorption coefficient [-]')
                 plt.xscale('log')
