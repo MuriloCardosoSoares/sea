@@ -379,18 +379,18 @@ class Material():
 
         aux = {0:0,
                1:0}
-        upper_lim = [0]
+        upper_lim = upper[0]
         while self.freq[0] > upper_limit[aux[0]]:
             aux[0] = aux[0] + 1
 
-        upper_lim = [1]
+        upper_lim = upper[1]
         while self.freq[0] > upper_limit[aux[1]]:
             aux[1] = aux[1] + 1
 
         for i in np.arange(len(upper)):
 
-            upper_lim = [i]
-            center_freq = [i]
+            upper_lim = upper[i]
+            center_freq = center[i]
 
             f_aux = 0
             for fi, f in enumerate(sel.freq):
