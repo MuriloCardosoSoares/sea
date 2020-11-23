@@ -363,6 +363,182 @@ class Material():
         
         self.alpha_in_bands()
     
+    
+    def impedance_thru_optimization (self):
+
+        '''
+        This function computes surface impedances from statistical absorption coefficients. 
+        This technique was first presented by Mondet in 2020 and is based on the solution 
+        of a constrained optimization problem
+
+
+        absorber -> string that defines the type of the absorber. It is gonna be used to define 
+                    the constraints of the optimization problem. The possible values are:
+
+                        - "soft porous" -> porous absorber with flow resistivity < 20 000 [rayl/m] and
+                                           thickness < 0.1 [m]           
+                        - "hard porous" -> porous absorber which parameters exceeds the "soft porous" limits
+                        - "perforated panel" 
+                        - "microperforated panel"
+                        - "membrane"
+                        - "hard" -> generic hard material (the result is gonna be the same as if it is considered microperforated panel)
+
+                    Obs: to a porous absorver with a cavity of air, the values of the flow resistivity and 
+                         thickness limits even decrease as the cavity depth increases                                     
+        '''
+
+        if hasattr(self, "absorber_type") != True or self.absorber_type != != "soft porous" and absorber != "hard porous" and absorber != "perforated panel" and absorber != "microperforated panel" and absorber != "membrane" and absorber != "hard":
+            raise ValueError("Invalid absorber; must be one of soft porous, hard porous, perforated panel, microperforated panel or membrane")
+
+        ################################################
+        # Computes a list of frequencies (f_list) containing three frequencies per octave (third-octave) band
+
+        if data_in_resolution == 'octave':
+
+            lower_limit = np.array([11,22,44,88,177,355,710,1420,2840,5680,11360])
+            upper_limit = np.array([22,44,88,177,355,710,1420,2840,5680,11360,22720])
+            center_freq = np.array([16,31.5,63,125,250,500,1000,2000,4000,8000,16000])
+
+        elif data_in_resolution == 'third-octave':
+
+            lower_limit = np.array([11.2,14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780])
+            upper_limit = np.array([14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780,22390])
+            center_freq = np.array([12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000])
+
+        else:
+            raise ValueError("Invalid resolution for input absorption coefficient; data_in_resolution parameter must be octave or third-octave")
+
+
+        aux = 0
+        while bands[0] > upper_limit[aux]:
+            aux = aux + 1
+
+        f_list = np.array([])
+        for band in bands:
+
+            freqs = np.array([np.mean((center_freq[aux], lower_limit[aux])), center_freq[aux], np.mean((upper_limit[aux], center_freq[aux]))])
+            f_list = np.append(f_list,freqs)
+            aux += 1
+
+        #################################################
+
+        if data_in_type == 'diffuse':
+
+            def cost_fun (parameters):
+
+                """
+                This funciton defines the cost function to be minimized by the optimization process
+                (The cost function is defined as the squared L2-norm between the corresponding 
+                statistical absorption coefficient and the input absorption coefficient)
+
+                Parameters = [k, r, m, g, gama]
+                The parameters are normalize by their typical orders of magnitude to facilitate 
+                the progress of the algorithm
+                """
+
+                Zs = impedance_thru_rmk1(parameters, f_list)
+                alpha_s = impedance2alpha_paris(Zs)
+                alpha_s_8 = data_2_bands(alpha_s, f_list, data_in_resolution)[0]
+                # print("Alpha_s_8 = %s" % alpha_s_8)
+
+                difference = alpha_in - alpha_s_8
+                squared_l2_norm = np.real(np.inner(difference, difference))
+
+                return squared_l2_norm
+
+        elif data_in_type == 'normal':
+
+            def cost_fun (parameters):
+
+                """
+                This funciton defines the cost function to be minimized by the optimization process
+                (The cost function is defined as the squared L2-norm between the corresponding 
+                statistical absorption coefficient and the input absorption coefficient)
+
+                Parameters = [k, r, m, g, gama]
+                The parameters are normalize by their typical orders of magnitude to facilitate 
+                the progress of the algorithm
+                """
+
+                Zs = impedance_thru_rmk1(parameters, f_list)
+                alpha = impedance2alpha_normal(Zs)
+                alpha_8 = data_2_bands(alpha, f_list, data_in_resolution)[0]
+                # print("Alpha_s_8 = %s" % alpha_s_8)
+
+                difference = alpha_in - alpha_8
+                squared_l2_norm = np.real(np.inner(difference, difference))
+
+                return squared_l2_norm
+        else:
+            raise ValueError("Invalid information about input data type; data_in_type parameter must be diffuse or normal")
+
+
+        ################################################
+        # Next condition statements define the constraints to be used in the optimization
+        # problem based on the type of absorber
+
+        if absorber == "soft porous" or absorber == "perforated panel" or absorber == "membrane":
+
+            def constrain(parameters):
+
+                # Parameters = [r, m, k, g, gama]
+                # The parameters are normalize by their typical orders of magnitude to facilitate the progress of the algorithm
+
+                Zs = 2 - np.real(impedance_thru_rmk1(parameters, f_list))
+
+                return Zs
+
+            ineq_cons = {'type': 'ineq',
+                         'fun': constrain}
+
+            bounds = ((0, np.inf), (0, np.inf), (0, np.inf), (0, np.inf), (-1, 1)) # (k, r, m, g, gama)
+            guesses = np.array([0, 1.6, 0, 0, 0]) # np.array([k, r, m, g, gama])
+
+            if absorber == "membrane":
+
+                bounds = ((0, np.inf), (0, np.inf), (0, np.inf), (0, np.inf), (0.9, 1)) # (k, r, m, g, gama)
+                guesses = np.array([0, 1.6, 0, 0, 0.95]) # np.array([k, r, m, g, gama])
+
+        if absorber == "hard porous" or absorber == "microperforated panel" or absorber == "hard":
+
+            def constrain(parameters):
+
+                '''
+                Parameters = [r, m, k, g, gama]
+
+                The parameters are normalize by their typical orders of magnitude to facilitate 
+                the progress of the algorithm
+                '''
+
+                Zs = np.real(impedance_thru_rmk1(parameters, f_list)) - 1
+
+                return Zs
+
+
+            ineq_cons = {'type': 'ineq',
+                         'fun': constrain}
+
+            bounds = ((0, np.inf), (0, np.inf), (0, np.inf), (0, np.inf), (-1, 1)) # (k, r, m, g, gama)
+            guesses = np.array([0, 1.6, 0, 0, 0]) # np.array([k, r, m, g, gama])
+
+        ################################################
+
+
+        print ("Working on the solution of the constrained optimization problem :)")
+
+
+        solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 1e-10, 'disp': True, 'maxiter': 1000})
+
+        while cost_fun (solution.x) > 0.1:
+
+            guesses = np.array([uniform(0,2), uniform(0,2), uniform(0,2), uniform(0,2), uniform(-1,1)]) # assign random values between 0 and 2 to all the normalized parameters, with the exception of the exponent, -1 <= gama <= 1
+            print ("Guesses: %s" % guesses)
+            solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol':1e-10, 'disp': True, 'maxiter': 1000})
+            print(solution.x)
+
+        return solution
+    
+    
     def alpha_in_bands (self):
     
         """
