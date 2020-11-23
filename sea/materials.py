@@ -7,7 +7,7 @@ from random import uniform
 
 class Material():
     
-    def __init__(self, statistical_alpha=[], normal_alpha=[], octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
+    def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
         Inputs:
@@ -20,7 +20,7 @@ class Material():
         '''
         
         self.statistical_alpha = np.array(statistical_alpha, dtype = np.float32)
-        self.normal_alpha = np.array(normal_alpha, dtype = np.float32)
+        self.normal_inidence_alpha = np.array(normal_inidence_alpha, dtype = np.float32)
         self.octave_bands = np.array(octave_bands, dtype = np.float32)
         self.admittance = np.array(admittance, dtype = np.complex64)
         self.surface_impedance = np.array(surface_impedance, dtype = np.complex64)
@@ -299,12 +299,12 @@ class Material():
             if self.normalized_surface_impedance.size == 0:
                 self.surface_impedance = 1/np.conj(self.admittance)
         
-        self.normal_alpha = np.zeros(len(self.surface_impedance))
+        self.normal_inidence_alpha = np.zeros(len(self.surface_impedance))
         
         for zsi, zs in enumerate (self.normalized_surface_impedance):
 
             vp =  (zs - 1)/(zs + 1)    
-            self.normal_alpha[zsi] = 1 - (abs(vp))**2
+            self.normal_inidence_alpha[zsi] = 1 - (abs(vp))**2
             
             
         if method == "thomasson":
@@ -360,62 +360,74 @@ class Material():
     
     def alpha_in_bands (self):
     
-    """
-    Given data and it's corresponding frequencies, calculates these data in octave or third-octave bands.
-    It is done directly: the value of a band is simply the mean value of all data inside this band.
-    """
-    
-    upper = {
-                0 : np.array([22,44,88,177,355,710,1420,2840,5680,11360,22720])
-                1: np.array([14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780,22390])
-                }
-        
-    center = {
-                0 : np.array([16,31.5,63,125,250,500,1000,2000,4000,8000,16000])
-                1 : np.array([12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000])
-                }
-        
-    data_in_bands = {}
-    aux = 0
-    while self.freq[0] > upper_limit[aux]:
-        aux = aux + 1
+        """
+        Given data and it's corresponding frequencies, calculates these data in octave and third-octave bands.
+        It is done directly: the value of a band is simply the mean value of all data inside this band.
+        """
 
-    for i in np.arange(len(upper))
-        
-        upper_lim = [i]
-        center_freq = [i]
-    
-        f_aux = 0
-        for fi, f in enumerate(sel.freq):
+        upper = {
+                    0 : np.array([22,44,88,177,355,710,1420,2840,5680,11360,22720])
+                    1: np.array([14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780,22390])
+                    }
 
-            if f < upper_limit[aux]:
+        center = {
+                    0 : np.array([16,31.5,63,125,250,500,1000,2000,4000,8000,16000])
+                    1 : np.array([12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000])
+                    }
 
-                if fi == (len(f_range) - 1):
+        data_in_bands = {}
 
-                    data_in_bands [center_freq[aux]] = np.mean(data[f_aux:fi+1])
+        aux = {0:0
+               1:0}
+        upper_lim = [0]
+        while self.freq[0] > upper_limit[aux[0]]:
+            aux[0] = aux[0] + 1
+
+        upper_lim = [1]
+        while self.freq[0] > upper_limit[aux[1]]:
+            aux[1] = aux[1] + 1
+
+        for i in np.arange(len(upper))
+
+            upper_lim = [i]
+            center_freq = [i]
+
+            f_aux = 0
+            for fi, f in enumerate(sel.freq):
+
+                if f < upper_limit[aux]:
+
+                    if fi == (len(self.freq) - 1):
+
+                        data_in_bands [center_freq[aux]] = np.mean(data[f_aux:fi+1])
+
+                    else:
+                        pass   
 
                 else:
-                    pass   
-
-            else:
-                data_in_bands [center_freq[aux]] = np.mean(data[f_aux:fi])
-
-                aux = aux + 1
-                f_aux = fi
-
-                if fi == (len(f_range) - 1): 
-
-                    data_in_bands [center_freq[aux]] = data[fi]
-
-                while f > upper_limit[aux]:
+                    data_in_bands [center_freq[aux]] = np.mean(data[f_aux:fi])
 
                     aux = aux + 1
-                    print('oi')
+                    f_aux = fi
 
-        lists = sorted(data_in_bands.items()) # sorted by key, return a list of tuples
-        bands, data_in_bands = zip(*lists) # unpack a list of pairs into two tuples
-        bands = np.array(bands)
-        data_in_bands = np.array(data_in_bands)    
+                    if fi == (len(self.freq) - 1): 
+
+                        data_in_bands [center_freq[aux]] = data[fi]
+
+                    while f > upper_limit[aux]:
+
+                        aux = aux + 1
+
+            lists = sorted(data_in_bands.items()) # sorted by key, return a list of tuples
+            bands, data_in_bands = zip(*lists) # unpack a list of pairs into two tuples
+
+            if i == 0:
+                self.octave_bands = np.array(bands)
+                self.octave_bands_statistical_alpha = np.array(data_in_bands)    
+                
+            if i == 1:
+                self.third_octave_bands = np.array(bands)
+                self.third_octave_bands_statistical_alpha = np.array(data_in_bands)  
 
     
     def plot(self, type="statistical"):
@@ -424,7 +436,7 @@ class Material():
         """
         
         if self.octave_bands.size == 0:
-            if self.statistical_alpha.size == 0 or self.normal_alpha.size == 0:
+            if self.statistical_alpha.size == 0 or self.normal_inidence_alpha.size == 0:
                 if self.surface_impedance.size == 0 and self.admittance.size == 0:
                     raise ValueError("There is no information about this material yet.")
                 else:
@@ -440,7 +452,7 @@ class Material():
                     plt.show()
                     
                 elif type == "normal incidence":
-                    plt.plot (self.freq, self.normal_alpha)
+                    plt.plot (self.freq, self.normal_inidence_alpha)
                     plt.title('Normal incidence absorption coefficients')
                     plt.xlabel('Frequency [Hz]')
                     plt.ylabel('Normal incidence absorption coefficient [-]')
