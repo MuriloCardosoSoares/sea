@@ -7,6 +7,24 @@ from random import uniform
 
 class Material():
     
+    #Define de lower and upper limits and center frequencies of octave and third-octave bands
+    
+    lower = {
+            0 : np.array([11,22,44,88,177,355,710,1420,2840,5680,11360]),
+            1 : np.array([11.2,14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780])
+            }
+
+    upper = {
+            0 : np.array([22,44,88,177,355,710,1420,2840,5680,11360,22720]),
+            1 : np.array([14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780,22390])
+            }
+
+    center = {
+            0 : np.array([16,31.5,63,125,250,500,1000,2000,4000,8000,16000]),
+            1 : np.array([12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000])
+            }
+            
+        
     def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
@@ -364,14 +382,15 @@ class Material():
         self.alpha_in_bands()
     
     
-    def impedance_thru_optimization (self):
+    def impedance_thru_optimization (self, **kwargs):
 
         '''
         This function computes surface impedances from statistical absorption coefficients. 
         This technique was first presented by Mondet in 2020 and is based on the solution 
         of a constrained optimization problem
 
-
+        The **kwargs (optional input argument) must be passed if you have not calculated the material properties using the methods of this module.
+        It must be passed as the keyword "absorber".
         absorber -> string that defines the type of the absorber. It is gonna be used to define 
                     the constraints of the optimization problem. The possible values are:
 
@@ -383,31 +402,17 @@ class Material():
                         - "membrane"
                         - "hard" -> generic hard material (the result is gonna be the same as if it is considered microperforated panel)
 
-                    Obs: to a porous absorver with a cavity of air, the values of the flow resistivity and 
+                    Obs: to a porous absorver with an air cavity, the values of the flow resistivity and 
                          thickness limits even decrease as the cavity depth increases                                     
         '''
 
-        if hasattr(self, "absorber_type") != True or self.absorber_type != != "soft porous" and absorber != "hard porous" and absorber != "perforated panel" and absorber != "microperforated panel" and absorber != "membrane" and absorber != "hard":
-            raise ValueError("Invalid absorber; must be one of soft porous, hard porous, perforated panel, microperforated panel or membrane")
-
+        if hasattr(self, "absorber_type") != True:
+            raise ValueError("Type of absorber is not defined.")
+        elif self.absorber_type != "soft porous" and absorber != "hard porous" and absorber != "perforated panel" and absorber != "microperforated panel" and absorber != "membrane" and absorber != "hard":
+            raise ValueError("Invalid absorber; must be one of soft porous, hard porous, perforated panel, microperforated panel or membrane.")
+        
         ################################################
         # Computes a list of frequencies (f_list) containing three frequencies per octave (third-octave) band
-
-        if data_in_resolution == 'octave':
-
-            lower_limit = np.array([11,22,44,88,177,355,710,1420,2840,5680,11360])
-            upper_limit = np.array([22,44,88,177,355,710,1420,2840,5680,11360,22720])
-            center_freq = np.array([16,31.5,63,125,250,500,1000,2000,4000,8000,16000])
-
-        elif data_in_resolution == 'third-octave':
-
-            lower_limit = np.array([11.2,14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780])
-            upper_limit = np.array([14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780,22390])
-            center_freq = np.array([12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000])
-
-        else:
-            raise ValueError("Invalid resolution for input absorption coefficient; data_in_resolution parameter must be octave or third-octave")
-
 
         aux = 0
         while bands[0] > upper_limit[aux]:
@@ -539,23 +544,37 @@ class Material():
         return solution
     
     
+    def impedance_thru_rmk1(self, parameters):
+    
+        """
+        Computes complex surface impedances impedances using the RMK + 1 method
+
+        Parameters = [k, r, m, g, gama]
+        The parameters are normalize by their typical orders of magnitude to facilitate 
+        the progress of the algorithm
+        """
+        
+        self.rmk1 = parameters
+        
+        k = self.rmk1[0]*(10**4)
+        r = self.rmk1[1]
+        m = self.rmk1[2]*(10**-4)
+        g = self.rmk1[3]*(10)
+        gama = self.rmk1[4]
+
+
+        self.normalized_surface_impedance = self.k0*(1j*self.w)**(-1) + r + m*(1j*self.w) + g*(1j*self.w)**gama   
+        
+        self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
+        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        
+        
     def alpha_in_bands (self):
     
         """
         Given data and it's corresponding frequencies, calculates these data in octave and third-octave bands.
         It is done directly: the value of a band is simply the mean value of all data inside this band.
         """
-
-        upper = {
-                    0 : np.array([22,44,88,177,355,710,1420,2840,5680,11360,22720]),
-                    1 : np.array([14.1,17.8,22.4,28.2,35.5,44.7,56.2,70.8,89.1,112,141,178,224,282,355,447,562,708,891,1122,1413,1778,2239,2818,3548,4467,5623,7079,8913,11220,14130,17780,22390])
-                    }
-
-        center = {
-                    0 : np.array([16,31.5,63,125,250,500,1000,2000,4000,8000,16000]),
-                    1 : np.array([12.5,16,20,25,31.5,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000])
-                    }
-
 
         first_band_aux = {0:0,
                           1:0}
