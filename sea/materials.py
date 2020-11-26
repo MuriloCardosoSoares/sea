@@ -474,7 +474,7 @@ class Material():
             the progress of the algorithm
             """
 
-            impedance_thru_rmk1(parameters)
+            self.impedance_thru_rmk1(parameters)
             self.impedance2alpha()
             difference = alpha_in - self.octave_bands_statistical_alpha
             squared_l2_norm = np.real(np.inner(difference, difference))
@@ -549,7 +549,7 @@ class Material():
         self.rmk1 = solution.x
         self.impedance_thru_rmk1(self.rmk1)
         
-        Print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything related was already calculated." % self.rmk1)
+        Print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything else related to it was already calculated." % self.rmk1)
     
     
     def impedance_thru_rmk1(self, parameters):
