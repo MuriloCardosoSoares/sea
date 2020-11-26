@@ -426,12 +426,16 @@ class Material():
         if self.third_octave_bands.size != 0 and self.third_octave_bands_statistical_alpha.size !=0:
             bands = self.third_octave_bands
             alpha_in = self.third_octave_bands_statistical_alpha
-            upper_limit = upper[1]
+            upper_limit = self.upper[1]
+            lower_limit = self.lower[1]
+            center_freq = self.center[1]
         
         elif self.octave_bands.size != 0 and self.octave_bands_statistical_alpha.size !=0:
             bands = self.octave_bands
             alpha_in = self.octave_bands_statistical_alpha
-            upper_limit = upper[0]
+            upper_limit = self.upper[0]
+            lower_limit = self.lower[0]
+            center_freq = self.center[0]
             
         else:
             raise ValueError("There is not enough information about the absorber yet. Check if it has been given octave or third-octave bands and \
@@ -580,18 +584,18 @@ class Material():
 
         first_band_aux = {0:0,
                           1:0}
-        upper_limit = upper[0]
+        upper_limit = self.upper[0]
         while self.freq[0] > upper_limit[first_band_aux[0]]:
             first_band_aux[0] = first_band_aux[0] + 1
 
-        upper_limit = upper[1]
+        upper_limit = self.upper[1]
         while self.freq[0] > upper_limit[first_band_aux[1]]:
             first_band_aux[1] = first_band_aux[1] + 1
 
         for i in np.arange(len(upper)):
 
-            upper_limit = upper[i]
-            center_freq = center[i]
+            upper_limit = self.upper[i]
+            center_freq = self.center[i]
             aux = first_band_aux[i]
             
             data_in_bands = {}
