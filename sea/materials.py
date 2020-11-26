@@ -414,10 +414,10 @@ class Material():
                     Obs: to a porous absorver with an air cavity, the values of the flow resistivity and 
                          thickness limits even decrease as the cavity depth increases                                     
         '''
-
+        self.absorber_type = absorber
         if hasattr(self, "absorber_type") != True:
             raise ValueError("Type of absorber is not defined.")
-        elif self.absorber_type != "soft porous" and absorber != "hard porous" and absorber != "perforated panel" and absorber != "microperforated panel" and absorber != "membrane" and absorber != "hard":
+        elif self.absorber_type != "soft porous" and self.absorber_type != "hard porous" and self.absorber_type != "perforated panel" and self.absorber_type != "microperforated panel" and self.absorber_type != "membrane" and self.absorber_type != "hard":
             raise ValueError("Invalid absorber; must be one of soft porous, hard porous, perforated panel, microperforated panel or membrane.")
         
         ################################################
@@ -486,7 +486,7 @@ class Material():
         # Next condition statements define the constraints to be used in the optimization
         # problem based on the type of absorber
 
-        if absorber == "soft porous" or absorber == "perforated panel" or absorber == "membrane":
+        if self.absorber_type == "soft porous" or self.absorber_type == "perforated panel" or self.absorber_type == "membrane":
 
             def constrain(parameters):
 
@@ -503,12 +503,12 @@ class Material():
             bounds = ((0, np.inf), (0, np.inf), (0, np.inf), (0, np.inf), (-1, 1)) # (k, r, m, g, gama)
             guesses = np.array([0, 1.6, 0, 0, 0]) # np.array([k, r, m, g, gama])
 
-            if absorber == "membrane":
+            if self.absorber_type == "membrane":
 
                 bounds = ((0, np.inf), (0, np.inf), (0, np.inf), (0, np.inf), (0.9, 1)) # (k, r, m, g, gama)
                 guesses = np.array([0, 1.6, 0, 0, 0.95]) # np.array([k, r, m, g, gama])
 
-        if absorber == "hard porous" or absorber == "microperforated panel" or absorber == "hard":
+        if self.absorber_type == "hard porous" or self.absorber_type == "microperforated panel" or self.absorber_type == "hard":
 
             def constrain(parameters):
 
