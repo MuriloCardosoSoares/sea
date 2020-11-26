@@ -474,12 +474,9 @@ class Material():
             the progress of the algorithm
             """
 
-            Zs = impedance_thru_rmk1(parameters, f_list)
-            alpha_s = impedance2alpha_paris(Zs)
-            alpha_s_8 = data_2_bands(alpha_s, f_list, data_in_resolution)[0]
-            # print("Alpha_s_8 = %s" % alpha_s_8)
-
-            difference = alpha_in - alpha_s_8
+            impedance_thru_rmk1(parameters)
+            self.impedance2alpha()
+            difference = alpha_in - self.octave_bands_statistical_alpha
             squared_l2_norm = np.real(np.inner(difference, difference))
 
             return squared_l2_norm
