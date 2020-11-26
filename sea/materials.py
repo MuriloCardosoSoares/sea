@@ -495,8 +495,9 @@ class Material():
 
                 # Parameters = [r, m, k, g, gama]
                 # The parameters are normalize by their typical orders of magnitude to facilitate the progress of the algorithm
-
-                Zs = 2 - np.real(impedance_thru_rmk1(parameters, f_list))
+                
+                self.impedance_thru_rmk1(parameters)
+                Zs = 2 - np.real(self.normalized_surface_impedance)
 
                 return Zs
 
@@ -521,8 +522,9 @@ class Material():
                 The parameters are normalize by their typical orders of magnitude to facilitate 
                 the progress of the algorithm
                 '''
-
-                Zs = np.real(impedance_thru_rmk1(parameters, f_list)) - 1
+                
+                self.impedance_thru_rmk1(parameters)
+                Zs = np.real(self.normalized_surface_impedance) - 1
 
                 return Zs
 
