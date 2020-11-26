@@ -423,12 +423,12 @@ class Material():
         ################################################
         # Gets the needed information considering available data
         
-        if self.third_octave_bands.size != 0 and self.third_octave_bands_statistical_alpha.size !=:
+        if self.third_octave_bands.size != 0 and self.third_octave_bands_statistical_alpha.size !=0:
             bands = self.third_octave_bands
             alpha_in = self.third_octave_bands_statistical_alpha
             upper_limit = upper[1]
         
-        elif self.octave_bands.size != 0 and self.octave_bands_statistical_alpha.size !=:
+        elif self.octave_bands.size != 0 and self.octave_bands_statistical_alpha.size !=0:
             bands = self.octave_bands
             alpha_in = self.octave_bands_statistical_alpha
             upper_limit = upper[0]
