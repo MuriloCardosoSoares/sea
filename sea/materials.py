@@ -592,7 +592,7 @@ class Material():
         while self.freq[0] > upper_limit[first_band_aux[1]]:
             first_band_aux[1] = first_band_aux[1] + 1
 
-        for i in np.arange(len(upper)):
+        for i in np.arange(len(self.upper)):
 
             upper_limit = self.upper[i]
             center_freq = self.center[i]
