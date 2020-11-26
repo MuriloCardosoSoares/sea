@@ -414,7 +414,7 @@ class Material():
                     Obs: to a porous absorver with an air cavity, the values of the flow resistivity and 
                          thickness limits even decrease as the cavity depth increases                                     
         '''
-        self.absorber_type = absorber
+        self.absorber_type = kwargs[absorber]
         if hasattr(self, "absorber_type") != True:
             raise ValueError("Type of absorber is not defined.")
         elif self.absorber_type != "soft porous" and self.absorber_type != "hard porous" and self.absorber_type != "perforated panel" and self.absorber_type != "microperforated panel" and self.absorber_type != "membrane" and self.absorber_type != "hard":
