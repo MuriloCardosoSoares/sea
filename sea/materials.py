@@ -92,8 +92,12 @@ class Material():
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
-        self.absorber_type = "porous"
-    
+        self.impedance2alpha()
+        
+        if self.flow_resistivity <= 20000:
+            self.absorber_type = "soft porous"
+        else:
+            self.absorber_type = "hard porous"
     
     def porous_with_air_cavity (self, parameters, theta):
     
@@ -126,14 +130,11 @@ class Material():
         air_surf_imp = -1j*(self.rho0*self.c0)/(np.cos(theta_t_2))/np.tan((self.w/self.c0)*np.cos(theta_t_2)*self.air_cavity_depth)
 
         self.surface_impedance = double_layer(air_surf_imp, self.characteristic_impedance, self.characteristic_c, self.characteristic_k, self.thickness, self.c0, self.theta)
-        
-        #self.surface_impedance = (-1j*air_surf_imp*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))) + \
-         #                        (self.characteristic_impedance)**2) / \
-          #                       (air_surf_imp*(np.cos(theta_t_1))**2 - \
-           #                      1j*self.characteristic_impedance*np.cos(theta_t_1)*1/(np.tan(self.characteristic_k*np.cos(theta_t_1)*(self.thickness))))
 
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        
+        self.impedance2alpha()
         
         self.absorber_type = "porous with air cavity"
 
@@ -171,6 +172,8 @@ class Material():
         
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        
+        self.impedance2alpha()
         
         self.absorber_type = "membrane"
 
@@ -218,6 +221,8 @@ class Material():
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
+        self.impedance2alpha()
+        
         self.absorber_type = "perforated panel"
         
         
@@ -258,6 +263,8 @@ class Material():
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
+        self.impedance2alpha()
+        
         self.absorber_type = "microperforated panel"   
         
         
@@ -297,6 +304,8 @@ class Material():
         
         self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        
+        self.impedance2alpha()
         
         self.absorber_type = "microperforated panel"  
         
@@ -382,7 +391,7 @@ class Material():
         self.alpha_in_bands()
     
     
-    def impedance_thru_optimization (self, **kwargs):
+    def impedance_from_alpha (self, **kwargs):
 
         '''
         This function computes surface impedances from statistical absorption coefficients. 
@@ -412,6 +421,24 @@ class Material():
             raise ValueError("Invalid absorber; must be one of soft porous, hard porous, perforated panel, microperforated panel or membrane.")
         
         ################################################
+        # Gets the needed information considering available data
+        
+        if self.third_octave_bands.size != 0 and self.third_octave_bands_statistical_alpha.size !=:
+            bands = self.third_octave_bands
+            alpha_in = self.third_octave_bands_statistical_alpha
+            upper_limit = upper[1]
+        
+        elif self.octave_bands.size != 0 and self.octave_bands_statistical_alpha.size !=:
+            bands = self.octave_bands
+            alpha_in = self.octave_bands_statistical_alpha
+            upper_limit = upper[0]
+            
+        else:
+            raise ValueError("There is not enough information about the absorber yet. Check if it has been given octave or third-octave bands and \
+                             it's corresponding statistical absorption coefficients.")
+        
+        
+        ################################################
         # Computes a list of frequencies (f_list) containing three frequencies per octave (third-octave) band
 
         aux = 0
@@ -426,56 +453,29 @@ class Material():
             aux += 1
 
         #################################################
+        # Defines cost function to be minimized
+        
+        def cost_fun (parameters):
 
-        if data_in_type == 'diffuse':
+            """
+            This funciton defines the cost function to be minimized by the optimization process
+            (The cost function is defined as the squared L2-norm between the corresponding 
+            statistical absorption coefficient and the input absorption coefficient)
 
-            def cost_fun (parameters):
+            Parameters = [k, r, m, g, gama]
+            The parameters are normalize by their typical orders of magnitude to facilitate 
+            the progress of the algorithm
+            """
 
-                """
-                This funciton defines the cost function to be minimized by the optimization process
-                (The cost function is defined as the squared L2-norm between the corresponding 
-                statistical absorption coefficient and the input absorption coefficient)
+            Zs = impedance_thru_rmk1(parameters, f_list)
+            alpha_s = impedance2alpha_paris(Zs)
+            alpha_s_8 = data_2_bands(alpha_s, f_list, data_in_resolution)[0]
+            # print("Alpha_s_8 = %s" % alpha_s_8)
 
-                Parameters = [k, r, m, g, gama]
-                The parameters are normalize by their typical orders of magnitude to facilitate 
-                the progress of the algorithm
-                """
+            difference = alpha_in - alpha_s_8
+            squared_l2_norm = np.real(np.inner(difference, difference))
 
-                Zs = impedance_thru_rmk1(parameters, f_list)
-                alpha_s = impedance2alpha_paris(Zs)
-                alpha_s_8 = data_2_bands(alpha_s, f_list, data_in_resolution)[0]
-                # print("Alpha_s_8 = %s" % alpha_s_8)
-
-                difference = alpha_in - alpha_s_8
-                squared_l2_norm = np.real(np.inner(difference, difference))
-
-                return squared_l2_norm
-
-        elif data_in_type == 'normal':
-
-            def cost_fun (parameters):
-
-                """
-                This funciton defines the cost function to be minimized by the optimization process
-                (The cost function is defined as the squared L2-norm between the corresponding 
-                statistical absorption coefficient and the input absorption coefficient)
-
-                Parameters = [k, r, m, g, gama]
-                The parameters are normalize by their typical orders of magnitude to facilitate 
-                the progress of the algorithm
-                """
-
-                Zs = impedance_thru_rmk1(parameters, f_list)
-                alpha = impedance2alpha_normal(Zs)
-                alpha_8 = data_2_bands(alpha, f_list, data_in_resolution)[0]
-                # print("Alpha_s_8 = %s" % alpha_s_8)
-
-                difference = alpha_in - alpha_8
-                squared_l2_norm = np.real(np.inner(difference, difference))
-
-                return squared_l2_norm
-        else:
-            raise ValueError("Invalid information about input data type; data_in_type parameter must be diffuse or normal")
+            return squared_l2_norm
 
 
         ################################################
@@ -528,20 +528,22 @@ class Material():
 
         ################################################
 
-
         print ("Working on the solution of the constrained optimization problem :)")
 
 
-        solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 1e-10, 'disp': True, 'maxiter': 1000})
+        solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 1e-10, 'maxiter': 1000})
 
         while cost_fun (solution.x) > 0.1:
 
             guesses = np.array([uniform(0,2), uniform(0,2), uniform(0,2), uniform(0,2), uniform(-1,1)]) # assign random values between 0 and 2 to all the normalized parameters, with the exception of the exponent, -1 <= gama <= 1
             print ("Guesses: %s" % guesses)
-            solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol':1e-10, 'disp': True, 'maxiter': 1000})
-            print(solution.x)
-
-        return solution
+            solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol':1e-10, 'maxiter': 1000})
+        
+        
+        self.rmk1 = solution.x
+        self.impedance_thru_rmk1(self.rmk1)
+        
+        Print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything related was already calculated." % self.rmk1)
     
     
     def impedance_thru_rmk1(self, parameters):
@@ -599,7 +601,6 @@ class Material():
                 if f < upper_limit[aux]:
 
                     if fi == (len(self.freq) - 1):
-
                         data_in_bands [center_freq[aux]] = np.mean(self.statistical_alpha[f_aux:fi+1])
 
                     else:
@@ -695,8 +696,12 @@ class Material():
     
     def __str__(self):
         
-        if self.absorber_type == "porous":
-            return ("Single layer porous absorber with rigid back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and thickness = " 
+        if self.absorber_type == "soft porous":
+            return ("Single layer soft porous absorber with rigid back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and thickness = " 
+            + str(self.thickness) + " [m]")
+        
+        if self.absorber_type == "hard porous":
+            return ("Single layer hard porous absorber with rigid back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and thickness = " 
             + str(self.thickness) + " [m]")
         
         elif self.absorber_type == "porous with air cavity":
