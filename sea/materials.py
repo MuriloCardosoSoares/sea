@@ -412,8 +412,59 @@ class Material():
         else:
             raise ValueError("Method is not valid. You must use \"paris\" or \"thomasson\".")
         
-        self.alpha_in_bands()
+        if kwargs.get("f_list") != None:
+            self.alpha_in_bands()
+        else:
+            self.alpha_in_bands(f_list=f_list)
+            
     
+    def impedance_thru_rmk1(self, **kwargs):
+    
+        """
+        Computes complex surface impedances impedances using the RMK + 1 method
+
+        Parameters = [k, r, m, g, gama]
+        The parameters are normalize by their typical orders of magnitude to facilitate 
+        the progress of the algorithm
+        """
+        ############################################################    
+        if kwargs.get("f_list") != None:
+            f_list = kwargs.get("f_list")
+            w = 2*np.pi*f_list
+            
+            if self.freq.size == 0:
+                self.freq = f_list
+                
+        elif self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.")  
+        else:
+            f_list = self.freq
+            w = self.w
+            
+        ############################################################    
+        if kwargs.get("parameters") != None:
+            self.rmk1 = kwargs.get("parameters")
+        elif self.rmk1 == 0:
+            raise ValueError("It not defined rmk+1 parameters yet.")  
+        
+        ############################################################    
+        k = self.rmk1[0]*(10**4)
+        r = self.rmk1[1]
+        m = self.rmk1[2]*(10**-4)
+        g = self.rmk1[3]*(10)
+        gama = self.rmk1[4]
+
+
+        self.normalized_surface_impedance = k*(1j*w)**(-1) + r + m*(1j*w) + g*(1j*w)**gama   
+        
+        self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
+        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        
+        if kwargs.get("f_list") != None:
+            self.impedance2alpha()
+        else:
+            self.impedance2alpha(f_list=f_list)
+            
     
     def impedance_from_alpha (self, **kwargs):
 
@@ -454,6 +505,7 @@ class Material():
             upper_limit = self.upper[1]
             lower_limit = self.lower[1]
             center_freq = self.center[1]
+            type = third_octave_bands
         
         elif self.octave_bands.size != 0 and self.octave_bands_statistical_alpha.size !=0:
             bands = self.octave_bands
@@ -461,6 +513,7 @@ class Material():
             upper_limit = self.upper[0]
             lower_limit = self.lower[0]
             center_freq = self.center[0]
+            type = octave_bands
             
         else:
             raise ValueError("There is not enough information about the absorber yet. Check if it has been given octave or third-octave bands and \
@@ -496,10 +549,13 @@ class Material():
             the progress of the algorithm
             """
 
-            self.impedance_thru_rmk1(parameters)
-            self.statistical_alpha = impedance2alpha(self.normalized_surface_inpedance, self.c0, f_list)
-            self.alpha_in_bands()
-            difference = alpha_in - self.octave_bands_statistical_alpha
+            self.impedance_thru_rmk1(parameters=parameters, f_list=f_list)
+            
+            if type == third_octave_bands
+                difference = alpha_in - self.third_octave_bands_statistical_alpha
+            else:
+                difference = alpha_in - self.octave_bands_statistical_alpha
+                
             squared_l2_norm = np.real(np.inner(difference, difference))
 
             return squared_l2_norm
@@ -516,10 +572,10 @@ class Material():
                 # Parameters = [r, m, k, g, gama]
                 # The parameters are normalize by their typical orders of magnitude to facilitate the progress of the algorithm
                 
-                self.impedance_thru_rmk1(parameters)
-                Zs = 2 - np.real(self.normalized_surface_impedance)
+                self.impedance_thru_rmk1(parameters=parameters, f_list=f_list)
+                zs = 2 - np.real(self.normalized_surface_impedance)
 
-                return Zs
+                return zs
 
             ineq_cons = {'type': 'ineq',
                          'fun': constrain}
@@ -543,10 +599,10 @@ class Material():
                 the progress of the algorithm
                 '''
                 
-                self.impedance_thru_rmk1(parameters)
-                Zs = np.real(self.normalized_surface_impedance) - 1
+                self.impedance_thru_rmk1(parameters=parameters, f_list=f_list)
+                zs = np.real(self.normalized_surface_impedance) - 1
 
-                return Zs
+                return zs
 
 
             ineq_cons = {'type': 'ineq',
@@ -567,73 +623,39 @@ class Material():
             guesses = np.array([uniform(0,2), uniform(0,2), uniform(0,2), uniform(0,2), uniform(-1,1)]) # assign random values between 0 and 2 to all the normalized parameters, with the exception of the exponent, -1 <= gama <= 1
             print ("Guesses: %s" % guesses)
             solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol':1e-10, 'maxiter': 1000})
-        
-        
-        self.rmk1 = solution.x
-        
-        if hasattr(self, "freq") == True: 
-            self.impedance_thru_rmk1(self.rmk1)
+             
+        self.impedance_thru_rmk1()
         
         Print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything else related to it was already calculated." % self.rmk1)
-    
-    
-    def impedance_thru_rmk1(self, **kwargs):
-    
-        """
-        Computes complex surface impedances impedances using the RMK + 1 method
-
-        Parameters = [k, r, m, g, gama]
-        The parameters are normalize by their typical orders of magnitude to facilitate 
-        the progress of the algorithm
-        """
-        ############################################################    
-        if kwargs.get("f_list") != None:
-            f_list = kwargs.get("f_list")
-            w = 2*np.pi*f_list
-            
-            if self.freq.size == 0:
-                self.freq = f_list
-        elif self.freq.size == 0:
-            raise ValueError("Frequency vector is empty.")  
-        else:
-            f_list = self.freq
-            w = self.w
-            
-        ############################################################    
-        if kwargs.get("parameters") != None:
-            self.rmk1 = kwargs.get("parameters")
-        elif self.rmk1 == 0:
-            raise ValueError("It not defined rmk+1 parameters yet.")  
-        
-        ############################################################    
-        k = self.rmk1[0]*(10**4)
-        r = self.rmk1[1]
-        m = self.rmk1[2]*(10**-4)
-        g = self.rmk1[3]*(10)
-        gama = self.rmk1[4]
-
-
-        self.normalized_surface_impedance = k*(1j*w)**(-1) + r + m*(1j*w) + g*(1j*w)**gama   
-        
-        self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
-        self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
         
-    def alpha_in_bands (self):
+    def alpha_in_bands (self, **kwargs):
     
         """
         Given data and it's corresponding frequencies, calculates these data in octave and third-octave bands.
         It is done directly: the value of a band is simply the mean value of all data inside this band.
         """
-
+        ############################################################    
+        if kwargs.get("f_list") != None:
+            f_list = kwargs.get("f_list")
+            
+            if self.freq.size == 0:
+                self.freq = f_list
+                
+        elif self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.")  
+        else:
+            f_list = self.freq
+            
+        ############################################################ 
         first_band_aux = {0:0,
                           1:0}
         upper_limit = self.upper[0]
-        while self.freq[0] > upper_limit[first_band_aux[0]]:
+        while f_list[0] > upper_limit[first_band_aux[0]]:
             first_band_aux[0] = first_band_aux[0] + 1
 
         upper_limit = self.upper[1]
-        while self.freq[0] > upper_limit[first_band_aux[1]]:
+        while f_list[0] > upper_limit[first_band_aux[1]]:
             first_band_aux[1] = first_band_aux[1] + 1
 
         for i in np.arange(len(self.upper)):
@@ -644,7 +666,7 @@ class Material():
             
             data_in_bands = {}
             f_aux = 0
-            for fi, f in enumerate(self.freq):
+            for fi, f in enumerate(f_list):
 
                 if f < upper_limit[aux]:
 
