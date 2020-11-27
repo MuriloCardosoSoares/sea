@@ -53,7 +53,7 @@ class Air():
     
     def __str__(self):
         return "Air sound speed = " + str(self.c0) + " | Air density = " + str(self.rho0) + \
-                " | Temperature = " + str(self.temperature) + " | Humid = " + str(self.humid) + " | Atmospheric pressure =" + str(self.p_atm)
+                " | Temperature = " + str(self.temperature) + " | Humid = " + str(self.humid) + " | Atmospheric pressure = " + str(self.p_atm)
     
     
 class Algorithm():
