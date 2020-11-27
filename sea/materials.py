@@ -118,7 +118,7 @@ class Material():
         """
         
         if self.freq.size == 0:
-            raise ValueError("Frequency vector is empty") 
+            raise ValueError("Frequency vector is empty.") 
         
         self.flow_resistivity = parameters[0]
         self.thickness = parameters[1]
@@ -160,7 +160,7 @@ class Material():
         """
 
         if self.freq.size == 0:
-            raise ValueError("Frequency vector is empty") 
+            raise ValueError("Frequency vector is empty.") 
             
         self.mass_per_unit_area = parameters[0]
         self.cavity_depth = parameters[1]
@@ -201,6 +201,9 @@ class Material():
                      to facilitate the interaction with another functions
 
         """
+        
+        if self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.") 
 
         self.panel_thickness = parameters[0]
         self.openings_radius = parameters[1]
@@ -248,6 +251,9 @@ class Material():
             mi0 -> dynamic viscosity of air [Pa*s]
         """
         
+        if self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.") 
+            
         self.panel_thickness = parameters[0]
         self.openings_radius = parameters[1]
         self.perforation_rate = parameters[2]
@@ -289,7 +295,9 @@ class Material():
 
             mi0 -> dynamic viscosity of air [Pa*s]
         """
-        
+        if self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.") 
+            
         self.panel_thickness = parameters[0]
         self.openings_radius = parameters[1]
         self.perforation_rate = parameters[2]
@@ -313,14 +321,22 @@ class Material():
         self.absorber_type = "microperforated panel"  
         
     
-    def impedance2alpha(self, method="thomasson", a=11**0.5, b=11**0.5):
+    def impedance2alpha(self, method="thomasson", a=11**0.5, b=11**0.5, **kwargs):
 
         """
         Computes absorption coeffients from complex impedances (or admittances) using Thomasson formulation or the Paris Formula
-        """
-        
-        if self.freq.size == 0:
-            raise ValueError("Frequency vector is empty") 
+        """    
+
+        if kwargs.get("f_list") != None:
+            f_list = kwargs.get("f_list")
+            k0 = 2*np.pi*f_list/self.c0
+            
+        elif self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.")
+            
+        else:
+            f_list = self.freq
+            k0 = self.k0
             
         if self.admittance.size == 0: 
             if self.normalized_surface_impedance.size == 0:
@@ -329,12 +345,12 @@ class Material():
             if self.normalized_surface_impedance.size == 0:
                 self.surface_impedance = 1/np.conj(self.admittance)
         
-        self.normal_inidence_alpha = np.zeros(len(self.surface_impedance))
+        self.normal_incidence_alpha = np.zeros(len(self.surface_impedance))
         
         for zsi, zs in enumerate (self.normalized_surface_impedance):
 
             vp =  (zs - 1)/(zs + 1)    
-            self.normal_inidence_alpha[zsi] = 1 - (abs(vp))**2
+            self.normal_incidence_alpha[zsi] = 1 - (abs(vp))**2
             
             
         if method == "thomasson":
@@ -346,7 +362,7 @@ class Material():
                 def alpha_fun(theta):
 
                     mi = np.sin(theta)
-                    ke = (2*self.k0[zsi]*a*b) / (a+b)
+                    ke = (2*k0[zsi]*a*b) / (a+b)
                     kappa = 0.956 / ke
                     z_h = 1 / ((1 + (kappa-1j*mi)**2)**(1/2))
 
@@ -354,7 +370,7 @@ class Material():
                         h = np.log((1+q**2)**(1/2) + q) - ((1+q**2)**(1/2)-1)/(3*q)
                         return h
 
-                    z_l = (2*self.k0[zsi]*a*b / np.pi) + 1j*(2*self.k0[zsi] / np.pi) * (b*h(a/b) + a*h(b/a))
+                    z_l = (2*k0[zsi]*a*b / np.pi) + 1j*(2*k0[zsi] / np.pi) * (b*h(a/b) + a*h(b/a))
 
                     z_r = 1 / ((1/(z_l.real**2))**(1/2) + (1/(z_h.real**2))**(1/2))
 
@@ -475,7 +491,8 @@ class Material():
             """
 
             self.impedance_thru_rmk1(parameters)
-            self.impedance2alpha()
+            self.statistical_alpha = impedance2alpha(self.normalized_surface_inpedance, self.c0, f_list)
+            self.alpha_in_bands()
             difference = alpha_in - self.octave_bands_statistical_alpha
             squared_l2_norm = np.real(np.inner(difference, difference))
 
@@ -547,7 +564,9 @@ class Material():
         
         
         self.rmk1 = solution.x
-        self.impedance_thru_rmk1(self.rmk1)
+        
+        if hasattr(self, "freq") == True: 
+            self.impedance_thru_rmk1(self.rmk1)
         
         Print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything else related to it was already calculated." % self.rmk1)
     
@@ -752,3 +771,64 @@ def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
 
     return z_si
         
+    
+def impedance2alpha(z_s, f_range, c0, method="thomasson", a=11**0.5, b=11**0.5):
+
+    """
+    Computes absorption coeffients from complex impedances (or admittances) using Thomasson formulation or the Paris Formula
+    """    
+
+    k = 2*np.pi*f_range/c0
+
+    if method == "thomasson":
+
+        alpha_s = np.zeros(len(z_s))
+
+        for z_si, zs in enumerate (z_s):
+
+            def alpha_fun(theta):
+
+                mi = np.sin(theta)
+                ke = (2*k[z_si]*a*b) / (a+b)
+                kappa = 0.956 / ke
+                z_h = 1 / ((1 + (kappa-1j*mi)**2)**(1/2))
+
+                def h(q):
+                    h = np.log((1+q**2)**(1/2) + q) - ((1+q**2)**(1/2)-1)/(3*q)
+                    return h
+
+                z_l = (2*k[z_si]*a*b / np.pi) + 1j*(2*k[z_si] / np.pi) * (b*h(a/b) + a*h(b/a))
+
+                z_r = 1 / ((1/(z_l.real**2))**(1/2) + (1/(z_h.real**2))**(1/2))
+
+
+                z_hi0 = 0.67/ke
+                z_i0 = 1 / ((1/(z_l.imag**3))**(1/3) + (1/(z_hi0**3))**(1/3))
+                z_i = np.max((z_i0, z_h.imag))
+
+                z_radiation = z_r + 1j*z_i
+
+                alpha_fun = zs.real*np.sin(theta) / (abs(zs + z_radiation))**2
+
+                return alpha_fun
+
+            alpha_s[z_si] = 8 * abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
+
+
+    elif method == "paris":
+
+        alpha_s = np.zeros(len(z_s))
+
+        for z_si, zs in enumerate (z_s):
+
+            def alpha_fun(theta):
+
+                vp =  (zs*np.cos(theta) - 1)/(zs*np.cos(theta) + 1)    
+                alpha = 1 - (abs(vp))**2
+                alpha_fun = alpha*np.sin(2*theta)
+
+                return alpha_fun
+
+            alpha_s[z_si] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
+
+    return alpha_s
