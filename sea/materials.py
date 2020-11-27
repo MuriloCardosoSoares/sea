@@ -25,7 +25,7 @@ class Material():
             }
             
         
-    def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rho0=1.21, c0=343.0):
+    def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rmk1=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
         Inputs:
@@ -328,21 +328,23 @@ class Material():
         """    
             
         ############################################################    
-        if kwargs.get("f_list") != None:
-            f_list = kwargs.get("f_list")
-            w = 2*np.pi*f_list
+        if "f_list" in kwargs:
+            f_list = kwargs.get("f_list")    
+            k0 = 2*np.pi*f_list/self.c0
             
             if self.freq.size == 0:
                 self.freq = f_list
+                self.w = 2*np.pi*self.freq
+                self.k0 = self.w/self.c0
+                
         elif self.freq.size == 0:
             raise ValueError("Frequency vector is empty.")  
+            
         else:
             f_list = self.freq
             k0 = self.k0
             
-        ############################################################ 
-        
-            
+        ############################################################             
         if self.admittance.size == 0: 
             if self.normalized_surface_impedance.size == 0:
                 raise ValueError("There is no information about the surface impedance (or admittance) of this material yet.") 
@@ -412,12 +414,12 @@ class Material():
         else:
             raise ValueError("Method is not valid. You must use \"paris\" or \"thomasson\".")
         
-        if kwargs.get("f_list") != None:
-            self.alpha_in_bands()
-        else:
+        if "f_list" in kwargs:
             self.alpha_in_bands(f_list=f_list)
-            
-    
+        else:
+            self.alpha_in_bands()
+
+
     def impedance_thru_rmk1(self, **kwargs):
     
         """
@@ -428,23 +430,27 @@ class Material():
         the progress of the algorithm
         """
         ############################################################    
-        if kwargs.get("f_list") != None:
+        if "f_list" in kwargs:
             f_list = kwargs.get("f_list")
             w = 2*np.pi*f_list
-            
+                        
             if self.freq.size == 0:
                 self.freq = f_list
+                self.w = 2*np.pi*self.freq
+                self.k0 = self.w/self.c0
                 
         elif self.freq.size == 0:
-            raise ValueError("Frequency vector is empty.")  
+            raise ValueError("Frequency vector is empty.") 
+            
         else:
             f_list = self.freq
             w = self.w
             
         ############################################################    
-        if kwargs.get("parameters") != None:
+        if "parameters" in kwargs:
             self.rmk1 = kwargs.get("parameters")
-        elif self.rmk1 == 0:
+            
+        elif self.rmk1.size == 0:
             raise ValueError("It not defined rmk+1 parameters yet.")  
         
         ############################################################    
@@ -454,16 +460,16 @@ class Material():
         g = self.rmk1[3]*(10)
         gama = self.rmk1[4]
 
-
-        self.normalized_surface_impedance = k*(1j*w)**(-1) + r + m*(1j*w) + g*(1j*w)**gama   
         
+        self.normalized_surface_impedance = k*(1j*w)**(-1) + r + m*(1j*w) + g*(1j*w)**gama   
+
         self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
         
-        if kwargs.get("f_list") != None:
-            self.impedance2alpha()
-        else:
+        if "f_list" in kwargs:
             self.impedance2alpha(f_list=f_list)
+        else:
+            self.impedance2alpha()
             
     
     def impedance_from_alpha (self, **kwargs):
@@ -491,8 +497,10 @@ class Material():
         '''
         
         self.absorber_type = kwargs.get("absorber")
+        
         if hasattr(self, "absorber_type") != True:
             raise ValueError("Type of absorber is not defined.")
+            
         elif self.absorber_type != "soft porous" and self.absorber_type != "hard porous" and self.absorber_type != "perforated panel" and self.absorber_type != "microperforated panel" and self.absorber_type != "membrane" and self.absorber_type != "hard":
             raise ValueError("Invalid absorber; must be one of soft porous, hard porous, perforated panel, microperforated panel or membrane.")
         
@@ -505,7 +513,7 @@ class Material():
             upper_limit = self.upper[1]
             lower_limit = self.lower[1]
             center_freq = self.center[1]
-            type = third_octave_bands
+            type = "third_octave_bands"
         
         elif self.octave_bands.size != 0 and self.octave_bands_statistical_alpha.size !=0:
             bands = self.octave_bands
@@ -513,7 +521,7 @@ class Material():
             upper_limit = self.upper[0]
             lower_limit = self.lower[0]
             center_freq = self.center[0]
-            type = octave_bands
+            type = "octave_bands"
             
         else:
             raise ValueError("There is not enough information about the absorber yet. Check if it has been given octave or third-octave bands and \
@@ -551,7 +559,7 @@ class Material():
 
             self.impedance_thru_rmk1(parameters=parameters, f_list=f_list)
             
-            if type == third_octave_bands
+            if type == "third_octave_bands":
                 difference = alpha_in - self.third_octave_bands_statistical_alpha
             else:
                 difference = alpha_in - self.octave_bands_statistical_alpha
@@ -621,12 +629,12 @@ class Material():
         while cost_fun (solution.x) > 0.1:
 
             guesses = np.array([uniform(0,2), uniform(0,2), uniform(0,2), uniform(0,2), uniform(-1,1)]) # assign random values between 0 and 2 to all the normalized parameters, with the exception of the exponent, -1 <= gama <= 1
-            print ("Guesses: %s" % guesses)
             solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol':1e-10, 'maxiter': 1000})
-             
+        
+
         self.impedance_thru_rmk1()
         
-        Print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything else related to it was already calculated." % self.rmk1)
+        print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything else related to it was already calculated." % self.rmk1)
         
         
     def alpha_in_bands (self, **kwargs):
@@ -636,14 +644,17 @@ class Material():
         It is done directly: the value of a band is simply the mean value of all data inside this band.
         """
         ############################################################    
-        if kwargs.get("f_list") != None:
+        if "f_list" in kwargs:
             f_list = kwargs.get("f_list")
             
             if self.freq.size == 0:
                 self.freq = f_list
+                self.w = 2*np.pi*self.freq
+                self.k0 = self.w/self.c0
                 
         elif self.freq.size == 0:
             raise ValueError("Frequency vector is empty.")  
+            
         else:
             f_list = self.freq
             
