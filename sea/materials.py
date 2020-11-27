@@ -571,7 +571,7 @@ class Material():
         Print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything else related to it was already calculated." % self.rmk1)
     
     
-    def impedance_thru_rmk1(self, parameters):
+    def impedance_thru_rmk1(parameters=self.rmk1, freq=self.freq):
     
         """
         Computes complex surface impedances impedances using the RMK + 1 method
@@ -762,10 +762,7 @@ def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
         d1 -> thickness of the first layer
         theta -> angle of incidence
     """
-    #porous =        double_layer(air_surf_imp, self.characteristic_impedance, self.characteristic_c, self.characteristic_k, self.thickness, self.c0, self.theta)
-    #membrane =      double_layer(self.surface_impedance, self.rho0*self.c0, self.c0, self.k0, (self.cavity_depth - self.porous_layer_thickness), self.c0, 0)
-    #membrane_orig = double_layer_absorber(z_s_porous, rho0*c0, k0,  (d - d_porous), 0)
-    
+
     theta_t1 = np.arctan(c1*np.sin(theta)/c0)
     z_si = (-1j*zs2*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))) + (zc1)**2) / (zs2*(np.cos(theta_t1))**2 - 1j*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))))
 
@@ -828,7 +825,26 @@ def impedance2alpha(z_s, f_range, c0, method="thomasson", a=11**0.5, b=11**0.5):
                 alpha_fun = alpha*np.sin(2*theta)
 
                 return alpha_fun
+            
+    def impedance_thru_rmk1(parameters, freq_vec):
+    
+        """
+        Computes complex surface impedances impedances using the RMK + 1 method
 
-            alpha_s[z_si] = abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
+        Parameters = [k, r, m, g, gama]
+        The parameters are normalize by their typical orders of magnitude to facilitate 
+        the progress of the algorithm
+        """
+        
+        w = 2*np.pi*freq_vec  
+        
+        k = parameters[0]
+        r = parameters[1]
+        m = parameters[2]
+        g = parameters[3]
+        gama = parameters[4]
 
-    return alpha_s
+
+        zs = k*(1j*w)**(-1) + r + m*(1j*w) + g*(1j*w)**gama   
+
+        return zs
