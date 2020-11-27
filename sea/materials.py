@@ -326,17 +326,22 @@ class Material():
         """
         Computes absorption coeffients from complex impedances (or admittances) using Thomasson formulation or the Paris Formula
         """    
-
+            
+        ############################################################    
         if kwargs.get("f_list") != None:
             f_list = kwargs.get("f_list")
-            k0 = 2*np.pi*f_list/self.c0
+            w = 2*np.pi*f_list
             
+            if self.freq.size == 0:
+                self.freq = f_list
         elif self.freq.size == 0:
-            raise ValueError("Frequency vector is empty.")
-            
+            raise ValueError("Frequency vector is empty.")  
         else:
             f_list = self.freq
             k0 = self.k0
+            
+        ############################################################ 
+        
             
         if self.admittance.size == 0: 
             if self.normalized_surface_impedance.size == 0:
@@ -433,7 +438,8 @@ class Material():
                     Obs: to a porous absorver with an air cavity, the values of the flow resistivity and 
                          thickness limits even decrease as the cavity depth increases                                     
         '''
-        self.absorber_type = kwargs["absorber"]
+        
+        self.absorber_type = kwargs.get("absorber")
         if hasattr(self, "absorber_type") != True:
             raise ValueError("Type of absorber is not defined.")
         elif self.absorber_type != "soft porous" and self.absorber_type != "hard porous" and self.absorber_type != "perforated panel" and self.absorber_type != "microperforated panel" and self.absorber_type != "membrane" and self.absorber_type != "hard":
@@ -571,7 +577,7 @@ class Material():
         Print("The solution of the optimization problem leads to rmk+1 parameters equal to %s. Impedances, admittances and everything else related to it was already calculated." % self.rmk1)
     
     
-    def impedance_thru_rmk1(parameters=self.rmk1, freq=self.freq):
+    def impedance_thru_rmk1(self, **kwargs):
     
         """
         Computes complex surface impedances impedances using the RMK + 1 method
@@ -580,9 +586,26 @@ class Material():
         The parameters are normalize by their typical orders of magnitude to facilitate 
         the progress of the algorithm
         """
+        ############################################################    
+        if kwargs.get("f_list") != None:
+            f_list = kwargs.get("f_list")
+            w = 2*np.pi*f_list
+            
+            if self.freq.size == 0:
+                self.freq = f_list
+        elif self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.")  
+        else:
+            f_list = self.freq
+            w = self.w
+            
+        ############################################################    
+        if kwargs.get("parameters") != None:
+            self.rmk1 = kwargs.get("parameters")
+        elif self.rmk1 == 0:
+            raise ValueError("It not defined rmk+1 parameters yet.")  
         
-        self.rmk1 = parameters
-        
+        ############################################################    
         k = self.rmk1[0]*(10**4)
         r = self.rmk1[1]
         m = self.rmk1[2]*(10**-4)
@@ -590,7 +613,7 @@ class Material():
         gama = self.rmk1[4]
 
 
-        self.normalized_surface_impedance = self.k0*(1j*self.w)**(-1) + r + m*(1j*self.w) + g*(1j*self.w)**gama   
+        self.normalized_surface_impedance = k*(1j*w)**(-1) + r + m*(1j*w) + g*(1j*w)**gama   
         
         self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
         self.admittance = 1/np.conj(self.normalized_surface_impedance)
@@ -723,20 +746,20 @@ class Material():
         
         if self.absorber_type == "soft porous":
             return ("Single layer soft porous absorber with rigid back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and thickness = " 
-            + str(self.thickness) + " [m]")
+            + str(self.thickness) + " [m].")
         
         if self.absorber_type == "hard porous":
             return ("Single layer hard porous absorber with rigid back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and thickness = " 
-            + str(self.thickness) + " [m]")
+            + str(self.thickness) + " [m].")
         
         elif self.absorber_type == "porous with air cavity":
             return ("Porous absorber with air cavity back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and material thickness = " 
-            + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m]")
+            + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m].")
         
         elif self.absorber_type == "membrane":
             return ("Membrane absorber. The mass per unit area of the membrane is " + str(self.mass_per_unit_area) + " [kg/m^2].\nThe total cavity depth is " 
             + str(self.cavity_depth) + " [m], being " + str(self.porous_layer_thickness) + " [m] of porous a porous material with flow resistivity = " 
-            + str(self.flow_resistivity) + " [rayl/m]")
+            + str(self.flow_resistivity) + " [rayl/m].")
         
         elif self.absorber_type == "perforated panel":
             return ("Perforated panel absorber. The panel thickness is " + str(self.panel_thickness) + " [m].\nThe opening radius is " 
@@ -767,84 +790,3 @@ def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
     z_si = (-1j*zs2*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))) + (zc1)**2) / (zs2*(np.cos(theta_t1))**2 - 1j*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))))
 
     return z_si
-        
-    
-def impedance2alpha(z_s, f_range, c0, method="thomasson", a=11**0.5, b=11**0.5):
-
-    """
-    Computes absorption coeffients from complex impedances (or admittances) using Thomasson formulation or the Paris Formula
-    """    
-
-    k = 2*np.pi*f_range/c0
-
-    if method == "thomasson":
-
-        alpha_s = np.zeros(len(z_s))
-
-        for z_si, zs in enumerate (z_s):
-
-            def alpha_fun(theta):
-
-                mi = np.sin(theta)
-                ke = (2*k[z_si]*a*b) / (a+b)
-                kappa = 0.956 / ke
-                z_h = 1 / ((1 + (kappa-1j*mi)**2)**(1/2))
-
-                def h(q):
-                    h = np.log((1+q**2)**(1/2) + q) - ((1+q**2)**(1/2)-1)/(3*q)
-                    return h
-
-                z_l = (2*k[z_si]*a*b / np.pi) + 1j*(2*k[z_si] / np.pi) * (b*h(a/b) + a*h(b/a))
-
-                z_r = 1 / ((1/(z_l.real**2))**(1/2) + (1/(z_h.real**2))**(1/2))
-
-
-                z_hi0 = 0.67/ke
-                z_i0 = 1 / ((1/(z_l.imag**3))**(1/3) + (1/(z_hi0**3))**(1/3))
-                z_i = np.max((z_i0, z_h.imag))
-
-                z_radiation = z_r + 1j*z_i
-
-                alpha_fun = zs.real*np.sin(theta) / (abs(zs + z_radiation))**2
-
-                return alpha_fun
-
-            alpha_s[z_si] = 8 * abs(scipy.integrate.quad(alpha_fun, 0, np.pi/2)[0])
-
-
-    elif method == "paris":
-
-        alpha_s = np.zeros(len(z_s))
-
-        for z_si, zs in enumerate (z_s):
-
-            def alpha_fun(theta):
-
-                vp =  (zs*np.cos(theta) - 1)/(zs*np.cos(theta) + 1)    
-                alpha = 1 - (abs(vp))**2
-                alpha_fun = alpha*np.sin(2*theta)
-
-                return alpha_fun
-            
-    def impedance_thru_rmk1(parameters, freq_vec):
-    
-        """
-        Computes complex surface impedances impedances using the RMK + 1 method
-
-        Parameters = [k, r, m, g, gama]
-        The parameters are normalize by their typical orders of magnitude to facilitate 
-        the progress of the algorithm
-        """
-        
-        w = 2*np.pi*freq_vec  
-        
-        k = parameters[0]
-        r = parameters[1]
-        m = parameters[2]
-        g = parameters[3]
-        gama = parameters[4]
-
-
-        zs = k*(1j*w)**(-1) + r + m*(1j*w) + g*(1j*w)**gama   
-
-        return zs
