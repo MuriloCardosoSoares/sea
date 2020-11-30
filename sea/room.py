@@ -15,9 +15,13 @@ bempp.api.PLOT_BACKEND = "gmsh"
 
 warnings.filterwarnings('ignore')
 
+from sea.definitions import Air
+from sea.definitions import Algorithm
+from sea.definitions import Receiver
+from sea.definitions import Source
 
-class InteriorBEM:
-    bempp.api.DEVICE_PRECISION_CPU = 'single'    
+
+class InteriorBEM:   
     """
     Hi, this class contains some tools to solve the interior acoustic problem with monopole point sources. First, you gotta 
     give some inputs:
@@ -59,6 +63,7 @@ class InteriorBEM:
         
     """
     #then = time.time()
+    bempp.api.DEVICE_PRECISION_CPU = 'single'
     
     AP_init = ctrl.AirProperties()
     AC_init = ctrl.AlgControls(AP_init.c0, 1000,1000,10)
@@ -68,13 +73,16 @@ class InteriorBEM:
     BC_init = BC.BC(AC_init,AP_init)
     BC_init.rigid(0)
     
-    def __init__(self,grid=grid_init,AC=AC_init,AP=AP_init,S=S_init,R=R_init,BC=BC_init,assembler = 'numba',IS=0):
+    def __init__(self, grid=grid_init, AC=AC_init, AP=AP_init, S=S_init, R=R_init, BC=BC_init, assembler = 'numba', IS=0):
+        
         if type(grid) == list:
             
             self.grid = grid[1]
             self.path_to_geo = grid[0]
+            
         else:
             self.grid = grid
+            
         self.f_range = AC.freq
         self.wavetype = S.wavetype
         # self.r0 = S.coord.reshape(len(S.coord),-1)
@@ -103,9 +111,96 @@ class InteriorBEM:
                     [self.mu[key][i]
                      for key in self.mu.keys()],dtype="complex128"))
         self.mu = conv
+
+        
+    def add_receiver(self, coord = [1.0, 0.0, 0.0]):
+        self.receivers.append(Receiver(coord))
         
         
-    def impedance_bemsolve(self,device="cpu",individual_sources=False):
+    def list_receivers(self):
+        print("Receivers coordinates are:")
+        for receiver in self.receivers:
+            print (receiver.coord)
+            
+            
+    def add_source(self, coord = [0.0, 0.0, 1.0], q = [1.0], source_type="monopole"):
+        self.sources.append(Source(coord, q , source_type))  
+        
+        
+    def list_sources(self):
+        print("Sources coordinates are:")
+        for source in self.receivers:
+            print (source.coord)
+     
+    
+    def add_mesh(path_to_msh, show_mesh=False, gmsh_filepath=None, reorder_domain_index=True):
+        """
+        This function imports a .msh file and orders the domain_index from 0 to len(domain_index).
+        Parameters
+        ----------
+        path : String
+            Path to .msh file.
+        Returns
+        -------
+        Bempp Grid.
+        """
+        
+        self.path_to_msh = path_to_msh
+        
+        try:  
+            import gmsh
+        except :
+            import gmsh_api.gmsh as gmsh
+
+        import sys
+        import os
+
+        if reorder_domain_index:
+            
+            gmsh.initialize(sys.argv)
+            gmsh.open(path_to_msh) # Open msh
+            phgr = gmsh.model.getPhysicalGroups(2)
+            odph = []
+            
+            for i in range(len(phgr)):
+                odph.append(phgr[i][1]) 
+            phgr_ordered = [i for i in range(0, len(phgr))]
+            phgr_ent = []
+            
+            for i in range(len(phgr)):
+                phgr_ent.append(gmsh.model.getEntitiesForPhysicalGroup(phgr[i][0],phgr[i][1]))
+                
+            gmsh.model.removePhysicalGroups()
+            
+            for i in range(len(phgr)):
+                gmsh.model.addPhysicalGroup(2, phgr_ent[i],phgr_ordered[i])
+
+            # gmsh.fltk.run()   
+            path_name = os.path.dirname(path_to_msh)
+            gmsh.write(path_name+'/current_mesh.msh')   
+            gmsh.finalize()    
+            
+            if show_mesh == True:
+                
+                try:
+                    bempp.api.PLOT_BACKEND = "jupyter_notebook"
+                    bempp.api.import_grid(path_name+'/current_mesh.msh').plot()
+                    
+                except:
+                    bempp.api.GMSH_PATH = gmsh_filepath
+                    bempp.api.PLOT_BACKEND = "gmsh"
+                    bempp.api.import_grid(path_name+'/current_mesh.msh').plot()
+
+
+
+            self.msh = bempp.api.import_grid(path_name+'/current_mesh.msh')
+            os.remove(path_name+'/current_mesh.msh')
+            
+        else:
+            self.msh = bempp.api.import_grid(path_to_msh)
+                    
+        
+    def run(self,device="cpu",individual_sources=False):
         """
         Computes the bempp gridFunctions for the interior acoustic problem.
         
