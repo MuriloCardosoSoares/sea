@@ -71,12 +71,12 @@ class Algorithm():
             self.freq_init = np.array(freq_init)
             self.freq_end = np.array(freq_end)
             self.freq_step = np.array(freq_step)
-            self.freq = np.arange(self.freq_init, self.freq_end + self.freq_step, self.freq_step)
+            self.freq_vec = np.arange(self.freq_init, self.freq_end + self.freq_step, self.freq_step)
         else:
             self.freq_init = np.array(freq_vec[0])
             self.freq_end = np.array(freq_vec[-1])
-            self.freq = freq_vec
-        self.w = 2.0 * np.pi * self.freq
+            self.freq_vec = freq_vec
+        self.w = 2.0 * np.pi * self.freq_vec
      
     def __str__(self):
         return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz and a step of " + str(self.freq_step) + " Hz"
