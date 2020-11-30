@@ -16,14 +16,14 @@ from sea.definitions import Air
 from sea.definitions import Algorithm
 from sea.definitions import Receiver
 from sea.definitions import Source
+from sea.materials import Material
 
 
 class Room:   
-        
+
     bempp.api.DEVICE_PRECISION_CPU = 'single'
-    air = Air()
     
-    def __init__(self, air=air, assembler = 'numba', IS=0):
+    def __init__(self, air=Air(), assembler = 'numba', IS=0):
         '''
         Room object.
         This class comunicates to the other classes of this repository. 
@@ -125,7 +125,13 @@ class Room:
             
         else:
             self.msh = bempp.api.import_grid(path_to_msh)
-                    
+     
+
+    def add_material(self, parameters=[15000, 0.05], type="porous"):
+        if type == "porous"
+        self.materials.append()
+
+        
         
     def run(self,device="cpu",individual_sources=False):
         """
