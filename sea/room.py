@@ -19,97 +19,21 @@ from sea.definitions import Source
 
 
 class Room:   
-    """
-    Hi, this class contains some tools to solve the interior acoustic problem with monopole point sources. First, you gotta 
-    give some inputs:
         
-    Inputs:
-        
-        space = bempp.api.function_space(grid, "DP", 0) || grid = bempp.api.import_grid('#YOURMESH.msh')
-        
-        f_range = array with frequencies of analysis. eg:   f1= 20
-                                                            f2 = 150
-                                                            df = 2
-                                                            f_range = np.arange(f1,f2+df,df) 
-        
-        c0 = speed of sound
-        
-        r0 = dict[0:numSources] with source positions. eg:  r0 = {}
-                                                            r0[0] =  np.array([1.4,0.7,-0.35])
-                                                            r0[1] = np.array([1.4,-0.7,-0.35])
-                                                            
-        q = dict[0:numSources] with constant source strenght S. eg: q = {}
-                                                                    q[0] = 1
-                                                                    q[1] = 1
-        
-        mu = dict[physical_group_id]| A dictionary containing f_range sized arrays with admittance values. 
-        The key (index) to the dictionary must be the physical group ID defined in Gmsh. If needed, check out
-        the bemder.porous functions :). 
-                                        eg: zsd1 = porous.delany(5000,0.1,f_range)
-                                            zsd2 = porous.delany(10000,0.2,f_range)
-                                            zsd3 = porous.delany(15000,0.3,f_range)
-                                            mud1 = np.complex128(rho0*c0/np.conj(zsd1))
-                                            mud2 = np.complex128(rho0*c0/np.conj(zsd2))
-                                            mud3 = np.complex128(rho0*c0/np.conj(zsd3))
-                                            
-                                            mu = {}
-                                            mu[1] = mud2
-                                            mu[2] = mud2
-                                            mu[3] = mud3
-        
-        
-    """
-    #then = time.time()
     bempp.api.DEVICE_PRECISION_CPU = 'single'
-    
-    AP_init = ctrl.AirProperties()
-    AC_init = ctrl.AlgControls(AP_init.c0, 1000,1000,10)
-    S_init = sources.Source("spherical",coord=[2,0,0])
-    R_init = receivers.Receiver(coord=[1.5,0,0])
-    grid_init = bempp.api.shapes.regular_sphere(2)
-    BC_init = BC.BC(AC_init,AP_init)
-    BC_init.rigid(0)
-    
     air = Air()
     
-    def __init__(self, grid=grid_init, AC=AC_init, AP=AP_init, S=S_init, R=R_init, BC=BC_init, assembler = 'numba', IS=0):
-        
-        if type(grid) == list:
-            
-            self.grid = grid[1]
-            self.path_to_geo = grid[0]
-            
-        else:
-            self.grid = grid
-            
-        self.f_range = AC.freq
-        self.wavetype = S.wavetype
-        # self.r0 = S.coord.reshape(len(S.coord),-1)
-        self.r0 = S.coord.T
-        # print(self.r0)
-        self.q = S.q
-        self.mu = BC.mu
-        self.c0 = AP.c0
-        self.rho0 = AP.rho0
-        self.AP = AP
-        self.AC = AC
-        self.S = S
-        self.R = R
-        self.BC = BC
-        self.EoI = 1
-        self.v = 0
+    def __init__(self, air=air, assembler = 'numba', IS=0):
+        '''
+        Room object.
+        This class comunicates to the other classes of this repository. 
+        All information about the simulation will be set up in here.
+        '''
+        self.air = air
         self.IS = IS
         self.assembler = assembler
-        
-        
-        self.mu = collections.OrderedDict(sorted(self.mu.items()))
-        conv = []
-        for i in range(len(self.f_range)):
-            conv.append(
-                np.array(
-                    [self.mu[key][i]
-                     for key in self.mu.keys()],dtype="complex128"))
-        self.mu = conv
+        self.EoI = 1
+        self.v = 0 
         
 
     def algorithm_control(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
