@@ -128,8 +128,14 @@ class Room:
      
 
     def add_material(self, parameters=[15000, 0.05], type="porous"):
+        
+        if hasattr(self, "frequencies") != True:
+            raise ValueError("Algorithm frequencies are not defined yet.")
+            
+        material = Material()
+        
         if type == "porous"
-        self.materials.append()
+            self.materials.append(material.porous(parameters, self.frequencies.freq_vec))
 
         
         
