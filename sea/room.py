@@ -1,3 +1,21 @@
+import time
+import warnings
+import bempp.api
+import numpy as np
+import numba
+from bemder import controlsair as ctrl
+from bemder import sources
+from bemder import receivers
+from bemder import helpers
+import bemder.BoundaryConditions as BC
+from matplotlib import pylab as plt
+import cloudpickle
+import collections
+bempp.api.PLOT_BACKEND = "gmsh"
+
+warnings.filterwarnings('ignore')
+
+
 class InteriorBEM:
     bempp.api.DEVICE_PRECISION_CPU = 'single'    
     """
