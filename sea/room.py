@@ -3,11 +3,8 @@ import warnings
 import bempp.api
 import numpy as np
 import numba
-from bemder import controlsair as ctrl
-from bemder import sources
-from bemder import receivers
+
 from bemder import helpers
-import bemder.BoundaryConditions as BC
 from matplotlib import pylab as plt
 import cloudpickle
 import collections
@@ -73,6 +70,8 @@ class Room:
     BC_init = BC.BC(AC_init,AP_init)
     BC_init.rigid(0)
     
+    air = Air()
+    
     def __init__(self, grid=grid_init, AC=AC_init, AP=AP_init, S=S_init, R=R_init, BC=BC_init, assembler = 'numba', IS=0):
         
         if type(grid) == list:
@@ -111,8 +110,12 @@ class Room:
                     [self.mu[key][i]
                      for key in self.mu.keys()],dtype="complex128"))
         self.mu = conv
-
         
+
+    def algorithm_control(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
+        self.frequencies = Algorithm(freq_init, freq_end, freq_step, freq_vec) 
+        
+    
     def add_receiver(self, coord = [1.0, 0.0, 0.0]):
         self.receivers.append(Receiver(coord))
         
