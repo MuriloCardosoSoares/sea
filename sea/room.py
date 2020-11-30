@@ -21,7 +21,7 @@ from sea.definitions import Receiver
 from sea.definitions import Source
 
 
-class InteriorBEM:   
+class Room:   
     """
     Hi, this class contains some tools to solve the interior acoustic problem with monopole point sources. First, you gotta 
     give some inputs:
