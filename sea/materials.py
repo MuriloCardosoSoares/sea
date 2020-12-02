@@ -25,7 +25,9 @@ class Material():
             }
             
         
-    def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], normalized_surface_impedance=[], surface_impedance=[], freq_vec=[], rmk1=[], rho0=1.21, c0=343.0):
+    def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], 
+                 octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], 
+                 normalized_surface_impedance=[], surface_impedance=[], freq_vec=[], rmk1=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
         Inputs:
