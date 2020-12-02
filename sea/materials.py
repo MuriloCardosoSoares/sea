@@ -784,7 +784,7 @@ class Material():
         Adjusts automatically information about the material based on init data.
         '''
         
-        if self.admittance =! 0:
+        if self.admittance != 0:
             self.normalized_surface_impedance = 1/self.admittance
             self.surface_impedance = self.normalized_surface_impedance * (self.rho0*self.c0)
             self.impedance2alpha()
