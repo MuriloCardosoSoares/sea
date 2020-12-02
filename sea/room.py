@@ -163,5 +163,5 @@ class Room:
     
     def list_materials(self):
         
-        for material in self.materials
+        for material in self.materials:
             print(material)
