@@ -138,16 +138,16 @@ class Room:
                 
             material = Material(freq_vec=self.frequencies.freq_vec, rho0=self.rho0, c0=self.c0)
 
-            if type == "porous"
+            if type == "porous":
                 self.materials.append(material.porous(parameters))
 
-            if type == "porous with air cavity"
+            if type == "porous with air cavity":
                 self.materials.append(material.porous_with_air_cavity(parameters))
                 
-            if type == "perforated panel"
+            if type == "perforated panel":
                 self.materials.append(material.perforated_panel(parameters))
                 
-            if type == "microperforated panel"
+            if type == "microperforated panel":
                 self.materials.append(material.microperforated_panel(parameters))
 
         else:
