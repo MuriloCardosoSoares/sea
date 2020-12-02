@@ -25,7 +25,7 @@ class Material():
             }
             
         
-    def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], surface_impedance=[], freq_vec=[], rmk1=[], rho0=1.21, c0=343.0):
+    def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], normalized_surface_impedance=[], surface_impedance=[], freq_vec=[], rmk1=[], rho0=1.21, c0=343.0):
         '''
         Set up material properties
         Inputs:
@@ -45,12 +45,14 @@ class Material():
         self.third_octave_bands = np.array(third_octave_bands, dtype = np.float32)
         self.admittance = np.array(admittance, dtype = np.complex64)
         self.surface_impedance = np.array(surface_impedance, dtype = np.complex64)
+        self.normalized_surface_impedance = np.array(normalized_surface_impedance, dtype = np.complex64)
         self.freq = np.array(freq_vec, dtype = np.float32)
         self.rho0 = rho0
         self.c0 = c0
         self.w = 2*np.pi*self.freq
         self.k0 = self.w/self.c0
         
+        self.adjust()
         
     def porous(self, parameters, theta):
 
@@ -775,6 +777,27 @@ class Material():
                 plt.show()
     
     
+    def adjust(self):
+        '''
+        Adjusts automatically information about the material based on init data.
+        '''
+        
+        if self.admittance =! 0:
+            self.normalized_surface_impedance = 1/self.admittance
+            self.surface_impedance = self.normalized_surface_impedance * (self.rho0*self.c0)
+            self.impedance2alpha()
+        
+        elif self.normalized_surface_impedance != 0:
+            self.surface_impedance = self.normalized_surface_impedance * (self.rho0*self.c0)
+            self.admittance = 1/(self.normalized_surface_impedance)
+            self.impedance2alpha()
+            
+        elif self.surface_impedance != 0:
+            self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
+            self.admittance = 1/(self.normalized_surface_impedance)
+            self.impedance2alpha()                 
+        
+        
     def __str__(self):
         
         if self.absorber_type == "soft porous":
@@ -823,3 +846,5 @@ def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
     z_si = (-1j*zs2*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))) + (zc1)**2) / (zs2*(np.cos(theta_t1))**2 - 1j*zc1*np.cos(theta_t1)*1/(np.tan(k1*np.cos(theta_t1)*(d1))))
 
     return z_si
+
+
