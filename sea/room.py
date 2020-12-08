@@ -158,7 +158,7 @@ class Room:
                                 octave_bands=octave_bands, third_octave_bands_statistical_alpha=third_octave_bands_statistical_alpha, 
                                 third_octave_bands=third_octave_bands, admittance=admittance, normalized_surface_impedance=normalized_surface_impedance, 
                                 surface_impedance=surface_impedance, freq_vec=self.frequencies.freq_vec, rmk1=rmk1, rho0=self.air.rho0, c0=self.air.c0)
-            print("Estive aqui!")                           
+            print("Estive aqui! 2")                           
             if material.admittance == 0 and "absorber_type" in kwargs:
                 meterial.alpha_from_impedance(absorber_type=absorber_type)
             
