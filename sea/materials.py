@@ -56,7 +56,7 @@ class Material():
         
         self.adjust()
         
-    def porous(self, parameters, theta):
+    def porous(self, parameters, theta=0):
 
         """
             Computes the surface admittance for a single layer porous absorber with rigid back end
@@ -106,7 +106,7 @@ class Material():
         else:
             self.absorber_type = "hard porous"
     
-    def porous_with_air_cavity (self, parameters, theta):
+    def porous_with_air_cavity (self, parameters, theta=0):
     
         """
             Computes the surface impedance for a single layer porous absorber with rigid back end
@@ -499,13 +499,14 @@ class Material():
                     Obs: to a porous absorver with an air cavity, the values of the flow resistivity and 
                          thickness limits even decrease as the cavity depth increases                                     
         '''
-        
-        self.absorber_type = kwargs.get("absorber")
-        
-        if hasattr(self, "absorber_type") != True:
-            raise ValueError("Type of absorber is not defined.")
+
+        if "absorber_type" in kwargs:
+            self.absorber_type = kwargs.get("absorber")
             
-        elif self.absorber_type != "soft porous" and self.absorber_type != "hard porous" and self.absorber_type != "perforated panel" and self.absorber_type != "microperforated panel" and self.absorber_type != "membrane" and self.absorber_type != "hard":
+        elif hasattr(self, "absorber_type") != True:
+            raise ValueError("Type of absorber is not defined.")
+               
+        if self.absorber_type != "soft porous" and self.absorber_type != "hard porous" and self.absorber_type != "perforated panel" and self.absorber_type != "microperforated panel" and self.absorber_type != "membrane" and self.absorber_type != "hard":
             raise ValueError("Invalid absorber; must be one of soft porous, hard porous, perforated panel, microperforated panel or membrane.")
         
         ################################################
