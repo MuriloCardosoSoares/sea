@@ -142,6 +142,7 @@ class Room:
             material = Material(freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
 
             if kwargs["absorber_type"] == "porous":
+                print("Estive aqui!2")
                 self.materials.append(material.porous(kwargs["parameters"]))
 
             if kwargs["absorber_type"] == "porous with air cavity":
@@ -158,7 +159,7 @@ class Room:
                                 octave_bands=octave_bands, third_octave_bands_statistical_alpha=third_octave_bands_statistical_alpha, 
                                 third_octave_bands=third_octave_bands, admittance=admittance, normalized_surface_impedance=normalized_surface_impedance, 
                                 surface_impedance=surface_impedance, freq_vec=self.frequencies.freq_vec, rmk1=rmk1, rho0=self.air.rho0, c0=self.air.c0)
-            print("Estive aqui! 2")                           
+            print("Estive aqui! 3")                           
             if material.admittance == 0 and "absorber_type" in kwargs:
                 meterial.alpha_from_impedance(absorber_type=kwargs["absorber_type"])
             
