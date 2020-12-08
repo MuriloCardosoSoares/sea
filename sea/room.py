@@ -142,16 +142,16 @@ class Room:
             material = Material(freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
 
             if kwargs["absorber_type"] == "porous":
-                self.materials.append(material.porous(parameters))
+                self.materials.append(material.porous(kwargs["parameters"]))
 
             if kwargs["absorber_type"] == "porous with air cavity":
-                self.materials.append(material.porous_with_air_cavity(parameters))
+                self.materials.append(material.porous_with_air_cavity(kwargs["parameters"]))
                 
             if kwargs["absorber_type"] == "perforated panel":
-                self.materials.append(material.perforated_panel(parameters))
+                self.materials.append(material.perforated_panel(kwargs["parameters"]))
                 
             if kwargs["absorber_type"] == "microperforated panel":
-                self.materials.append(material.microperforated_panel(parameters))
+                self.materials.append(material.microperforated_panel(kwargs["parameters"]))
 
         else:
             material = Material(normal_inidence_alpha=normal_inidence_alpha, statistical_alpha=statistical_alpha, octave_bands_statistical_alpha=octave_bands_statistical_alpha, 
@@ -160,7 +160,7 @@ class Room:
                                 surface_impedance=surface_impedance, freq_vec=self.frequencies.freq_vec, rmk1=rmk1, rho0=self.air.rho0, c0=self.air.c0)
             print("Estive aqui! 2")                           
             if material.admittance == 0 and "absorber_type" in kwargs:
-                meterial.alpha_from_impedance(absorber_type=absorber_type)
+                meterial.alpha_from_impedance(absorber_type=kwargs["absorber_type"])
             
             self.materials.append(material)
             
