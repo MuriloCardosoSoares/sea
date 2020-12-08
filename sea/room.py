@@ -32,6 +32,8 @@ class Room:
         self.air = air
         self.IS = IS
         self.assembler = assembler
+        self.receivers = []
+        self.sources = []
         self.EoI = 1
         self.v = 0 
         
