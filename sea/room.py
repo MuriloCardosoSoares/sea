@@ -139,7 +139,7 @@ class Room:
             if hasattr(self, "frequencies") != True:
                 raise ValueError("Algorithm frequencies are not defined yet.")
                 
-            material = Material(freq_vec=self.frequencies.freq_vec, rho0=self.rho0, c0=self.c0)
+            material = Material(freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
 
             if absorber_type == "porous":
                 self.materials.append(material.porous(parameters))
