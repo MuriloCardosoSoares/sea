@@ -47,7 +47,7 @@ class Room:
         self.receivers.append(Receiver(coord))
     
     
-    def del_receivers(self, *args)
+    def del_receivers(self, *args):
     
         if args:
             for position in args:
@@ -66,7 +66,7 @@ class Room:
         self.sources.append(Source(coord, q , source_type))  
 
         
-    def del_sources(self, *args)
+    def del_sources(self, *args):
     
         if args:
             for position in args:
@@ -187,7 +187,7 @@ class Room:
             self.materials.append(material)
             
             
-    def del_materials(self, *args)
+    def del_materials(self, *args):
     
         if args:
             for position in args:
