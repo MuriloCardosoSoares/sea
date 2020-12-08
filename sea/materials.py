@@ -717,11 +717,11 @@ class Material():
                 self.third_octave_bands_statistical_alpha = np.array(data_in_bands)  
 
     
-    def plot(self, type="statistical in octave bands"):
+    def plot(self, *type):
         """
         Plots the absorption coeffients. If it is not yet defined, it is plotted the complex surface impedance (to be implemented)
         """
-        
+        print(type)
         if self.octave_bands.size == 0 and type == "statistical in octave bands":
             raise ValueError("Statistical absorption coefficient in octave bands is not defined yet.")
             
