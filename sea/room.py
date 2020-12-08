@@ -58,8 +58,8 @@ class Room:
         
     def list_sources(self):
         print("Sources coordinates are:")
-        for source in self.receivers:
-            print (source.coord)
+        for source in self.sources:
+            print ("Coordinate = %s, q = %s" % (source.coord, source.q))
      
     
     def add_mesh(path_to_msh, show_mesh=False, gmsh_filepath=None, reorder_domain_index=True):
