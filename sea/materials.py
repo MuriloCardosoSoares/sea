@@ -721,8 +721,12 @@ class Material():
         """
         Plots the absorption coeffients. If it is not yet defined, it is plotted the complex surface impedance (to be implemented)
         """
+        
         print(type)
-        if type != True:
+        
+        if type:
+            pass
+        else:
             type = [["statistical in octave bands"]]
             
         for type in type:
