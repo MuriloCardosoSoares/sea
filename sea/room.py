@@ -34,6 +34,7 @@ class Room:
         self.assembler = assembler
         self.receivers = []
         self.sources = []
+        self.materials = []
         self.EoI = 1
         self.v = 0 
         
