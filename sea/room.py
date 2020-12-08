@@ -141,16 +141,16 @@ class Room:
                 
             material = Material(freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
 
-            if absorber_type == "porous":
+            if kwargs["absorber_type"] == "porous":
                 self.materials.append(material.porous(parameters))
 
-            if absorber_type == "porous with air cavity":
+            if kwargs["absorber_type"] == "porous with air cavity":
                 self.materials.append(material.porous_with_air_cavity(parameters))
                 
-            if absorber_type == "perforated panel":
+            if kwargs["absorber_type"] == "perforated panel":
                 self.materials.append(material.perforated_panel(parameters))
                 
-            if absorber_type == "microperforated panel":
+            if kwargs["absorber_type"] == "microperforated panel":
                 self.materials.append(material.microperforated_panel(parameters))
 
         else:
