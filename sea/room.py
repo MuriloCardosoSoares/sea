@@ -131,32 +131,33 @@ class Room:
                      third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], 
                      normalized_surface_impedance=[], surface_impedance=[], rmk1=[],**kwargs):
         
-        if "parameters" in kwargs and "type" in kwargs:
+        if "parameters" in kwargs and "absorber_type" in kwargs:
             
             if hasattr(self, "frequencies") != True:
                 raise ValueError("Algorithm frequencies are not defined yet.")
                 
             material = Material(freq_vec=self.frequencies.freq_vec, rho0=self.rho0, c0=self.c0)
 
-            if type == "porous":
+            if absorber_type == "porous":
                 self.materials.append(material.porous(parameters))
 
-            if type == "porous with air cavity":
+            if absorber_type == "porous with air cavity":
                 self.materials.append(material.porous_with_air_cavity(parameters))
                 
-            if type == "perforated panel":
+            if absorber_type == "perforated panel":
                 self.materials.append(material.perforated_panel(parameters))
                 
-            if type == "microperforated panel":
+            if absorber_type == "microperforated panel":
                 self.materials.append(material.microperforated_panel(parameters))
 
         else:
-            material = Material(normal_inidence_alpha, statistical_alpha, octave_bands_statistical_alpha, octave_bands, 
-                                third_octave_bands_statistical_alpha, third_octave_bands, admittance, 
-                                normalized_surface_impedance, surface_impedance, freq_vec=self.frequencies.freq_vec, rmk1, rho0=self.rho0, c0=self.c0)
+            material = Material(normal_inidence_alpha=normal_inidence_alpha, statistical_alpha=statistical_alpha, octave_bands_statistical_alpha=octave_bands_statistical_alpha, 
+                                octave_bands=octave_bands, third_octave_bands_statistical_alpha=third_octave_bands_statistical_alpha, 
+                                third_octave_bands=third_octave_bands, admittance=admittance, normalized_surface_impedance=normalized_surface_impedance, 
+                                surface_impedance=surface_impedance, freq_vec=self.frequencies.freq_vec, rmk1, rho0=self.rho0, c0=self.c0)
                                        
-            if material.admittance == 0 and material.normalized_surface_impedance == 0 and material.surface_impedance == 0:
-                meterial.alpha_from_impedance()
+            if material.admittance == 0 and "absorber_type" in kwargs:
+                meterial.alpha_from_impedance(absorber_type=absorber_type)
             
             self.materials.append(material)
             
