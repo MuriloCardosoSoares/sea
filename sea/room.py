@@ -45,6 +45,15 @@ class Room:
     
     def add_receiver(self, coord = [1.0, 0.0, 0.0]):
         self.receivers.append(Receiver(coord))
+    
+    
+    def del_receivers(self, *args)
+    
+        if args:
+            for position in args:
+                del self.receivers[position]
+        else:
+            self.receivers.clear()
         
         
     def list_receivers(self):
@@ -55,8 +64,17 @@ class Room:
             
     def add_source(self, coord = [0.0, 0.0, 1.0], q = [1.0], source_type="monopole"):
         self.sources.append(Source(coord, q , source_type))  
+
         
-        
+    def del_sources(self, *args)
+    
+        if args:
+            for position in args:
+                del self.sources[position]
+        else:
+            self.sources.clear()
+     
+    
     def list_sources(self):
         print("Sources are:")
         for source in self.sources:
@@ -167,6 +185,15 @@ class Room:
                 meterial.alpha_from_impedance(absorber_type=kwargs["absorber_type"])
             
             self.materials.append(material)
+            
+            
+    def del_materials(self, *args)
+    
+        if args:
+            for position in args:
+                del self.materials[position]
+        else:
+            self.materials.clear()
             
     
     def list_materials(self):
