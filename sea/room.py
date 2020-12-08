@@ -143,7 +143,8 @@ class Room:
 
             if kwargs["absorber_type"] == "porous":
                 print("Estive aqui!2")
-                self.materials.append(material.porous(kwargs["parameters"]))
+                material.porous(kwargs["parameters"])
+                self.materials.append(material)
 
             if kwargs["absorber_type"] == "porous with air cavity":
                 self.materials.append(material.porous_with_air_cavity(kwargs["parameters"]))
