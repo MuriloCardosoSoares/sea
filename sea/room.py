@@ -57,7 +57,7 @@ class Room:
         
         
     def list_sources(self):
-        print("Sources coordinates are:")
+        print("Sources are:")
         for source in self.sources:
             print ("Coordinate = %s, q = %s" % (source.coord, source.q))
      
@@ -156,7 +156,7 @@ class Room:
             material = Material(normal_inidence_alpha=normal_inidence_alpha, statistical_alpha=statistical_alpha, octave_bands_statistical_alpha=octave_bands_statistical_alpha, 
                                 octave_bands=octave_bands, third_octave_bands_statistical_alpha=third_octave_bands_statistical_alpha, 
                                 third_octave_bands=third_octave_bands, admittance=admittance, normalized_surface_impedance=normalized_surface_impedance, 
-                                surface_impedance=surface_impedance, freq_vec=self.frequencies.freq_vec, rmk1=rmk1, rho0=self.rho0, c0=self.c0)
+                                surface_impedance=surface_impedance, freq_vec=self.frequencies.freq_vec, rmk1=rmk1, rho0=self.air.rho0, c0=self.air.c0)
                                        
             if material.admittance == 0 and "absorber_type" in kwargs:
                 meterial.alpha_from_impedance(absorber_type=absorber_type)
