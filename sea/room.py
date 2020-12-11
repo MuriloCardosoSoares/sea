@@ -95,7 +95,7 @@ class Room:
         from google.colab import files
         uploaded = files.upload()
         
-        for key in my_room.path_to_msh:
+        for key in uploaded:
             self.path_to_msh = key
         
         try:  
