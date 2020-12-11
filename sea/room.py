@@ -109,7 +109,7 @@ class Room:
         if reorder_domain_index:
             
             gmsh.initialize(sys.argv)
-            gmsh.open(path_to_msh) # Open msh
+            gmsh.open(self.path_to_msh) # Open msh
             phgr = gmsh.model.getPhysicalGroups(2)
             odph = []
             
@@ -127,7 +127,7 @@ class Room:
                 gmsh.model.addPhysicalGroup(2, phgr_ent[i],phgr_ordered[i])
 
             # gmsh.fltk.run()   
-            path_name = os.path.dirname(path_to_msh)
+            path_name = os.path.dirname(self.path_to_msh)
             gmsh.write(path_name+'/current_mesh.msh')   
             gmsh.finalize()    
             
@@ -148,7 +148,7 @@ class Room:
             os.remove(path_name+'/current_mesh.msh')
             
         else:
-            self.msh = bempp.api.import_grid(path_to_msh)
+            self.msh = bempp.api.import_grid(self.path_to_msh)
      
 
     def add_material(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[],
