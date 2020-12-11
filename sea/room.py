@@ -93,9 +93,10 @@ class Room:
         Bempp Grid.
         """
         from google.colab import files
-        path_to_msh = files.upload()
-
-        self.path_to_msh = path_to_msh
+        uploaded = files.upload()
+        
+        for key in my_room.path_to_msh:
+            self.path_to_msh = key
         
         try:  
             import gmsh
