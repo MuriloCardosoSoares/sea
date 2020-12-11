@@ -9,8 +9,6 @@ import collections
 bempp.api.PLOT_BACKEND = "gmsh"
 
 import plotly
-from matplotlib import style
-style.use("seaborn-talk")
 
 warnings.filterwarnings('ignore')
 
@@ -206,23 +204,19 @@ class Room:
         for material in self.materials:
             print(material)
             
-            
-    def view(self):
+    def plot_problem(obj,S=None,R=None,grid_pts=None, pT=None, opacity = 0.75, mode="element", transformation=None):        
+    def view(self, grid_pts=None, pT=None, opacity = 0.3, mode="element", transformation=None):
         
-    import numpy as np
-    import plotly
-    import matplotlib.pyplot as plt
-    from matplotlib import style
-    from bemder import receivers
-    style.use("seaborn-talk")
-
-    def plot_problem(obj,S=None,R=None,grid_pts=None, pT=None, opacity = 0.75, mode="element", transformation=None):
+        from matplotlib import style
+        style.use("seaborn-talk")
+        
         import plotly.figure_factory as ff
         import plotly.graph_objs as go
         from bempp.api import GridFunction
         from bempp.api.grid.grid import Grid
-        import numpy as np
+        
         obj = obj[1]
+        
         if transformation is None:
             transformation = np.abs
 
