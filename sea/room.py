@@ -92,7 +92,9 @@ class Room:
         -------
         Bempp Grid.
         """
-        
+        from google.colab import files
+        path_to_msh = files.upload()
+
         self.path_to_msh = path_to_msh
         
         try:  
