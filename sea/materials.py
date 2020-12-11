@@ -738,11 +738,11 @@ class Material():
                 raise ValueError("Statistical absorption coefficient in third octave bands is not defined yet.")
 
             if self.octave_bands.size == 0 or self.third_octave_bands.size == 0 or type == "statistical" or type == "normal incidence":
-                if self.statistical_alpha.size == 0 or self.normal_inidence_alpha.size == 0:
+                if self.statistical_alpha.size == 0 or self.normal_incidence_alpha.size == 0:
                     if self.surface_impedance.size == 0 and self.admittance.size == 0:
                         raise ValueError("There is no information about this material yet.")
                     else:
-                        pass #to be implemented
+                        print("Entrou aqui trouxa!")
                 else:
                     if type == "normal incidence":
                         plt.plot (self.freq, self.normal_incidence_alpha)
