@@ -720,9 +720,7 @@ class Material():
     def plot(self, *type):
         """
         Plots the absorption coeffients. If it is not yet defined, it is plotted the complex surface impedance (to be implemented)
-        """
-        
-        print(type)
+        """        
         
         if type:
             pass
@@ -730,7 +728,7 @@ class Material():
             type = [["statistical in octave bands"]]
             
         for type in type:
-            print(type)
+
             if self.octave_bands.size == 0 and type == "statistical in octave bands":
                 raise ValueError("Statistical absorption coefficient in octave bands is not defined yet.")
 
