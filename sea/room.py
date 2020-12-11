@@ -81,7 +81,7 @@ class Room:
             print ("Coordinate = %s, q = %s" % (source.coord, source.q))
      
     
-    def add_mesh(path_to_msh, show_mesh=False, gmsh_filepath=None, reorder_domain_index=True):
+    def add_mesh(self, show_mesh=False, gmsh_filepath=None, reorder_domain_index=True):
         """
         This function imports a .msh file and orders the domain_index from 0 to len(domain_index).
         Parameters
