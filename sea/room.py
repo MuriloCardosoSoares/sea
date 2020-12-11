@@ -10,6 +10,10 @@ import cloudpickle
 import collections
 bempp.api.PLOT_BACKEND = "gmsh"
 
+import plotly
+from matplotlib import style
+style.use("seaborn-talk")
+
 warnings.filterwarnings('ignore')
 
 from sea.definitions import Air
@@ -203,3 +207,109 @@ class Room:
         
         for material in self.materials:
             print(material)
+            
+            
+    def view(self):
+        
+    import numpy as np
+    import plotly
+    import matplotlib.pyplot as plt
+    from matplotlib import style
+    from bemder import receivers
+    style.use("seaborn-talk")
+
+    def plot_problem(obj,S=None,R=None,grid_pts=None, pT=None, opacity = 0.75, mode="element", transformation=None):
+        import plotly.figure_factory as ff
+        import plotly.graph_objs as go
+        from bempp.api import GridFunction
+        from bempp.api.grid.grid import Grid
+        import numpy as np
+        obj = obj[1]
+        if transformation is None:
+            transformation = np.abs
+
+        p2dB = lambda x: 20*np.log10(np.abs(x)/2e-5) 
+        if transformation is None:
+            transformation = np.abs
+        if transformation == "dB":
+            transformation = p2dB
+
+        def configure_plotly_browser_state():
+            import IPython
+            display(IPython.core.display.HTML('''
+                    <script src="/static/components/requirejs/require.js"></script>
+                    <script>
+                      requirejs.config({
+                        paths: {
+                          base: '/static/base',
+                          plotly: 'https://cdn.plot.ly/plotly-1.5.1.min.js?noext',
+                        },
+                      });
+                    </script>
+                    '''))
+
+        plotly.offline.init_notebook_mode()
+
+        if isinstance(obj, Grid):
+            vertices = obj.vertices
+            elements = obj.elements
+            fig = ff.create_trisurf(
+                x=vertices[0, :],
+                y=vertices[1, :],
+                z=vertices[2, :],
+                simplices=elements.T,
+                color_func=elements.shape[1] * ["rgb(255, 222, 173)"],
+            )
+            fig['data'][0].update(opacity=opacity)
+            fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
+
+            if R != None:
+                fig.add_trace(go.Scatter3d(x = R.coord[:,0], y = R.coord[:,1], z = R.coord[:,2],marker=dict(size=8, color='rgb(0, 0, 128)', symbol='circle'),name="Receivers"))
+
+            if S != None:    
+                if S.wavetype == "spherical":
+                    fig.add_trace(go.Scatter3d(x = S.coord[:,0], y = S.coord[:,1], z = S.coord[:,2],marker=dict(size=8, color='rgb(128, 0, 0)', symbol='square'),name="Sources"))
+
+            fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
+
+            configure_plotly_browser_state() 
+            plotly.offline.iplot(fig)
+
+        elif isinstance(obj, GridFunction):
+
+
+            grid = obj.space.grid
+            vertices = grid.vertices
+            elements = grid.elements
+
+            local_coordinates = np.array([[1.0 / 3], [1.0 / 3]])
+            values = np.zeros(grid.entity_count(0), dtype="float64")
+            for element in grid.entity_iterator(0):
+                index = element.index
+                local_values = np.real(
+                    transformation(obj.evaluate(index, local_coordinates))
+                )
+                values[index] = local_values.flatten()
+
+            fig = ff.create_trisurf(
+                x=vertices[0, :],
+                y=vertices[1, :],
+                z=vertices[2, :],
+                color_func=values,
+                colormap = "Jet",
+                simplices=elements.T,
+                show_colorbar = True,
+
+            )
+            fig['data'][0].update(opacity=opacity)
+
+            fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
+            if R != None:
+                fig.add_trace(go.Scatter3d(x = R.coord[:,0], y = R.coord[:,1], z = R.coord[:,2],name="Receivers"))
+
+            if S != None:    
+                if S.wavetype == "spherical":
+                    fig.add_trace(go.Scatter3d(x = S.coord[:,0], y = S.coord[:,1], z = S.coord[:,2],name="Sources"))
+
+            configure_plotly_browser_state()    
+            plotly.iplot(fig)
