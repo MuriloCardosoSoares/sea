@@ -203,3 +203,55 @@ class Room:
         for material in self.materials:
             print(material)          
 
+    def view(self, opacity = 0.3):
+        
+        from matplotlib import style
+        style.use("seaborn-talk")
+        
+        import plotly.figure_factory as ff
+        import plotly.graph_objs as go
+        from bempp.api import GridFunction
+        from bempp.api.grid.grid import Grid
+
+        def configure_plotly_browser_state():
+            import IPython
+            display(IPython.core.display.HTML('''
+                    <script src="/static/components/requirejs/require.js"></script>
+                    <script>
+                      requirejs.config({
+                        paths: {
+                          base: '/static/base',
+                          plotly: 'https://cdn.plot.ly/plotly-1.5.1.min.js?noext',
+                        },
+                      });
+                    </script>
+                    '''))
+
+        plotly.offline.init_notebook_mode()
+
+        vertices = self.msh.vertices
+        elements = self.msh.elements
+        fig = ff.create_trisurf(
+            x=vertices[0, :],
+            y=vertices[1, :],
+            z=vertices[2, :],
+            simplices=elements.T,
+            color_func=elements.shape[1] * ["rgb(255, 222, 173)"],
+        )
+        fig['data'][0].update(opacity=opacity)
+        fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
+
+        if hasattr(self, "receivers"):
+            for receiver in self.receivers:
+                fig.add_trace(go.Scatter3d(x = receiver.coord[0], y = receiver.coord[1], z = receiver.coord[2],marker=dict(size=8, color='rgb(0, 0, 128)', symbol='circle'),name="Receivers"))
+       
+        if hasattr(self, "sources"):
+            for source in self.sources:
+                fig.add_trace(go.Scatter3d(x = source.coord[0], y = source.coord[1], z = source.coord[2],marker=dict(size=8, color='rgb(128, 0, 0)', symbol='square'),name="Sources"))
+
+       
+        fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
+
+        configure_plotly_browser_state() 
+        plotly.offline.iplot(fig)
+        
