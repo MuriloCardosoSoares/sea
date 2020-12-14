@@ -203,7 +203,7 @@ class Room:
         for material in self.materials:
             print(material)          
 
-    def view(self, opacity = 0.3):
+    def view(self, opacity = 0.2):
         
         from matplotlib import style
         style.use("seaborn-talk")
