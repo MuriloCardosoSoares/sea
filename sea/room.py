@@ -243,11 +243,11 @@ class Room:
 
         if hasattr(self, "receivers"):
             for receiver in self.receivers:
-                fig.add_trace(go.Scatter3d(x = receiver.coord[0], y = receiver.coord[1], z = receiver.coord[2],marker=dict(size=8, color='rgb(0, 0, 128)', symbol='circle'),name="Receivers"))
+                fig.add_trace(go.Scatter3d(x = receiver.coord[0,0], y = receiver.coord[0,1], z = receiver.coord[0,2],marker=dict(size=8, color='rgb(0, 0, 128)', symbol='circle'),name="Receivers"))
        
         if hasattr(self, "sources"):
             for source in self.sources:
-                fig.add_trace(go.Scatter3d(x = source.coord[0], y = source.coord[1], z = source.coord[2],marker=dict(size=8, color='rgb(128, 0, 0)', symbol='square'),name="Sources"))
+                fig.add_trace(go.Scatter3d(x = source.coord[0,0], y = source.coord[0,1], z = source.coord[0,2],marker=dict(size=8, color='rgb(128, 0, 0)', symbol='square'),name="Sources"))
 
        
         fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
