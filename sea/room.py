@@ -204,6 +204,7 @@ class Room:
         for material in self.materials:
             print(material)
             
+'''
     def plot_problem(obj,S=None,R=None,grid_pts=None, pT=None, opacity = 0.75, mode="element", transformation=None):        
     def view(self, grid_pts=None, pT=None, opacity = 0.3, mode="element", transformation=None):
         
@@ -305,3 +306,5 @@ class Room:
 
             configure_plotly_browser_state()    
             plotly.iplot(fig)
+            
+'''
