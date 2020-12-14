@@ -244,14 +244,14 @@ class Room:
         if hasattr(self, "receivers"):
             x = []; y = []; z = []
             for receiver in self.receivers:
-                x = np.append(x, receiver.coord[0,0]); y = np.append(x, receiver.coord[0,1]); z = np.append(x, receiver.coord[0,2])
+                x = np.append(x, receiver.coord[0,0]); y = np.append(y, receiver.coord[0,1]); z = np.append(z, receiver.coord[0,2])
             print(x); print(y); print(z)
             fig.add_trace(go.Scatter3d(x=x, y=y, z=z, marker=dict(size=8, color='rgb(0, 0, 128)', symbol='circle'),name="Receivers"))
        
         if hasattr(self, "sources"):
             x = []; y = []; z = []
             for source in self.sources:
-                x = np.append(x, source.coord[0,0]); y = np.append(x, source.coord[0,1]); z = np.append(x, source.coord[0,2])
+                x = np.append(x, source.coord[0,0]); y = np.append(y, source.coord[0,1]); z = np.append(z, source.coord[0,2])
             print(x); print(y); print(z)
             fig.add_trace(go.Scatter3d(x=x, y=y, z=z, marker=dict(size=8, color='rgb(128, 0, 0)', symbol='square'),name="Sources"))
 
