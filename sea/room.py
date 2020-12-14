@@ -250,7 +250,7 @@ class Room:
         if hasattr(self, "sources"):
             x = []; y = []; z = []
             for source in self.sources:
-                x = np.append(x, receiver.coord[0,0]); y = np.append(x, receiver.coord[0,1]); z = np.append(x, receiver.coord[0,2])
+                x = np.append(x, source.coord[0,0]); y = np.append(x, source.coord[0,1]); z = np.append(x, source.coord[0,2])
             fig.add_trace(go.Scatter3d(x=x, y=y, z=z, marker=dict(size=8, color='rgb(128, 0, 0)', symbol='square'),name="Sources"))
 
        
