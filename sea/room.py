@@ -23,7 +23,7 @@ class Room:
 
     bempp.api.DEVICE_PRECISION_CPU = 'single'
     
-    def __init__(self, air=Air(), IS=0):
+    def __init__(self, air=Air()):
         '''
         Room object.
         This class comunicates to the other classes of this repository. 
@@ -34,8 +34,6 @@ class Room:
         self.receivers = []
         self.sources = []
         self.materials = []
-        self.EoI = 1
-        self.v = 0 
         
 
     def algorithm_control(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
