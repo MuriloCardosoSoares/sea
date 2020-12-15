@@ -23,7 +23,7 @@ class Room:
 
     bempp.api.DEVICE_PRECISION_CPU = 'single'
     
-    def __init__(self, air=Air(), assembler = 'numba', IS=0):
+    def __init__(self, air=Air(), IS=0):
         '''
         Room object.
         This class comunicates to the other classes of this repository. 
@@ -31,7 +31,6 @@ class Room:
         '''
         self.air = air
         self.IS = IS
-        self.assembler = assembler
         self.receivers = []
         self.sources = []
         self.materials = []
