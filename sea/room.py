@@ -20,8 +20,6 @@ from sea.materials import Material
 
 
 class Room:   
-
-    bempp.api.DEVICE_PRECISION_CPU = 'single'
     
     def __init__(self, air=Air()):
         '''
@@ -35,9 +33,15 @@ class Room:
         self.sources = []
         self.materials = []
         
-
+        
+    def air_properties(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
+        self.air = Air(c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0)
+        self.air.k0 = 2*np.pi*f/self.air.c0
+        
+    
     def algorithm_control(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
-        self.frequencies = Algorithm(freq_init, freq_end, freq_step, freq_vec) 
+        self.frequencies = Algorithm(freq_init, freq_end, freq_step, freq_vec)
+        self.air.k0 = 2*np.pi*f/self.air.c0
         
     
     def add_receiver(self, coord = [1.0, 0.0, 0.0]):
