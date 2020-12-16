@@ -58,7 +58,7 @@ class Air():
     
 class Algorithm():
     
-    def __init__(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[], c0 = 343.0, rho0 = 1.21):
+    def __init__(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
         '''
         Set up algorithm controls. You set-up your frequency span:
         Inputs:
@@ -78,7 +78,6 @@ class Algorithm():
             self.freq_vec = freq_vec
             
         self.w = 2.0 * np.pi * self.freq_vec
-        self.k = 2*np.pi*self.freq_vec/c0
      
     def __str__(self):
         return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz and a step of " + str(self.freq_step) + " Hz"
