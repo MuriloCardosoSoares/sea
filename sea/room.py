@@ -28,7 +28,6 @@ class Room:
         All information about the simulation will be set up in here.
         '''
         self.air = air
-        self.IS = IS
         self.receivers = []
         self.sources = []
         self.materials = []
