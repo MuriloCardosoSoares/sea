@@ -25,7 +25,7 @@ class Material():
             }
             
         
-    def __init__(self, normal_inidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], 
+    def __init__(self, normal_incidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], 
                  octave_bands=[], third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], 
                  normalized_surface_impedance=[], surface_impedance=[], freq_vec=[], rmk1=[], rho0=1.21, c0=343.0):
         '''
@@ -39,7 +39,7 @@ class Material():
             Obs: all these quantities might be input data or be calculated by one of the methods
         '''
         
-        self.normal_inidence_alpha = np.array(normal_inidence_alpha, dtype = np.float32)
+        self.normal_incidence_alpha = np.array(normal_incidence_alpha, dtype = np.float32)
         self.statistical_alpha = np.array(statistical_alpha, dtype = np.float32)
         self.octave_bands_statistical_alpha = np.array(octave_bands_statistical_alpha, dtype = np.float32)
         self.octave_bands = np.array(octave_bands, dtype = np.float32)
