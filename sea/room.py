@@ -35,8 +35,7 @@ class Room:
         
     def air_properties(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
         self.air = Air(c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0)
-        if hasattr(self, "frequencies"):
-            self.air.k0 = 2*np.pi*self.frequencies.freq_vec/self.air.c0
+        self.air.k0 = 2*np.pi*self.frequencies.freq_vec/self.air.c0
         
     
     def algorithm_control(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
@@ -259,4 +258,74 @@ class Room:
 
         configure_plotly_browser_state() 
         plotly.offline.iplot(fig)
+        
+        
+    def run(self, method='bem'):
+        
+        if hasattr(self, "frequencies") != True:
+            print("Algorithm frequencies are not defined yet.")
+            
+            if self.sources == 0:
+                print("Sources were not defined yet.")
+                
+            raise ValueError("It is lacking some peace of information.")
+            
+        if self.receivers == 0:
+            print ("Receivers were not defined yet. Nevertheless, it will run and you will be able to perform this step later.")
+        
+        admittances = {}
+        if self.materials == 0:
+            for i in (np.unique(self.grid.domain_indices)):
+                admittances[i] = Material(admittance = np.zeros_like(self.f_range, dtype=np.complex64), freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
+        else:
+            for i, material in enumerate(self.materials):
+                admittances[i] = material.admittance
+                
+            bempp.api.DEVICE_PRECISION_CPU = 'single'  
+            
+        self.solutions = []      
+
+        self.space = bempp.api.function_space(self.msh, "P", 1)
+
+        for fi,f in enumerate(self.frequencies.freq_vec):
+            
+            admittance = self.mu[fi]
+            k = self.self.air.k0[fi]
+            
+           @bempp.api.callable(complex=True, jit=True, parameterized=True)
+            def mu_fun(x, n, domain_index, result, admittance):
+                    result[0]=np.conj(admittance[domain_index])
+
+            mu_op = bempp.api.MultiplicationOperator(
+                bempp.api.GridFunction(self.space, fun=mu_fun, function_parameters=mu_f)
+                , self.space, self.space, self.space)
+
+            identity = bempp.api.operators.boundary.sparse.identity(
+                self.space, self.space, self.space)
+            dlp = bempp.api.operators.boundary.helmholtz.double_layer(
+                self.space, self.space, self.space, k, assembler="dense", device_interface=self.assembler)
+            slp = bempp.api.operators.boundary.helmholtz.single_layer(
+                self.space, self.space, self.space, k,assembler="dense", device_interface=self.assembler)
+
+            for source in self.sources:
+                
+                @bempp.api.callable(complex=True, jit=True)
+                def monopole_fun(r, n, domain_index, result):
+
+                    pos  = np.linalg.norm(r - source.coord)
+                    val  = source.q*np.exp(1j*k*pos) / (4*np.pi*pos)
+                    
+                    result[0]= -(1j*admittance[domain_index]*k*val - val/(pos*pos) * (1j*k*pos-1)* np.dot(r-source.coord,n))
+
+                monopole = bempp.api.GridFunction(self.space,fun=monopole_fun)
+                    
+                a = 1j*k*self.c0*self.rho0
+                Y = a*(mu_op)
+
+                lhs = (0.5*identity+dlp) - slp*Y
+                rhs = -slp*monopole_fun
+
+                solution, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
+
+                self.solutions.append (solution.coefficients)
         
