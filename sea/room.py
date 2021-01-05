@@ -35,7 +35,8 @@ class Room:
         
     def air_properties(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
         self.air = Air(c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0)
-        self.air.k0 = 2*np.pi*self.frequencies.freq_vec/self.air.c0
+        if hasattr(self, "frequencies"):
+            self.air.k0 = 2*np.pi*self.frequencies.freq_vec/self.air.c0
         
     
     def algorithm_control(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
