@@ -791,17 +791,17 @@ class Material():
         Adjusts automatically information about the material based on init data.
         '''
         
-        if self.admittance != 0:
+        if self.admittance.size != 0:
             self.normalized_surface_impedance = 1/self.admittance
             self.surface_impedance = self.normalized_surface_impedance * (self.rho0*self.c0)
             self.impedance2alpha()
         
-        elif self.normalized_surface_impedance != 0:
+        elif self.normalized_surface_impedance.size != 0:
             self.surface_impedance = self.normalized_surface_impedance * (self.rho0*self.c0)
             self.admittance = 1/(self.normalized_surface_impedance)
             self.impedance2alpha()
             
-        elif self.surface_impedance != 0:
+        elif self.surface_impedance.size != 0:
             self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
             self.admittance = 1/(self.normalized_surface_impedance)
             self.impedance2alpha()                 
