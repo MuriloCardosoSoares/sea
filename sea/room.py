@@ -300,7 +300,7 @@ class Room:
                     result[0]=np.conj(admittance[domain_index])
 
             mu_op = bempp.api.MultiplicationOperator(
-                bempp.api.GridFunction(self.space, fun=mu_fun, function_parameters=mu_f)
+                bempp.api.GridFunction(self.space, fun=mu_fun, function_parameters=admittance)
                 , self.space, self.space, self.space)
 
             identity = bempp.api.operators.boundary.sparse.identity(
