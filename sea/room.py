@@ -293,7 +293,7 @@ class Room:
             print ("Working on frequency = %0.3f Hz." % f)
             
             admittance = [item[fi] for item in admittances]
-            k = self.self.air.k0[fi]
+            k = self.air.k0[fi]
             
             @bempp.api.callable(complex=True, jit=True, parameterized=True)
             def mu_fun(x, n, domain_index, result, admittance):
