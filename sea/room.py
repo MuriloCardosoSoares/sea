@@ -27,10 +27,10 @@ class Room:
         This class comunicates to the other classes of this repository. 
         All information about the simulation will be set up in here.
         '''
-        self.air = air
-        self.receivers = []
-        self.sources = []
-        self.materials = []
+        self.air = air 
+        self.receivers = np.array([], dtype = np.float32)
+        self.sources = np.array([], dtype = np.float32)
+        self.materials = np.array([], dtype = np.float32)
         
         
     def air_properties(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
