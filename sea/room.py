@@ -265,16 +265,16 @@ class Room:
         if hasattr(self, "frequencies") != True:
             print("Algorithm frequencies are not defined yet.")
             
-            if self.sources == 0:
+            if self.sources.size == 0:
                 print("Sources were not defined yet.")
                 
             raise ValueError("It is lacking some peace of information.")
             
-        if self.receivers == 0:
+        if self.receivers.size == 0:
             print ("Receivers were not defined yet. Nevertheless, it will run and you will be able to perform this step later.")
         
         admittances = {}
-        if self.materials == 0:
+        if self.materials.size == 0:
             for i in (np.unique(self.grid.domain_indices)):
                 admittances[i] = Material(admittance = np.zeros_like(self.frequencies.freq_vec, dtype=np.complex64), freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
         else:
