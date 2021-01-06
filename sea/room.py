@@ -289,6 +289,8 @@ class Room:
 
         for fi,f in enumerate(self.frequencies.freq_vec):
             
+            print ("Working on frequency = %0.3f Hz." % f)
+            
             admittance = self.mu[fi]
             k = self.self.air.k0[fi]
             
