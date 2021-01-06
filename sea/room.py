@@ -274,13 +274,13 @@ class Room:
         if len(self.receivers) == 0:
             print ("Receivers were not defined yet. Nevertheless, it will run and you will be able to perform this step later.")
         
-        admittances = {}
+        admittances = []
         if len(self.materials) == 0:
             for i in (np.unique(self.grid.domain_indices)):
-                admittances[i] = Material(admittance = np.zeros_like(self.frequencies.freq_vec, dtype=np.complex64), freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
+                admittances.append(Material(admittance = np.zeros_like(self.frequencies.freq_vec, dtype=np.complex64), freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0))
         else:
-            for i, material in enumerate(self.materials):
-                admittances[i] = material.admittance
+            for material in self.materials:
+                admittances.append(material.admittance)
                 
             bempp.api.DEVICE_PRECISION_CPU = 'single'  
             
@@ -292,7 +292,7 @@ class Room:
             
             print ("Working on frequency = %0.3f Hz." % f)
             
-            admittance = self.mu[fi]
+            admittance = [item[fi] for item in admittances]
             k = self.self.air.k0[fi]
             
             @bempp.api.callable(complex=True, jit=True, parameterized=True)
