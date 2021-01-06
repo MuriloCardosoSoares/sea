@@ -276,7 +276,7 @@ class Room:
         admittances = {}
         if self.materials == 0:
             for i in (np.unique(self.grid.domain_indices)):
-                admittances[i] = Material(admittance = np.zeros_like(self.f_range, dtype=np.complex64), freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
+                admittances[i] = Material(admittance = np.zeros_like(self.frequencies.freq_vec, dtype=np.complex64), freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
         else:
             for i, material in enumerate(self.materials):
                 admittances[i] = material.admittance
