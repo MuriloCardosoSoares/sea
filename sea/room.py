@@ -311,11 +311,12 @@ class Room:
                 
                 @bempp.api.callable(complex=True, jit=True)
                 def monopole_fun(r, n, domain_index, result):
-
+                    
+                    result[0] = 0
                     pos  = np.linalg.norm(r - source.coord)
                     val  = source.q*np.exp(1j*k*pos) / (4*np.pi*pos)
                     
-                    result[0]= -(1j*admittance[domain_index]*k*val - val/(pos*pos) * (1j*k*pos-1)* np.dot(r-source.coord,n))
+                    result[0] += -(1j*admittance[domain_index]*k*val - val/(pos*pos) * (1j*k*pos-1)* np.dot(r-source.coord,n))
 
                 monopole = bempp.api.GridFunction(self.space,fun=monopole_fun)
                     
