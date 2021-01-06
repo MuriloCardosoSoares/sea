@@ -28,14 +28,15 @@ class Room:
         All information about the simulation will be set up in here.
         '''
         self.air = air 
-        self.receivers = np.array([], dtype = np.float32)
-        self.sources = np.array([], dtype = np.float32)
-        self.materials = np.array([], dtype = np.float32)
+        self.receivers = []
+        self.sources = []
+        self.materials = []
         
         
     def air_properties(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
         self.air = Air(c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0)
-        self.air.k0 = 2*np.pi*self.frequencies.freq_vec/self.air.c0
+        if hasattr(self, "frequencies"):
+            self.air.k0 = 2*np.pi*self.frequencies.freq_vec/self.air.c0
         
     
     def algorithm_control(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
@@ -265,16 +266,16 @@ class Room:
         if hasattr(self, "frequencies") != True:
             print("Algorithm frequencies are not defined yet.")
             
-            if self.sources.size == 0:
+            if len(self.sources) == 0:
                 print("Sources were not defined yet.")
                 
             raise ValueError("It is lacking some peace of information.")
             
-        if self.receivers.size == 0:
+        if len(self.receivers) == 0:
             print ("Receivers were not defined yet. Nevertheless, it will run and you will be able to perform this step later.")
         
         admittances = {}
-        if self.materials.size == 0:
+        if len(self.materials) == 0:
             for i in (np.unique(self.grid.domain_indices)):
                 admittances[i] = Material(admittance = np.zeros_like(self.frequencies.freq_vec, dtype=np.complex64), freq_vec=self.frequencies.freq_vec, rho0=self.air.rho0, c0=self.air.c0)
         else:
