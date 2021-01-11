@@ -292,7 +292,7 @@ class Room:
             
             print ("Working on frequency = %0.3f Hz." % f)
             
-            admittance = [item[fi] for item in admittances]
+            admittance = np.array([item[fi] for item in admittances])
             k = self.air.k0[fi]
             
             @bempp.api.callable(complex=True, jit=True, parameterized=True)
