@@ -306,9 +306,9 @@ class Room:
             identity = bempp.api.operators.boundary.sparse.identity(
                 self.space, self.space, self.space)
             dlp = bempp.api.operators.boundary.helmholtz.double_layer(
-                self.space, self.space, self.space, k, assembler="dense", device_interface=self.assembler)
+                self.space, self.space, self.space, k, assembler="dense", device_interface='numba')
             slp = bempp.api.operators.boundary.helmholtz.single_layer(
-                self.space, self.space, self.space, k,assembler="dense", device_interface=self.assembler)
+                self.space, self.space, self.space, k,assembler="dense", device_interface='numba')
 
             for source in self.sources:
                 
