@@ -312,22 +312,37 @@ class Room:
 
             for source in self.sources:
                 
-                @bempp.api.callable(complex=True, jit=True)
-                def monopole_fun(r, n, domain_index, result):
+                @bempp.api.callable(complex=True, jit=True, parameterized=True)
+                def monopole_fun(r,n, domain_index, result, parameters):
                     
-                    result[0] = 0
-                    pos  = np.linalg.norm(r - source.coord)
-                    val  = source.q*np.exp(1j*k*pos) / (4*np.pi*pos)
+                    coord = np.real(parameters[:3])
+                    k = parameters[3]
+                    q = parameters[4]
+                    mu = parameters[5:]
                     
-                    result[0] += -(1j*admittance[domain_index]*k*val - val/(pos*pos) * (1j*k*pos-1)* np.dot(r-source.coord,n))
+                    pos  = np.linalg.norm(r-coord)
+                    val  = q*np.exp(1j*k*pos)/(4*np.pi*pos)
+                    
+                    result[0] = -(1j * mu[domain_index] * k * val -
+                        val / (pos**2) * (1j*k*pos - 1) * np.dot(r-coord, n))
 
-                monopole = bempp.api.GridFunction(self.space,fun=monopole_fun)
+                monopole = bempp.api.GridFunction.from_zeros(self.space)
+                monopole_parameters = np.zeros(5+len(admittance),dtype = 'complex128')
+                
+                monopole_parameters[:3] = source.coord
+                monopole_parameters[3] = k
+                monopole_parameters[4] = source.q
+                monopole_parameters[5:] = admittance
+                
+                monopole = bempp.api.GridFunction(self.space,fun=monopole_fun,
+                                                      function_parameters=monopole_parameters)
+                
                     
                 a = 1j*k*self.c0*self.rho0
                 Y = a*(mu_op)
 
                 lhs = (0.5*identity+dlp) - slp*Y
-                rhs = -slp*monopole_fun
+                rhs = monopole_fun
 
                 solution, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
 
