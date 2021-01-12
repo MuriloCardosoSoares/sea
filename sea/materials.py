@@ -55,7 +55,17 @@ class Material():
         self.k0 = self.w/self.c0
         
         self.adjust()
+
         
+    def rigid(self):
+        
+        self.admittance = np.zeros_like(my_room.frequencies.freq_vec, dtype=np.complex64)
+        self.statistical_alpha = np.zeros(len(self.admittance))
+        self.alpha_in_bands()
+                
+        self.absorber_type = "rigid"
+    
+    
     def porous(self, parameters, theta=0):
 
         """
@@ -810,6 +820,9 @@ class Material():
     def __str__(self):
         
         if hasattr(self, "absorber_type"):
+            
+            if self.absorber_type == "rigid":
+                return ("Ideal rigid surface.")
             
             if self.absorber_type == "soft porous":
                 return ("Single layer soft porous absorber with rigid back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and thickness = " 
