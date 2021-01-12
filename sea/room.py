@@ -284,7 +284,8 @@ class Room:
                 
             bempp.api.DEVICE_PRECISION_CPU = 'single'  
             
-        self.solutions = []      
+        self.pressure = [] 
+        self.velocity = [] 
 
         self.space = bempp.api.function_space(self.msh, "P", 1)
 
@@ -341,7 +342,38 @@ class Room:
                 Y = a*(mu_op)
                 lhs = (0.5*identity+dlp) - slp*Y
 
-                solution, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
+                boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
+                boundary_velocity = Y*boundary_pressure - rhs
 
-                self.solutions.append (solution.coefficients)
+                self.pressure.append (boundary_pressure.coefficients)
+                self.velocity.append (boundary_velocity.coefficients)
+                
+            if len(self.receivers) != 0:
+                for receiver in receivers:
+                    self.receiver_evaluate(source, receiver, boundary_pressure = boundary_pressure, boundary_velocity = boundary_velocity)
+            
+
+    def receiver_evaluate (self, source, receiver, **kwargs):
+        
+        if "boundary_pressure" in kwargs and "boundary_velocity" in kwargs:
+            
+            for fi,f in enumerate(self.frequencies.freq_vec):
+        
+                k = self.air.k0[fi]
+            
+                dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
+                    self.space, pts.T, k, assembler = "dense", device_interface = "numba")
+                slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
+                    self.space, pts.T, k, assembler = "dense", device_interface = "numba")
+                
+                scattered_pressure =  -dlp_pot.evaluate(boundary_pressure) + slp_pot.evaluate(boundary_velocity)
+        
+                distance  = np.linalg.norm(receiver.coord - source.coord)
+                incident_pressure  = q*np.exp(1j*k*distance)/(4*np.pi*distance)
+                
+                total_pressure = scattered_pressure + incident_pressure 
+        
+        
+        
+        
         
