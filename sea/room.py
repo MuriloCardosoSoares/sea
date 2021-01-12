@@ -370,7 +370,7 @@ class Room:
                 slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
                     self.space, receiver.coord, k, assembler = "dense", device_interface = "numba")
                 
-                self.scattered_pressure.append(-dlp_pot.evaluate(boundary_pressure) + slp_pot.evaluate(boundary_velocity))
+                self.scattered_pressure.append(-dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"]))
         
                 distance  = np.linalg.norm(receiver.coord - source.coord)
                 self.incident_pressure.append(q*np.exp(1j*k*distance)/(4*np.pi*distance))
