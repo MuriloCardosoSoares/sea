@@ -59,7 +59,7 @@ class Material():
         
     def rigid(self):
         
-        self.admittance = np.zeros_like(self.freq_vec, dtype=np.complex64)
+        self.admittance = np.zeros_like(self.freq, dtype=np.complex64)
         self.statistical_alpha = np.zeros(len(self.admittance))
         self.alpha_in_bands()
                 
