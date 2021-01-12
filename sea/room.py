@@ -334,15 +334,12 @@ class Room:
                 monopole_parameters[4] = source.q
                 monopole_parameters[5:] = admittance
                 
-                monopole = bempp.api.GridFunction(self.space,fun=monopole_fun,
+                rhs = bempp.api.GridFunction(self.space,fun=monopole_fun,
                                                       function_parameters=monopole_parameters)
-                
-                    
+                                    
                 a = 1j*k*self.air.c0*self.air.rho0
                 Y = a*(mu_op)
-
                 lhs = (0.5*identity+dlp) - slp*Y
-                rhs = monopole_fun
 
                 solution, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
 
