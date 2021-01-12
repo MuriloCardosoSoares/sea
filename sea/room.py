@@ -192,8 +192,7 @@ class Room:
                 
             elif material.admittance.size == 0 and "absorber_type" in kwargs:
                 meterial.alpha_from_impedance(absorber_type=kwargs["absorber_type"])
-            
-            self.materials.append(material)
+                self.materials.append(material)
             
             
     def del_materials(self, *args):
