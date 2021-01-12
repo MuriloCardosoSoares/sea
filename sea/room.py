@@ -294,6 +294,8 @@ class Room:
             
             admittance = np.array([item[fi] for item in admittances])
             k = self.air.k0[fi]
+            c0 = self.air.c0[fi]
+            rho0 = self.air.rho0[fi]
             
             @bempp.api.callable(complex=True, jit=True, parameterized=True)
             def mu_fun(x, n, domain_index, result, admittance):
@@ -338,7 +340,7 @@ class Room:
                                                       function_parameters=monopole_parameters)
                 
                     
-                a = 1j*k*self.c0*self.rho0
+                a = 1j*k*c0*rho0
                 Y = a*(mu_op)
 
                 lhs = (0.5*identity+dlp) - slp*Y
