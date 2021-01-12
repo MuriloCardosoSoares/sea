@@ -353,7 +353,7 @@ class Room:
                 self.boundary_velocity.append (boundary_velocity.coefficients)
                 
             if len(self.receivers) != 0:
-                for receiver in receivers:
+                for receiver in self.receivers:
                     self.receiver_evaluate(source, receiver, boundary_pressure = boundary_pressure, boundary_velocity = boundary_velocity)
             
 
