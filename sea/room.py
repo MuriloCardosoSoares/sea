@@ -284,8 +284,12 @@ class Room:
                 
             bempp.api.DEVICE_PRECISION_CPU = 'single'  
             
-        self.pressure = [] 
-        self.velocity = [] 
+        self.boundary_pressure = [] 
+        self.boundary_velocity = [] 
+        
+        self.scattered_pressure = []
+        self.incident_pressure = []
+        self.total_pressure = []
 
         self.space = bempp.api.function_space(self.msh, "P", 1)
 
@@ -345,8 +349,8 @@ class Room:
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
                 boundary_velocity = Y*boundary_pressure - rhs
 
-                self.pressure.append (boundary_pressure.coefficients)
-                self.velocity.append (boundary_velocity.coefficients)
+                self.boundary_pressure.append (boundary_pressure.coefficients)
+                self.boundary_velocity.append (boundary_velocity.coefficients)
                 
             if len(self.receivers) != 0:
                 for receiver in receivers:
@@ -362,16 +366,16 @@ class Room:
                 k = self.air.k0[fi]
             
                 dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
-                    self.space, pts.T, k, assembler = "dense", device_interface = "numba")
+                    self.space, receiver.coord, k, assembler = "dense", device_interface = "numba")
                 slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
-                    self.space, pts.T, k, assembler = "dense", device_interface = "numba")
+                    self.space, receiver.coord, k, assembler = "dense", device_interface = "numba")
                 
-                scattered_pressure =  -dlp_pot.evaluate(boundary_pressure) + slp_pot.evaluate(boundary_velocity)
+                self.scattered_pressure.append(-dlp_pot.evaluate(boundary_pressure) + slp_pot.evaluate(boundary_velocity))
         
                 distance  = np.linalg.norm(receiver.coord - source.coord)
-                incident_pressure  = q*np.exp(1j*k*distance)/(4*np.pi*distance)
+                self.incident_pressure.append(q*np.exp(1j*k*distance)/(4*np.pi*distance))
                 
-                total_pressure = scattered_pressure + incident_pressure 
+                self.total_pressure.append(scattered_pressure + incident_pressure) 
         
         
         
