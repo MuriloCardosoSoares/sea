@@ -185,7 +185,12 @@ class Room:
                                 third_octave_bands=third_octave_bands, admittance=admittance, normalized_surface_impedance=normalized_surface_impedance, 
                                 surface_impedance=surface_impedance, freq_vec=self.frequencies.freq_vec, rmk1=rmk1, rho0=self.air.rho0, c0=self.air.c0)
 
-            if material.admittance.size == 0 and "absorber_type" in kwargs:
+            if "absorber_type" in kwargs:
+                if kwargs["absorber_type"] == "rigid":
+                    material.rigid()
+                    self.materials.append(material)
+                
+            elif material.admittance.size == 0 and "absorber_type" in kwargs:
                 meterial.alpha_from_impedance(absorber_type=kwargs["absorber_type"])
             
             self.materials.append(material)
