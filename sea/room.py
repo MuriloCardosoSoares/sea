@@ -373,7 +373,7 @@ class Room:
                 self.scattered_pressure.append(-dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"]))
         
                 distance  = np.linalg.norm(receiver.coord - source.coord)
-                self.incident_pressure.append(q*np.exp(1j*k*distance)/(4*np.pi*distance))
+                self.incident_pressure.append(source.q*np.exp(1j*k*distance)/(4*np.pi*distance))
                 
                 self.total_pressure.append(scattered_pressure + incident_pressure) 
         
