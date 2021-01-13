@@ -382,8 +382,9 @@ class Room:
                 slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
                     self.space, receiver.coord, k, assembler = "dense", device_interface = "numba")
                 
-                pScat[fi] = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
-
+                pScat = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
+                print(pScat)
+                papum = kkdw
                 distance  = np.linalg.norm(receiver.coord - source.coord)
                 pInc[fi] = source.q*np.exp(1j*k*distance)/(4*np.pi*distance)
                 
