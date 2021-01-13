@@ -103,7 +103,7 @@ class Source():
             if "q" in kwargs:
                 self.q = np.array([kwargs["q"]], dtype = np.float32)
             else:
-                self.q = np.array([1], dtype = np.float32)
+                self.q = np.array([[1]], dtype = np.float32)
             self.type = "monopole"
         
     def __str__(self):
