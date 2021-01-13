@@ -386,17 +386,16 @@ class Room:
                 print(slp_pot.evaluate(kwargs["boundary_velocity"]))
                 
                 pS = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
-                print(pS)
-                pScat[fi] = pS
+                pScat[fi] = pS[0][0]
                 
                 distance  = np.linalg.norm(receiver.coord - source.coord)
-                pInc[fi] = source.q*np.exp(1j*k*distance)/(4*np.pi*distance)
+                pInc[fi] = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
                 
                 pT[fi] = pScat[fi] + pInc[fi]
                 
             self.scattered_pressure.append(pScat)
             self.incident_pressure.append(pInc)
-            self.total_pressure.append(pScat + pInc) 
+            self.total_pressure.append(pT) 
         
         
         
