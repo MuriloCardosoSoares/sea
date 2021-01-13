@@ -378,20 +378,21 @@ class Room:
                 k = self.air.k0[fi]
             
                 dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
-                    self.space, receiver.coord, k, assembler = "dense", device_interface = "numba")
+                    self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
                 slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
-                    self.space, receiver.coord, k, assembler = "dense", device_interface = "numba")
+                    self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
                 
                 print(-dlp_pot.evaluate(kwargs["boundary_pressure"]))
                 print(slp_pot.evaluate(kwargs["boundary_velocity"]))
                 
-                pScat = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
-                print(pScat)
-                papum = kkdw
+                pS = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
+                print(pS)
+                pScat[fi] = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
+                
                 distance  = np.linalg.norm(receiver.coord - source.coord)
                 pInc[fi] = source.q*np.exp(1j*k*distance)/(4*np.pi*distance)
                 
-                pT[fi] = pScat + pInc
+                pT[fi] = pScat[fi] + pInc[fi]
                 
             self.scattered_pressure.append(pScat)
             self.incident_pressure.append(pInc)
