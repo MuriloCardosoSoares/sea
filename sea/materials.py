@@ -822,38 +822,38 @@ class Material():
         if hasattr(self, "absorber_type"):
             
             if self.absorber_type == "rigid":
-                return ("Ideal rigid surface.")
+                return ("Ideal rigid surface.\n")
             
             if self.absorber_type == "soft porous":
                 return ("Single layer soft porous absorber with rigid back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and thickness = " 
-                + str(self.thickness) + " [m].")
+                + str(self.thickness) + " [m].\n")
 
             elif self.absorber_type == "hard porous":
                 return ("Single layer hard porous absorber with rigid back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and thickness = " 
-                + str(self.thickness) + " [m].")
+                + str(self.thickness) + " [m].\n")
 
             elif self.absorber_type == "porous with air cavity":
                 return ("Porous absorber with air cavity back end. Flow resistivity = " + str(self.flow_resistivity) + " [rayl/m] and material thickness = " 
-                + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m].")
+                + str(self.thickness) + "[m]. Air cavity depth = " + str(self.air_cavity_depth) + " [m].\n")
 
             elif self.absorber_type == "membrane":
                 return ("Membrane absorber. The mass per unit area of the membrane is " + str(self.mass_per_unit_area) + " [kg/m^2].\nThe total cavity depth is " 
                 + str(self.cavity_depth) + " [m], being " + str(self.porous_layer_thickness) + " [m] of porous a porous material with flow resistivity = " 
-                + str(self.flow_resistivity) + " [rayl/m].")
+                + str(self.flow_resistivity) + " [rayl/m].\n")
 
             elif self.absorber_type == "perforated panel":
                 return ("Perforated panel absorber. The panel thickness is " + str(self.panel_thickness) + " [m].\nThe opening radius is " 
                 + str(self.openings_radius) + " [m], being the perforation rate " + str(self.perforation_rate) 
                 + ". \nThe total cavity depth is " + str(self.cavity_depth) + " [m] and the porous absorver layer thickness is " + str(self.cavity_depth) 
-                + " [m].\nThe flow resistivity of the porous absorber is " + str(self.flow_resistivity) + " [rayl/m].")
+                + " [m].\nThe flow resistivity of the porous absorber is " + str(self.flow_resistivity) + " [rayl/m].\n")
 
             elif self.absorber_type == "microperforated panel":
                 return ("Microperforated panel absorber. The panel thickness is " + str(self.panel_thickness) + " [m].\nThe opening radius is " 
                 + str(self.openings_radius) + " [m], being the perforation rate " + str(self.perforation_rate) 
-                + ".\nThe air cavity depth is " + str(self.air_cavity_depth) + " [m].")
+                + ".\nThe air cavity depth is " + str(self.air_cavity_depth) + " [m].\n")
         
         else:
-            return("Generic material. Use plot method to get more information.")
+            return("Generic material. Use plot method to get more information.\n")
         
         
 def double_layer(zs2, zc1, c1, k1,  d1, c0, theta):
