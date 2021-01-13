@@ -171,6 +171,10 @@ class Room:
                 material.porous_with_air_cavity(kwargs["parameters"])
                 self.materials.append(material)
                 
+            if kwargs["absorber_type"] == "membrane":
+                material.membrane(kwargs["parameters"])
+                self.materials.append(material)
+                
             if kwargs["absorber_type"] == "perforated panel":
                 material.perforated_panel(kwargs["parameters"])
                 self.materials.append(material)
