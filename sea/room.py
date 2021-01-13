@@ -365,6 +365,10 @@ class Room:
         
         if "boundary_pressure" in kwargs and "boundary_velocity" in kwargs:
             
+            pScat = np.zeros(len(self.frequencies.freq_vec))
+            pInc = np.zeros(len(self.frequencies.freq_vec))
+            pT = np.zeros(len(self.frequencies.freq_vec))
+            
             for fi,f in enumerate(self.frequencies.freq_vec):
         
                 k = self.air.k0[fi]
@@ -374,14 +378,16 @@ class Room:
                 slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
                     self.space, receiver.coord, k, assembler = "dense", device_interface = "numba")
                 
-                pScat = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
-                self.scattered_pressure.append(pScat)
-        
+                pScat[fi] = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
+
                 distance  = np.linalg.norm(receiver.coord - source.coord)
-                pInc = source.q*np.exp(1j*k*distance)/(4*np.pi*distance)
-                self.incident_pressure.append(pInc)
+                pInc[fi] = source.q*np.exp(1j*k*distance)/(4*np.pi*distance)
                 
-                self.total_pressure.append(pScat + pInc) 
+                pT[fi] = pScat + pInc
+                
+            self.scattered_pressure.append(pScat)
+            self.incident_pressure.append(pInc)
+            self.total_pressure.append(pScat + pInc) 
         
         
         
