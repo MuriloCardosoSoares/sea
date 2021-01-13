@@ -53,7 +53,7 @@ class Air():
     
     def __str__(self):
         return "Air sound speed = " + str(self.c0) + " | Air density = " + str(self.rho0) + \
-                " | Temperature = " + str(self.temperature) + " | Humid = " + str(self.humid) + " | Atmospheric pressure = " + str(self.p_atm)
+                " | Temperature = " + str(self.temperature) + " | Humid = " + str(self.humid) + " | Atmospheric pressure = " + str(self.p_atm) + "\n"
     
     
 class Algorithm():
@@ -80,7 +80,7 @@ class Algorithm():
         self.w = 2.0 * np.pi * self.freq_vec
      
     def __str__(self):
-        return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz and a step of " + str(self.freq_step) + " Hz"
+        return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz and a step of " + str(self.freq_step) + " Hz. \n"
 
 class Source():
     '''
@@ -89,17 +89,25 @@ class Source():
     Inputs:
         cood - 3D coordinates of the sound sources
         q - volume velocity [m^3/s]
-        source_type - use "monopole" if you are considering omnidiretional sound sources. 
-                      Use "direciotinal" to use the spherical harmonics technique to consider the sources directivities
         
     '''
-    def __init__(self, coord=[0.0, 0.0, 1.0], q = [1.0], source_type="monopole"):
+    def __init__(self, coord=[0.0, 0.0, 1.0], **kwargs):
+        
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
-        self.q = np.array([q], dtype = np.float32)
-        self.type = source_type
+        
+        if "sh_coefficients" in kwargs:
+            self.sh_coefficients = kwargs["sh_coefficients"]
+            self.type = "directional"
+            
+        else:
+            if "q" in kwargs:
+                self.q = np.array([q], dtype = np.float32)
+            else:
+                self.q = np.array([1], dtype = np.float32)
+            self.type = "monopole"
         
     def __str__(self):
-        return "Source coordinate is " + str(self.coord) 
+        return "Source coordinate is " + str(self.coord) + ". It is a" + str(self.type) + "source.\n"
 
         
 class Receiver():
@@ -117,6 +125,6 @@ class Receiver():
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
        
     def __str__(self):
-        return "Receiver coordinate is " + str(self.coord) 
+        return "Receiver coordinate is " + str(self.coord) + "\n" 
 
     
