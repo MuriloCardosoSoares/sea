@@ -107,7 +107,7 @@ class Source():
             self.type = "monopole"
         
     def __str__(self):
-        return "Source coordinate is " + str(self.coord) + ". It is a" + str(self.type) + "source.\n"
+        return "Source coordinate is " + str(self.coord) + ". It is a " + str(self.type) + " source.\n"
 
         
 class Receiver():
