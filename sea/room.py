@@ -63,8 +63,8 @@ class Room:
             print (receiver.coord)
             
             
-    def add_source(self, coord = [0.0, 0.0, 1.0], q = [1.0], source_type="monopole"):
-        self.sources.append(Source(coord, q , source_type))  
+    def add_source(self, coord = [0.0, 0.0, 1.0], q = [1.0]):
+        self.sources.append(Source(coord, q = q))  
 
         
     def del_sources(self, *args):
