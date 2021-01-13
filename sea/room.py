@@ -382,9 +382,6 @@ class Room:
                 slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
                     self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
                 
-                print(-dlp_pot.evaluate(kwargs["boundary_pressure"]))
-                print(slp_pot.evaluate(kwargs["boundary_velocity"]))
-                
                 pS = -dlp_pot.evaluate(kwargs["boundary_pressure"]) + slp_pot.evaluate(kwargs["boundary_velocity"])
                 pScat[fi] = pS[0][0]
                 
