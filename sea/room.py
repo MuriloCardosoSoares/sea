@@ -298,10 +298,6 @@ class Room:
         self.scattered_pressure = []
         self.incident_pressure = []
         self.total_pressure = []
-        
-        pScat = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
-        pInc = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
-        pT = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
 
         self.space = bempp.api.function_space(self.msh, "P", 1)
 
@@ -366,6 +362,10 @@ class Room:
                 
             if len(self.receivers) != 0:
                 for receiver in self.receivers:
+                    
+                    pScat = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
+                    pInc = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
+                    pT = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
 
                     dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
                         self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
