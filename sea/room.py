@@ -298,6 +298,10 @@ class Room:
         self.scattered_pressure = []
         self.incident_pressure = []
         self.total_pressure = []
+        
+        pScat = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
+        pInc = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
+        pT = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
 
         self.space = bempp.api.function_space(self.msh, "P", 1)
 
@@ -362,7 +366,26 @@ class Room:
                 
             if len(self.receivers) != 0:
                 for receiver in self.receivers:
-                    self.receiver_evaluate(source, receiver, boundary_pressure = boundary_pressure, boundary_velocity = boundary_velocity)
+
+                    dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
+                        self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+                    slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
+                        self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+
+                    pS = -dlp_pot.evaluate(kwargs["boundary_pressure"])[0][0] + slp_pot.evaluate(kwargs["boundary_velocity"])[0][0]
+                    pScat[fi] = pS
+                    print(pScat)
+                    distance  = np.linalg.norm(receiver.coord - source.coord)
+                    pInc[fi] = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
+                    print(pInc)
+                    pT[fi] = pScat[fi] + pInc[fi]
+                    print(pT)
+
+                self.scattered_pressure.append(pScat)
+                self.incident_pressure.append(pInc)
+                self.total_pressure.append(pT) 
+                
+                #self.receiver_evaluate(source, receiver, boundary_pressure = boundary_pressure, boundary_velocity = boundary_velocity)
             
 
     def receiver_evaluate (self, source, receiver, **kwargs):
