@@ -10,6 +10,8 @@ bempp.api.PLOT_BACKEND = "gmsh"
 
 import plotly
 
+from google.colab import files
+
 warnings.filterwarnings('ignore')
 
 from sea.definitions import Air
@@ -21,13 +23,14 @@ from sea.materials import Material
 
 class Room:   
     
-    def __init__(self, air=Air()):
+    def __init__(self, air=Air(), room_name="my_room_simulation"):
         '''
         Room object.
         This class comunicates to the other classes of this repository. 
         All information about the simulation will be set up in here.
         '''
         self.air = air 
+        self.room_name = room_name
         self.receivers = []
         self.sources = []
         self.materials = []
@@ -416,9 +419,23 @@ class Room:
                 
             self.scattered_pressure.append(pScat)
             self.incident_pressure.append(pInc)
-            self.total_pressure.append(pT) 
+            self.total_pressure.append(pT)  
+            
+            
+    def save(self, place="drive"):
         
+        saved_name = "%s.pickle" % self.room_name
+        pickle_obj = open(saved_name, "wb")
+        pickle.dump(self, pickle_obj)
+        pickle_obj.close()
         
-        
-        
-        
+        if place == "drive":
+            try:
+                !cp saved_name /content/drive/MyDrive 
+            except:
+                from google.colab import drive
+                print("Mount your Google Drive, so that you are gonna be able to save your simulation:")
+                drive.mount('/content/gdrive')
+                
+        elif place == "local":
+            files.download(saved_name)
