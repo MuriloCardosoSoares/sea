@@ -91,20 +91,34 @@ class Source():
         q - volume velocity [m^3/s]
         
     '''
-    def __init__(self, coord=[0.0, 0.0, 1.0], **kwargs):
+    def __init__(self, coord=[0.0, 0.0, 1.0], type="monopole", **kwargs):
         
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
         
-        if "sh_coefficients" in kwargs:
-            self.sh_coefficients = kwargs["sh_coefficients"]
-            self.type = "directional"
+        if type == "directional":
+            from google.colab import files
+            print("Upload the file with the spherical harmonic information for this source:")
+            uploaded = files.upload()
             
-        else:
+            for key in uploaded:
+                file_to_read = open(key, "rb")
+                source_sh = pickle.load(file_to_read)
+                file_to_read.close()
+            
+                self.sh_coefficients = source_sh.sh_ccoefficients
+                self.sh_order = source_sh.sh_order
+                self.freq_vec = source_sh.freq_vec
+                
+        elif type == "monopole":
             if "q" in kwargs:
                 self.q = np.array([kwargs["q"]], dtype = np.float32)
             else:
-                self.q = np.array([[1]], dtype = np.float32)
-            self.type = "monopole"
+                self.q = np.array([[1]], dtype = np.float32)  
+        
+        else:
+            raise ValueError("Source type is not valid. It must be monople or directional.") 
+            
+        self.type = type
         
     def __str__(self):
         return "Source coordinate is " + str(self.coord) + ". It is a " + str(self.type) + " source.\n"
