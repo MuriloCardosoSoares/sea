@@ -19,6 +19,7 @@ from sea.definitions import Algorithm
 from sea.definitions import Receiver
 from sea.definitions import Source
 from sea.materials import Material
+import spherical_harmonics as sh
 
 
 class Room:   
@@ -328,30 +329,59 @@ class Room:
 
             for source in self.sources:
                 
-                @bempp.api.callable(complex=True, jit=True, parameterized=True)
-                def monopole_fun(r,n, domain_index, result, parameters):
-                    
-                    coord = np.real(parameters[:3])
-                    k = parameters[3]
-                    q = parameters[4]
-                    mu = parameters[5:]
-                    
-                    pos  = np.linalg.norm(r-coord)
-                    val  = q*np.exp(1j*k*pos)/(4*np.pi*pos)
-                    
-                    result[0] = -(1j * mu[domain_index] * k * val -
-                        val / (pos**2) * (1j*k*pos - 1) * np.dot(r-coord, n))
-
-                monopole = bempp.api.GridFunction.from_zeros(self.space)
-                monopole_parameters = np.zeros(5+len(admittance),dtype = 'complex128')
+                if source.type == "monopole"
                 
-                monopole_parameters[:3] = source.coord
-                monopole_parameters[3] = k
-                monopole_parameters[4] = source.q
-                monopole_parameters[5:] = admittance
+                    @bempp.api.callable(complex=True, jit=True, parameterized=True)
+                    def monopole_fun(r, n, domain_index, result, parameters):
+
+                        coord = np.real(parameters[:3])
+                        k = parameters[3]
+                        q = parameters[4]
+                        mu = parameters[5:]
+
+                        pos  = np.linalg.norm(r-coord)
+                        val  = q*np.exp(1j*k*pos)/(4*np.pi*pos)
+
+                        result[0] = -(1j * mu[domain_index] * k * val -
+                            val / (pos**2) * (1j*k*pos - 1) * np.dot(r-coord, n))
+                        
+                    source_parameters = np.zeros(5+len(admittance),dtype = 'complex128')
+
+                    source_parameters[:3] = source.coord
+                    source_parameters[3] = k
+                    source_parameters[4] = source.q
+                    source_parameters[5:] = admittance
+                        
+                else:
+                        
+                    rot_mat_FPTP = sh.GetRotationMatrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
+                    rot_mat_AzEl = sh.GetRotationMatrix(0, -source.elevation, source.azimuth, source.sh_order); # Rotation Matrix for Loudspeaker orientation
+
+                    b_nm_top = ReflectSH(rot_mat_FPTP * b_nm_f, 1, 0, 0)  # Convert to top-pole format
+                    b_nm_top = rot_mat_AzEl * b_nm_top
+                    
+                    @bempp.api.callable(complex=True, jit=True, parameterized=True)
+                    def monopole_data(r, n, domain_index, result):
+                        
+                        coord = np.real(parameters[:3])
+                        k = parameters[3]
+                        b_nm = parameters[4]
+                        mu = parameters[5:]
+                        
+                        val, d_val  = sh.spherical_basis_out_all(k, b_nm, r-coord, n)
+                        result[0] += d_val - 1j*mu[domain_index]*k*val
+                    
+                    source_parameters = np.zeros(5+len(admittance),dtype = 'complex128')
+
+                    source_parameters[:3] = source.coord
+                    source_parameters[3] = k
+                    source_parameters[4] = b_nm_top
+                    source_parameters[5:] = admittance
+                
+                monopole = bempp.api.GridFunction.from_zeros(self.space)
                 
                 rhs = bempp.api.GridFunction(self.space,fun=monopole_fun,
-                                                      function_parameters=monopole_parameters)
+                                                      function_parameters=source_parameters)
                                     
                 a = 1j*k*self.air.c0*self.air.rho0
                 Y = a*(mu_op)
