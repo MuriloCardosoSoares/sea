@@ -109,6 +109,16 @@ class Source():
                 self.sh_order = source_sh.sh_order
                 self.freq_vec = source_sh.freq_vec
                 
+            try:
+                self.elevation = kwargs["elevation"] * np.pi/180
+            exception:
+                self.elevation = 0.0
+                
+            try:
+                self.azimuth = kwargs["azimuth"] * np.pi/180
+            exception:
+                self.azimuth = 0.0
+                
         elif type == "monopole":
             if "q" in kwargs:
                 self.q = np.array([kwargs["q"]], dtype = np.float32)
@@ -116,7 +126,7 @@ class Source():
                 self.q = np.array([[1]], dtype = np.float32)  
         
         else:
-            raise ValueError("Source type is not valid. It must be monople or directional.") 
+            raise ValueError("Source type is not valid. It must be monopole or directional.") 
             
         self.type = type
         
