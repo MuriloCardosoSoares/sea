@@ -215,7 +215,7 @@ class Room:
         plotly.offline.iplot(fig)
         
         
-    def run(self, method='bem'):
+    def run(self, method='bem', save=True):
         
         if hasattr(self, "frequencies") != True:
             print("Algorithm frequencies are not defined yet.")
