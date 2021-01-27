@@ -288,7 +288,7 @@ class Room:
 
             for source in self.sources:
                 
-                if source.type == "monopole"
+                if source.type == "monopole":
                 
                     @bempp.api.callable(complex=True, jit=True, parameterized=True)
                     def source_fun(r, n, domain_index, result, parameters):
