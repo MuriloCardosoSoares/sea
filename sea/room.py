@@ -286,6 +286,12 @@ class Room:
         if len(self.receivers) == 0:
             print ("Receivers were not defined yet. Nevertheless, it will run and you will be able to perform this step later.")
         
+        for si, source in enumerate(self.sources):
+            if source.type == "directional":
+                if self.frequencies.freq_vec.all() == source.freq_vec.all():
+                    raise ValueError("The frequencies considered to calculate one of the spherical harmonic coefficients for the "
+                                     + str(si) +  " source are not the same that you are considering in the simulation.")
+        
         admittances = []
         if len(self.materials) == 0:
             for i in (np.unique(self.grid.domain_indices)):
@@ -352,12 +358,12 @@ class Room:
                     source_parameters[4] = source.q
                     source_parameters[5:] = admittance
                         
-                else:
-                        
+                else:             
+                    
                     rot_mat_FPTP = sh.GetRotationMatrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
                     rot_mat_AzEl = sh.GetRotationMatrix(0, -source.elevation, source.azimuth, source.sh_order); # Rotation Matrix for Loudspeaker orientation
 
-                    b_nm_top = ReflectSH(rot_mat_FPTP * b_nm_f, 1, 0, 0)  # Convert to top-pole format
+                    b_nm_top = ReflectSH(rot_mat_FPTP * source.sh_ccoefficients, 1, 0, 0)  # Convert to top-pole format
                     b_nm_top = rot_mat_AzEl * b_nm_top
                     
                     @bempp.api.callable(complex=True, jit=True, parameterized=True)
