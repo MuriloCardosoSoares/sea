@@ -105,7 +105,7 @@ class Source():
                 source_sh = pickle.load(file_to_read)
                 file_to_read.close()
             
-                self.sh_coefficients = source_sh.sh_ccoefficients
+                self.sh_coefficients = source_sh.sh_coefficients
                 self.sh_order = source_sh.sh_order
                 self.freq_vec = source_sh.freq_vec
                 
