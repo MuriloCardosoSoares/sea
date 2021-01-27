@@ -105,7 +105,7 @@ class Room:
         
         try:  
             import gmsh
-        except :
+        except:
             import gmsh_api.gmsh as gmsh
 
         import sys
