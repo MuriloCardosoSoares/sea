@@ -86,74 +86,15 @@ class Room:
             print ("Coordinate = %s, q = %s" % (source.coord, source.q))
      
     
-    def add_mesh(self, show_mesh=False, gmsh_filepath=None, reorder_domain_index=False):
+    def add_mesh(self):
         """
-        This function imports a .msh file and orders the domain_index from 0 to len(domain_index).
-        Parameters
-        ----------
-        path : String
-            Path to .msh file.
-        Returns
-        -------
-        Bempp Grid.
+        This function imports a .msh file.
         """
         from google.colab import files
         uploaded = files.upload()
         
         for key in uploaded:
             self.path_to_msh = key
-        
-        try:  
-            import gmsh
-        except:
-            import gmsh_api.gmsh as gmsh
-
-        import sys
-        import os
-
-        if reorder_domain_index:
-            
-            gmsh.initialize(sys.argv)
-            gmsh.open(self.path_to_msh) # Open msh
-            phgr = gmsh.model.getPhysicalGroups(2)
-            odph = []
-            
-            for i in range(len(phgr)):
-                odph.append(phgr[i][1]) 
-            phgr_ordered = [i for i in range(0, len(phgr))]
-            phgr_ent = []
-            
-            for i in range(len(phgr)):
-                phgr_ent.append(gmsh.model.getEntitiesForPhysicalGroup(phgr[i][0],phgr[i][1]))
-                
-            gmsh.model.removePhysicalGroups()
-            
-            for i in range(len(phgr)):
-                gmsh.model.addPhysicalGroup(2, phgr_ent[i],phgr_ordered[i])
-
-            # gmsh.fltk.run()   
-            path_name = os.path.dirname(self.path_to_msh)
-            gmsh.write(path_name+'/current_mesh.msh')   
-            gmsh.finalize()    
-            
-            if show_mesh == True:
-                
-                try:
-                    bempp.api.PLOT_BACKEND = "jupyter_notebook"
-                    bempp.api.import_grid(path_name+'/current_mesh.msh').plot()
-                    
-                except:
-                    bempp.api.GMSH_PATH = gmsh_filepath
-                    bempp.api.PLOT_BACKEND = "gmsh"
-                    bempp.api.import_grid(path_name+'/current_mesh.msh').plot()
-
-
-
-            self.msh = bempp.api.import_grid(path_name+'/current_mesh.msh')
-            os.remove(path_name+'/current_mesh.msh')
-            
-        else:
-            self.msh = bempp.api.import_grid(self.path_to_msh)
      
 
     def add_material(self, normal_incidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[],
@@ -216,6 +157,7 @@ class Room:
         for material in self.materials:
             print(material)          
 
+            
     def view(self, opacity = 0.2):
         
         from matplotlib import style
@@ -309,7 +251,18 @@ class Room:
         self.incident_pressure = []
         self.total_pressure = []
 
-        self.space = bempp.api.function_space(self.msh, "P", 1)
+        try:
+            msh = bempp.api.import_grid(self.path_to_msh)
+        except:
+            print("Mesh file not found. Please, upload it again:")
+            uploaded = files.upload()
+            
+            for key in uploaded:
+                self.path_to_msh = key
+                
+            msh = bempp.api.import_grid(self.path_to_msh)
+            
+        space = bempp.api.function_space(msh, "P", 1)
 
         for fi,f in enumerate(self.frequencies.freq_vec):
             
@@ -338,7 +291,7 @@ class Room:
                 if source.type == "monopole"
                 
                     @bempp.api.callable(complex=True, jit=True, parameterized=True)
-                    def monopole_fun(r, n, domain_index, result, parameters):
+                    def source_fun(r, n, domain_index, result, parameters):
 
                         coord = np.real(parameters[:3])
                         k = parameters[3]
@@ -363,30 +316,30 @@ class Room:
                     rot_mat_FPTP = sh.GetRotationMatrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
                     rot_mat_AzEl = sh.GetRotationMatrix(0, -source.elevation, source.azimuth, source.sh_order); # Rotation Matrix for Loudspeaker orientation
 
-                    b_nm_top = ReflectSH(rot_mat_FPTP * source.sh_ccoefficients, 1, 0, 0)  # Convert to top-pole format
-                    b_nm_top = rot_mat_AzEl * b_nm_top
+                    sh_coefficients_top = ReflectSH(rot_mat_FPTP * source.sh_coefficients, 1, 0, 0)  # Convert to top-pole format
+                    sh_coefficients_top = rot_mat_AzEl * b_nm_top
                     
                     @bempp.api.callable(complex=True, jit=True, parameterized=True)
-                    def monopole_data(r, n, domain_index, result):
+                    def source_fun(r, n, domain_index, result):
                         
                         coord = np.real(parameters[:3])
                         k = parameters[3]
-                        b_nm = parameters[4]
+                        sh_coefficients = parameters[4]
                         mu = parameters[5:]
                         
-                        val, d_val  = sh.spherical_basis_out_all(k, b_nm, r-coord, n)
+                        val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients, r-coord, n)
                         result[0] += d_val - 1j*mu[domain_index]*k*val
                     
                     source_parameters = np.zeros(5+len(admittance),dtype = 'complex128')
 
                     source_parameters[:3] = source.coord
                     source_parameters[3] = k
-                    source_parameters[4] = b_nm_top
+                    source_parameters[4] = sh_coefficients_top
                     source_parameters[5:] = admittance
                 
-                monopole = bempp.api.GridFunction.from_zeros(self.space)
+                #rhs = bempp.api.GridFunction.from_zeros(self.space)
                 
-                rhs = bempp.api.GridFunction(self.space,fun=monopole_fun,
+                rhs = bempp.api.GridFunction(space,fun=source_fun,
                                                       function_parameters=source_parameters)
                                     
                 a = 1j*k*self.air.c0*self.air.rho0
@@ -401,23 +354,18 @@ class Room:
                 
             if len(self.receivers) != 0:
                 for receiver in self.receivers:
-                    
-                    pScat = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
-                    pInc = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
-                    pT = np.zeros(len(self.frequencies.freq_vec), dtype = np.complex64)
 
                     dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
                         self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
                     slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
                         self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
 
-                    pS = -dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]
-                    pScat[fi] = pS
+                    pScat = -dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]
                     print(pScat)
                     distance  = np.linalg.norm(receiver.coord - source.coord)
-                    pInc[fi] = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
+                    pInc = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
                     print(pInc)
-                    pT[fi] = pScat[fi] + pInc[fi]
+                    pT = pScat + pInc
                     print(pT)
 
                 self.scattered_pressure.append(pScat)
@@ -475,3 +423,4 @@ class Room:
                 
         elif place == "local":
             files.download(saved_name)
+            
