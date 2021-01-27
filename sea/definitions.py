@@ -111,12 +111,12 @@ class Source():
                 
             try:
                 self.elevation = kwargs["elevation"] * np.pi/180
-            exception:
+            except:
                 self.elevation = 0.0
                 
             try:
                 self.azimuth = kwargs["azimuth"] * np.pi/180
-            exception:
+            except:
                 self.azimuth = 0.0
                 
         elif type == "monopole":
