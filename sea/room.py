@@ -11,6 +11,7 @@ bempp.api.PLOT_BACKEND = "gmsh"
 import plotly
 
 from google.colab import files
+import shutil 
 
 warnings.filterwarnings('ignore')
 
@@ -415,11 +416,13 @@ class Room:
         
         if place == "drive":
             try:
-                !cp saved_name /content/drive/MyDrive 
+                shutil.copy2(saved_name, "/content/drive/MyDrive")
             except:
                 from google.colab import drive
                 print("Mount your Google Drive, so that you are gonna be able to save your simulation:")
-                drive.mount('/content/gdrive')
+                drive.mount('/content/drive')
+                
+                shutil.copy2(saved_name, "/content/drive/MyDrive")
                 
         elif place == "local":
             files.download(saved_name)
