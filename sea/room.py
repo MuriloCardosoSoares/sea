@@ -26,7 +26,7 @@ import sea.spherical_harmonics as sh
 
 class Room:   
     
-    def __init__(self, air=Air(), room_name="my_room_simulation"):
+    def __init__(self, air=Air()):
         '''
         Room object.
         This class comunicates to the other classes of this repository. 
@@ -423,7 +423,9 @@ class Room:
             self.total_pressure.append(pT)  
             
             
-    def save(self, place="drive"):
+    def save(self, place="drive", name = "my_room"):
+        
+        self.room_name = name
         
         saved_name = "%s.pickle" % self.room_name
         pickle_obj = open(saved_name, "wb")
