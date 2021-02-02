@@ -169,6 +169,17 @@ class Room:
         from bempp.api import GridFunction
         from bempp.api.grid.grid import Grid
 
+        try:
+            msh = bempp.api.import_grid(self.path_to_msh)
+        except:
+            print("Mesh file not found. Please, upload it again:")
+            uploaded = files.upload()
+            
+            for key in uploaded:
+                self.path_to_msh = key
+                
+            msh = bempp.api.import_grid(self.path_to_msh)
+        
         def configure_plotly_browser_state():
             import IPython
             display(IPython.core.display.HTML('''
@@ -277,15 +288,15 @@ class Room:
                     result[0]=np.conj(admittance[domain_index])
 
             mu_op = bempp.api.MultiplicationOperator(
-                bempp.api.GridFunction(self.space, fun=mu_fun, function_parameters=admittance)
-                , self.space, self.space, self.space)
+                bempp.api.GridFunction(space, fun=mu_fun, function_parameters=admittance)
+                , space, space, space)
 
             identity = bempp.api.operators.boundary.sparse.identity(
-                self.space, self.space, self.space)
+                space, space, space)
             dlp = bempp.api.operators.boundary.helmholtz.double_layer(
-                self.space, self.space, self.space, k, assembler="dense", device_interface='numba')
+                space, space, space, k, assembler="dense", device_interface='numba')
             slp = bempp.api.operators.boundary.helmholtz.single_layer(
-                self.space, self.space, self.space, k,assembler="dense", device_interface='numba')
+                space, space, space, k,assembler="dense", device_interface='numba')
 
             for source in self.sources:
                 
@@ -357,9 +368,9 @@ class Room:
                 for receiver in self.receivers:
 
                     dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
-                        self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+                        space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
                     slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
-                        self.space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+                        space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
 
                     pScat = -dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]
                     print(pScat)
