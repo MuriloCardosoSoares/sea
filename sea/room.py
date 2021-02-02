@@ -20,7 +20,7 @@ from sea.definitions import Algorithm
 from sea.definitions import Receiver
 from sea.definitions import Source
 from sea.materials import Material
-import spherical_harmonics as sh
+import sea.spherical_harmonics as sh
 
 
 class Room:   
