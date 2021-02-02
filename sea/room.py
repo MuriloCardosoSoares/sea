@@ -364,6 +364,8 @@ class Room:
                 self.boundary_pressure.append (boundary_pressure.coefficients)
                 self.boundary_velocity.append (boundary_velocity.coefficients)
                 
+                self.save()
+                
             if len(self.receivers) != 0:
                 for receiver in self.receivers:
 
@@ -383,6 +385,8 @@ class Room:
                 self.scattered_pressure.append(pScat)
                 self.incident_pressure.append(pInc)
                 self.total_pressure.append(pT) 
+                
+                self.save()
                 
                 #self.receiver_evaluate(source, receiver, boundary_pressure = boundary_pressure, boundary_velocity = boundary_velocity)
             
