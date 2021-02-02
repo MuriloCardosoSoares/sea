@@ -196,8 +196,8 @@ class Room:
 
         plotly.offline.init_notebook_mode()
 
-        vertices = self.msh.vertices
-        elements = self.msh.elements
+        vertices = msh.vertices
+        elements = msh.elements
         fig = ff.create_trisurf(
             x=vertices[0, :],
             y=vertices[1, :],
