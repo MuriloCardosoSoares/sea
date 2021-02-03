@@ -54,7 +54,7 @@ def cart2sph(x,y,z):
     return r, alpha, sinbeta, cosbeta
 
 
-def ReflectSH(Bnm, xFlag, yFlag, zFlag):
+def reflect_sh(Bnm, xFlag, yFlag, zFlag):
     """
     Bnm = ReflectSH(Bnm, xFlag, yFlag, zFlag)   
     
@@ -88,7 +88,7 @@ def ReflectSH(Bnm, xFlag, yFlag, zFlag):
     return Bnm
 
 
-def GetRotationMatrix(a,b,c,Order):
+def get_rotation_matrix(a,b,c,Order):
     """
     [R, Q] = GetRotationMatrix(a,b,c,Order)
     
