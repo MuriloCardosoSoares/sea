@@ -326,10 +326,10 @@ class Room:
                         
                 else:             
                     
-                    rot_mat_FPTP = sh.GetRotationMatrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
-                    rot_mat_AzEl = sh.GetRotationMatrix(0, -source.elevation, source.azimuth, source.sh_order); # Rotation Matrix for Loudspeaker orientation
+                    rot_mat_FPTP = sh.get_rotation_matrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
+                    rot_mat_AzEl = sh.get_rotation_matrix(0, -source.elevation, source.azimuth, source.sh_order); # Rotation Matrix for Loudspeaker orientation
 
-                    sh_coefficients_top = ReflectSH(rot_mat_FPTP * source.sh_coefficients, 1, 0, 0)  # Convert to top-pole format
+                    sh_coefficients_top = reflect_sh(rot_mat_FPTP * source.sh_coefficients, 1, 0, 0)  # Convert to top-pole format
                     sh_coefficients_top = rot_mat_AzEl * b_nm_top
                     
                     @bempp.api.callable(complex=True, jit=True, parameterized=True)
@@ -369,25 +369,65 @@ class Room:
                 
             if len(self.receivers) != 0:
                 for receiver in self.receivers:
+                    
+                    if receiver.type == "omni":
+                        
+                        dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
+                            space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+                        slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
+                            space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
 
-                    dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
-                        space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
-                    slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
-                        space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+                        pScat = -dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]
+                        print(pScat)
+                        distance  = np.linalg.norm(receiver.coord - source.coord)
+                        pInc = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
+                        print(pInc)
+                        pT = pScat + pInc
+                        print(pT)
+                        
+                    else:
+                        
+                        AnmInc  = np.zeros([(order_r + 1) ** 2], np.complex64)
+                        AnmInc  = GetTranslationMatrix(receiver.coord - source.coord, k, source.sh_order, receiver.sh_order) * sh_coefficients_top
+                        
+                        AnmScat = np.zeros([(order_r + 1) ** 2], np.complex64)
+                        for n in range(receiver.sh_order + 1):
+                            for m in range(-n, n+1):
 
-                    pScat = -dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]
-                    print(pScat)
-                    distance  = np.linalg.norm(receiver.coord - source.coord)
-                    pInc = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
-                    print(pInc)
-                    pT = pScat + pInc
-                    print(pT)
+                                # Define functions to be evaluated:
+                                def OpDnmFunc(x, nUV, domain_index, result):
+                                    H, dHdn = spherical_basis_in(n, m, k, x - receiver.coord, nUV)
+                                    result[0] = dHdn
 
-                self.scattered_pressure.append(pScat)
-                self.incident_pressure.append(pInc)
-                self.total_pressure.append(pT) 
-                
-                self.save()
+                                def OpSnmFunc (x, nUV, domain_index, result):
+                                    H = spherical_basis_in_p0_only(n, m, k, x - receiver.coord)
+                                    result[0] = H
+
+
+                                # Integrate the SH functions with the basis functions from the approximation spaces:
+                                OpSnmGF = bempp.api.GridFunction(space, fun=OpSnmFunc)
+                                OpDnmGF = bempp.api.GridFunction(space, fun=OpDnmFunc)
+
+                                # Extract projections and conjugate to get discrete form of intended operators:
+                                OpSnm = np.conj(OpSnmGF.projections)
+                                OpDnm = np.conj(OpDnmGF.projections)
+
+                                AnmScat[n**2 + n + m] = 1j*k*np.sum(solution * (OpDnm + np.complex128(1j*k*mu_op) * OpSnm))
+                                
+                            rotation_matrix = GetRotationMatrix(0, 0, -receiver.azimuth, receiver.sh_order)
+                            AnmInc = rotation_matrix * AnmInc
+                            AnmScat = rotation_matrix * AnmScat
+                            
+                            pInc = [AnmInc*receiver.sh_coefficients_left, AnmInc*receiver.sh_coefficients_right]
+                            pScat = [AnmScat*receiver.sh_coefficients_left, AnmScat*receiver.sh_coefficients_right]
+                            pT = c = [a + b for a, b in zip(pInc, pScat)]
+                            
+
+                    self.scattered_pressure.append(pScat)
+                    self.incident_pressure.append(pInc)
+                    self.total_pressure.append(pT) 
+
+                    self.save()
                 
                 #self.receiver_evaluate(source, receiver, boundary_pressure = boundary_pressure, boundary_velocity = boundary_velocity)
             
