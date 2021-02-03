@@ -388,7 +388,7 @@ class Room:
                     else:
                         
                         AnmInc  = np.zeros([(order_r + 1) ** 2], np.complex64)
-                        AnmInc  = GetTranslationMatrix(receiver.coord - source.coord, k, source.sh_order, receiver.sh_order) * sh_coefficients_top
+                        AnmInc  = sh.get_translation_matrix(receiver.coord - source.coord, k, source.sh_order, receiver.sh_order) * sh_coefficients_top
                         
                         AnmScat = np.zeros([(order_r + 1) ** 2], np.complex64)
                         for n in range(receiver.sh_order + 1):
@@ -396,11 +396,11 @@ class Room:
 
                                 # Define functions to be evaluated:
                                 def OpDnmFunc(x, nUV, domain_index, result):
-                                    H, dHdn = spherical_basis_in(n, m, k, x - receiver.coord, nUV)
+                                    H, dHdn = sh.spherical_basis_in(n, m, k, x - receiver.coord, nUV)
                                     result[0] = dHdn
 
                                 def OpSnmFunc (x, nUV, domain_index, result):
-                                    H = spherical_basis_in_p0_only(n, m, k, x - receiver.coord)
+                                    H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord)
                                     result[0] = H
 
 
@@ -414,7 +414,7 @@ class Room:
 
                                 AnmScat[n**2 + n + m] = 1j*k*np.sum(solution * (OpDnm + np.complex128(1j*k*mu_op) * OpSnm))
                                 
-                            rotation_matrix = GetRotationMatrix(0, 0, -receiver.azimuth, receiver.sh_order)
+                            rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
                             AnmScat = rotation_matrix * AnmScat
                             
