@@ -417,6 +417,107 @@ def spherical_hankel_in(n, z):
     return (h, dhdz)
 
 
+def spherical_harmonic_p0_only(n, m, alpha, sinbeta, cosbeta):
+    '''
+    Y = SphericalHarmonic_pOnly(n, m, alpha, sinbeta, cosbeta)
+    	
+    Computes a Spherical Harmonic function of order (m,n).
+    Identical to SphericalHarmonic but does not compute the derivatives.
+    	
+    Arguments - these should all be scalars:
+    r is radius
+    alpha is azimuth angle (angle in radians from the positive x axis, with
+    rotation around the positive z axis according to the right-hand screw rule)
+    beta is polar angle, but it is specified as two arrays of its cos and sin values. 
+    m and n should be integer scalars; n should be non-negative and m should be in the range -n<=m<=n
+    	
+    Returned data will be a vector of length (Order+1)^2.
+    
+    Associated Legendre function its derivatives for |m|:
+    '''
+    
+    p_nm = lpmv(abs(m), n, cosbeta)
+
+    # Compute scaling term, including sign factor:
+    scaling_term = ((-1)**m) * np.sqrt((2 * n + 1) / (4 * np.pi * np.prod(np.float64(range(n-abs(m)+1, n+abs(m)+1)))))
+
+    # Compute exponential term:
+    exp_term = np.exp(1j*m*alpha)
+    
+    # Put it all together:
+    y = scaling_term * exp_term * p_nm
+
+    return y
+
+
+def spherical_basis_in_p0_only(n, m, k, pos):
+    '''
+	Phi = SphericalBasisIn_pOnly(n, m, k, x)
+	
+	Returns Phi for an incoming Spherical Basis function of order (m,n).
+	Identical to SphericalBasisIn but does not compute the derivatives.
+	
+	Arguments:
+	k     wavenumber - positive real scalar
+	n     must be a non-negative real integer scalar
+	m     m must be a real integer scalar in the range -n to +n
+	x     evaluation positions - real-valued array with 3 columns
+	
+	Returned quantity is a vector with the same number of elements as x has rows.
+    '''
+
+    # Convert cartesison coordinates x to spherical coordinates:
+    x = pos[0].reshape((1,1))
+    y = pos[1].reshape((1,1))
+    z = pos[2].reshape((1,1))
+    (r, alpha, sinbeta, cosbeta) = cart2sph(x,y,z)
+    	
+    # Evaluate spherical harmonic and Hankel functions and their derivatives:
+    Y = spherical_harmonic_p0_only(n, m, alpha, sinbeta, cosbeta)
+    R = spherical_hankel_in_p0_only(n, k*r)
+    
+    # Evaluate Phi:
+    Phi = R * Y
+    	
+    return Phi
+
+
+def spherical_basis_in(n, m, k, pos, nUV):
+    '''
+   	(Phi, dPhi_dn) = SphericalBasisIn(n, m, k, x, nUV)
+   	
+   	Returns Phi and dPhi/dn for an incoming Spherical Basis function of order (m,n).
+   	
+   	Arguments:
+   	k     wavenumber - positive real scalar
+   	n     must be a non-negative real integer scalar
+   	m     m must be a real integer scalar in the range -n to +n
+   	x     evaluation positions - real-valued array with 3 columns
+   	nUV   unit vector defining direction in which to compute dPhi/dn - 1x3
+   	
+   	Returned quantities are vectors with the same number of elements as x has rows.
+    '''
+    
+    # Convert cartesison coordinates x to spherical coordinates:
+    x = pos[0].reshape((1,1))
+    y = pos[1].reshape((1,1))
+    z = pos[2].reshape((1,1))
+    (r, alpha, sinbeta, cosbeta) = cart2sph(x,y,z)
+    
+    # dot products of nUV with unit vectors of spherical coordinate system (at x):
+    nUVrUV, nUValphaUV, nUVbetaUV = cart2sphUV(x,y,z,nUV)
+    	
+    # Evaluate spherical harmonic and Hankel functions and their derivatives:
+    Y, dY_dbeta, dY_dalpha = spherical_harmonic(n, m, alpha, sinbeta, cosbeta)
+    R, dR_dkr = spherical_hankel_in(n, k*r)
+    
+    	# Evaluate Phi and dPhi/dn:
+    Phi = R * Y
+    dPhi_dn = (nUVrUV * k * dR_dkr * Y + (R / r) * (nUVbetaUV * dY_dbeta + nUValphaUV * dY_dalpha / sinbeta))
+    	
+    return (Phi, dPhi_dn)
+
+
 def cart2sphUV(x,y,z,nUV):
     '''
     [nUVrUV, nUValphaUV, nUVbetaUV] = Cart2SphUV(x,y,z,nUV)
