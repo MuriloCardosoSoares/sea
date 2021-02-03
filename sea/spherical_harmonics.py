@@ -164,6 +164,54 @@ def get_rotation_matrix(a,b,c,Order):
     return R
 
 
+def spherical_harmonic(n, m, alpha, sinbeta, cosbeta):
+	
+    """
+    (Y, dY_dbeta, dY_dalpha) = SphericalHarmonic(n, m, alpha, sinbeta, cosbeta)
+    	
+    Computes a Spherical Harmonic function of order (m,n) and it's angular derivatives.
+    	
+    Arguments - these should all be scalars:
+    r is radius
+    alpha is azimuth angle (angle in radians from the positive x axis, with
+    rotation around the positive z axis according to the right-hand screw rule)
+    beta is polar angle, but it is specified as two arrays of its cos and sin values. 
+    m and n should be integer scalars; n should be non-negative and m should be in the range -n<=m<=n
+    	
+    Returned data will be vectors of length (Order+1)^2.
+    
+    Associated Legendre function its derivatives for |m|:
+    
+    """
+    
+    p_nm = lpmv(abs(m), n, cosbeta)
+    if n == 0:
+        dPmn_dbeta = 0
+    elif m == 0:
+        dPmn_dbeta = lpmv(1, n, cosbeta)
+    elif abs(m) < n:
+        dPmn_dbeta = 0.5 * lpmv(abs(m) + 1, n, cosbeta) - 0.5 * (n + abs(m)) * (n - abs(m) + 1) * lpmv(abs(m) - 1, n, cosbeta);
+    elif (abs(m) == 1) and (n == 1):
+        dPmn_dbeta = -cosbeta
+    elif sinbeta<=np.finfo(float).eps:
+        dPmn_dbeta = 0
+    else:
+        dPmn_dbeta = -abs(m) * cosbeta * p_nm / sinbeta - (n + abs(m)) * (n - abs(m) + 1) * lpmv(abs(m) - 1, n, cosbeta)
+
+    # Compute scaling term, including sign factor:
+    scaling_term = ((-1) ** m) * np.sqrt((2 * n + 1) / (4 * np.pi * np.prod(np.float64(range(n - abs(m) + 1, n + abs(m) + 1)))))
+
+    # Compute exponential term:
+    exp_term = np.exp(1j * m * alpha)
+
+    # Put it all together:
+    y = scaling_term * exp_term * p_nm
+    dy_dbeta = scaling_term * exp_term * dPmn_dbeta
+    dy_dalpha = y * 1j * m
+
+    return (y, dy_dbeta, dy_dalpha)
+
+
 def spherical_harmonic_all (max_order, alpha, sinbeta, cosbeta):
     
     """
@@ -241,6 +289,7 @@ def spherical_harmonic_all (max_order, alpha, sinbeta, cosbeta):
             dy_dalpha[:,i] = y[:,i] * 1j * m
             
     return y, dy_dbeta, dy_dalpha
+
 
 def spherical_hankel_out (n, z):
     '''
@@ -340,6 +389,32 @@ def spherical_basis_out_p0_only(k, Bnm, pos):
             phi += Bnm[i,0] * R * y[0,i]
 
     return phi
+
+
+def spherical_hankel_in_p0_only(n, z):
+    '''	
+    h = SphericalHankelIn_pOnly(n, z)
+    
+    Computes a spherical Hankel function of the second kind 
+    (incoming in this paper's lingo).
+    Identical to SphericalHankelIn but does not compute the derivative.
+    '''
+
+    h = spherical_jn(n,z,False) - 1j*spherical_yn(n,z,False)
+    return h
+
+
+def spherical_hankel_in(n, z):
+    '''
+    (h, dhdz) = SphericalHankelIn(n, z)
+    	
+    Computes a spherical Hankel function of the second kind (incoming in this
+    paper's lingo) and its first derivative.
+    '''
+  
+    h = spherical_jn(n,z,False) - 1j*spherical_yn(n,z,False)
+    dhdz = spherical_jn(n,z,True) - 1j*spherical_yn(n,z,True)
+    return (h, dhdz)
 
 
 def cart2sphUV(x,y,z,nUV):
