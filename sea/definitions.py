@@ -139,7 +139,7 @@ class Receiver():
     A receiver class to initialize the following receiver properties:
     coord - 3D coordinates of a receiver
     '''
-    def __init__(self, coord = [1.0, 0.0, 0.0]):
+    def __init__(self, coord = [1.0, 0.0, 0.0], type="omni", **kwargs):
         '''
         The class constructor initializes a single receiver with a given 3D coordinates
         The default is a height of 1 [cm]. User must be sure that the receiver lies out of
@@ -147,8 +147,28 @@ class Receiver():
         going on z>0
         '''
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
+        
+        if type == "head":
+            from google.colab import files
+            print("Upload the file with the spherical harmonic information for this receiver:")
+            uploaded = files.upload()
+            
+            for key in uploaded:
+                file_to_read = open(key, "rb")
+                source_sh = pickle.load(file_to_read)
+                file_to_read.close()
+            
+                self.sh_coefficients_left = source_sh.sh_coefficients_left
+                self.sh_coefficients_right = source_sh.sh_coefficients_right
+                self.sh_order = source_sh.sh_order
+                self.freq_vec = source_sh.freq_vec
+                
+            try:
+                self.azimuth = kwargs["azimuth"] * np.pi/180
+            except:
+                self.azimuth = 0.0
        
     def __str__(self):
-        return "Receiver coordinate is " + str(self.coord) + "\n" 
+        return "Receiver coordinate is " + str(self.coord) + ". It is a " + str(self.type) + " receiver.\n" 
 
     
