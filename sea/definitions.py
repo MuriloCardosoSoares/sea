@@ -102,12 +102,12 @@ class Source():
             
             for key in uploaded:
                 file_to_read = open(key, "rb")
-                source_sh = pickle.load(file_to_read)
+                sh = pickle.load(file_to_read)
                 file_to_read.close()
             
-                self.sh_coefficients = source_sh.sh_coefficients
-                self.sh_order = source_sh.sh_order
-                self.freq_vec = source_sh.freq_vec
+                self.sh_coefficients = sh.sh_coefficients
+                self.sh_order = sh.sh_order
+                self.freq_vec = sh.freq_vec
                 
             try:
                 self.elevation = kwargs["elevation"] * np.pi/180
@@ -155,13 +155,13 @@ class Receiver():
             
             for key in uploaded:
                 file_to_read = open(key, "rb")
-                source_sh = pickle.load(file_to_read)
+                sh = pickle.load(file_to_read)
                 file_to_read.close()
             
-                self.sh_coefficients_left = source_sh.sh_coefficients_left
-                self.sh_coefficients_right = source_sh.sh_coefficients_right
-                self.sh_order = source_sh.sh_order
-                self.freq_vec = source_sh.freq_vec
+                self.sh_coefficients_left = sh.sh_coefficients_left
+                self.sh_coefficients_right = sh.sh_coefficients_right
+                self.sh_order = sh.sh_order
+                self.freq_vec = sh.freq_vec
                 
             try:
                 self.azimuth = kwargs["azimuth"] * np.pi/180
