@@ -50,8 +50,8 @@ class Room:
         self.air.k0 = 2*np.pi*self.frequencies.freq_vec/self.air.c0
         
     
-    def add_receiver(self, coord = [1.0, 0.0, 0.0]):
-        self.receivers.append(Receiver(coord))
+    def add_receiver(self, coord = [1.0, 0.0, 0.0], type="omni", **kwargs):
+        self.receivers.append(Receiver(coord, type, **kwargs))
     
     
     def del_receivers(self, *args):
@@ -66,11 +66,11 @@ class Room:
     def list_receivers(self):
         print("Receivers coordinates are:")
         for receiver in self.receivers:
-            print (receiver.coord)
+            print (receiver)
             
             
-    def add_source(self, coord = [0.0, 0.0, 1.0], **kwargs):
-        self.sources.append(Source(coord, **kwargs))  
+    def add_source(self, coord=[0.0, 0.0, 1.0], type="monopole", **kwargs):
+        self.sources.append(Source(coord, type, **kwargs))  
 
         
     def del_sources(self, *args):
@@ -85,7 +85,7 @@ class Room:
     def list_sources(self):
         print("Sources are:")
         for source in self.sources:
-            print ("Coordinate = %s, q = %s" % (source.coord, source.q))
+            print (source)
      
     
     def add_mesh(self):
