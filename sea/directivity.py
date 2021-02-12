@@ -1,4 +1,4 @@
-import numpy as npp
+import numpy as np
 import scipy
 import scipy.io
 import pickle
