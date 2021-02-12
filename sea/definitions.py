@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import time, sys
 import pickle
 
-from sea import directivity
+from sea.directivity import Directivity
 
 class Air():
     
