@@ -26,14 +26,18 @@ import sea.spherical_harmonics as sh
 
 class Room:   
     
-    def __init__(self, air=Air()):
+    def __init__(self, air=Air(), **kwargs):
         '''
         Room object.
         This class comunicates to the other classes of this repository. 
         All information about the simulation will be set up in here.
         '''
-        self.air = air 
-        self.room_name = room_name
+        self.air = air
+        try:
+            self.room_name = kwargs["room_name"]
+        except:
+            pass
+        
         self.receivers = []
         self.sources = []
         self.materials = []
