@@ -104,6 +104,9 @@ class Source():
             uploaded = files.upload()
             
             for key in uploaded:
+                
+                from sea import directivity
+
                 file_to_read = open(key, "rb")
                 sh = pickle.load(file_to_read)
                 file_to_read.close()
