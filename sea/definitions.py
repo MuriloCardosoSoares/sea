@@ -167,7 +167,9 @@ class Receiver():
                 self.azimuth = kwargs["azimuth"] * np.pi/180
             except:
                 self.azimuth = 0.0
-       
+    
+        self.type = type
+    
     def __str__(self):
         return "Receiver coordinate is " + str(self.coord) + ". It is a " + str(self.type) + " receiver.\n" 
 
