@@ -1,10 +1,10 @@
 import numpy as np
 #import toml
 import matplotlib.pyplot as plt
-import time, sys
+import sys
 import pickle
 
-from sea.directivity import Directivity
+from sea import directivity
 
 class Air():
     
@@ -105,7 +105,7 @@ class Source():
             
             for key in uploaded:
                 
-                from sea.directivity import Directivity
+                sys.modules['directivity'] = directivity
 
                 file_to_read = open(key, "rb")
                 sh = pickle.load(file_to_read)
@@ -160,6 +160,9 @@ class Receiver():
             uploaded = files.upload()
             
             for key in uploaded:
+                
+                sys.modules['directivity'] = directivity
+                
                 file_to_read = open(key, "rb")
                 sh = pickle.load(file_to_read)
                 file_to_read.close()
