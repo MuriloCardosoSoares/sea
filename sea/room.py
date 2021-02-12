@@ -342,7 +342,7 @@ class Room:
                     rot_mat_FPTP = sh.get_rotation_matrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
                     rot_mat_AzEl = sh.get_rotation_matrix(0, -source.elevation, source.azimuth, source.sh_order); # Rotation Matrix for Loudspeaker orientation
 
-                    sh_coefficients_rotated = reflect_sh(rot_mat_FPTP * sh_coefficients_rotated, 1, 0, 0)  # Convert to top-pole format
+                    sh_coefficients_rotated = sh.reflect_sh(rot_mat_FPTP * sh_coefficients_rotated, 1, 0, 0)  # Convert to top-pole format
                     sh_coefficients_rotated = rot_mat_AzEl * sh_coefficients_rotated
                     
                     @bempp.api.callable(complex=True, jit=True, parameterized=True)
