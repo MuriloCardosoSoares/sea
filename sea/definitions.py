@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import time, sys
 import pickle
 
+from sea import directivity
+
 class Air():
     
     def __init__(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
