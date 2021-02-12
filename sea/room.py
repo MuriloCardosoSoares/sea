@@ -23,8 +23,6 @@ from sea.definitions import Source
 from sea.materials import Material
 import sea.spherical_harmonics as sh
 
-from sea import directivity
-
 
 class Room:   
     
