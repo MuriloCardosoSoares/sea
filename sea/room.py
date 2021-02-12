@@ -331,7 +331,7 @@ class Room:
                 else:             
                     
                     try:
-                        i = source.freq_vec.index(f)
+                        i = np.where(source.freq_vec == f)[0][0]
                         sh_coefficients = source.sh_coefficients[i]
                     except:
                         raise ValueError("The spherical harmonic coefficients were not defined for frequency %0.3f Hz." % f)
