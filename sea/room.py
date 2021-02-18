@@ -390,12 +390,9 @@ class Room:
                             space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
 
                         pScat = -dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]
-                        print(pScat)
                         distance  = np.linalg.norm(receiver.coord - source.coord)
                         pInc = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
-                        print(pInc)
                         pT = pScat + pInc
-                        print(pT)
                         
                     else:
                         
