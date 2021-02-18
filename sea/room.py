@@ -401,7 +401,13 @@ class Room:
 
                         pScat = -dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]
                         distance  = np.linalg.norm(receiver.coord - source.coord)
-                        pInc = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
+                        
+                        if source.type == "monopole":
+                            pInc = source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
+                            
+                        else:
+                            pInc = sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated, receiver.coord.reshape(3) - source.coord.reshape(3))
+                            
                         pT = pScat + pInc
                         
                     else:
