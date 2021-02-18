@@ -346,7 +346,7 @@ class Room:
                     sh_coefficients_rotated = rot_mat_AzEl * sh_coefficients_rotated
                     
                     @bempp.api.callable(complex=True, jit=True, parameterized=True)
-                    def source_fun(r, n, domain_index, result):
+                    def source_fun(r, n, domain_index, result, parameters):
                         
                         coord = np.real(parameters[:3])
                         k = parameters[3]
@@ -354,7 +354,8 @@ class Room:
                         mu = parameters[5:]
                         
                         val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients, r-coord, n)
-                        result[0] += d_val - 1j*mu[domain_index]*k*val
+                        #result[0] += d_val - 1j*mu[domain_index]*k*val
+                        result[0] = d_val - 1j*mu[domain_index]*k*val
                     
                     source_parameters = np.zeros(5+len(admittance),dtype = 'complex128')
 
