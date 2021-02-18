@@ -358,7 +358,7 @@ class Room:
                         #result[0] += d_val - 1j*mu[domain_index]*k*val
                         #result[0] = d_val - 1j*mu[domain_index]*k*val
                     
-                    @bempp.api.complex_callable(complex=True, jit=True)
+                    @bempp.api.callable(complex=True, jit=True)
                     def monopole_data(r, n, domain_index, result):
                         result[0]=0
                         #pos = np.linalg.norm(r-sources[s_i,:])
