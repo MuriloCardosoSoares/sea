@@ -353,8 +353,8 @@ class Room:
                         mu = parameters[4:]
                         
                         val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-coord, n)
-                        #result[0] += d_val - 1j*mu[domain_index]*k*val
-                        result[0] = d_val - 1j*mu[domain_index]*k*val
+                        result[0] += d_val - 1j*mu[domain_index]*k*val
+                        #result[0] = d_val - 1j*mu[domain_index]*k*val
                     
                     source_parameters = np.zeros(4+len(admittance),dtype = 'complex128')
 
