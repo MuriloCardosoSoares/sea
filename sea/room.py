@@ -365,7 +365,7 @@ class Room:
                     def source_fun(r, n, domain_index, result):
                         result[0]=0
                         val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-source.coord.reshape(3), n)
-                        result[0] += d_val - 1j*mu[domain_index]*k*val
+                        result[0] += d_val - 1j*admittance[domain_index]*k*val
                     
                     #source_parameters = np.zeros(4+len(admittance),dtype = 'complex128')
 
