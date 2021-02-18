@@ -125,6 +125,11 @@ class Source():
             except:
                 self.azimuth = 0.0
                 
+            try:
+                self.power_correction = kwargs["power_correction"] 
+            except:
+                pass
+                
         elif type == "monopole":
             if "q" in kwargs:
                 self.q = np.array([kwargs["q"]], dtype = np.float32)
