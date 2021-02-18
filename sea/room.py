@@ -345,26 +345,26 @@ class Room:
                     sh_coefficients_rotated = sh.reflect_sh(rot_mat_FPTP * sh_coefficients_rotated, 1, 0, 0)  # Convert to top-pole format
                     sh_coefficients_rotated = rot_mat_AzEl * sh_coefficients_rotated
                     
-                    #@bempp.api.callable(complex=True, jit=True, parameterized=True)
-                    #def source_fun(r, n, domain_index, result, parameters):
+                    @bempp.api.callable(complex=True, jit=True, nopython=True, parameterized=True)
+                    def source_fun(r, n, domain_index, result, parameters):
                         
-                     #   result[0]=0
-                        
-                      #  coord = np.real(parameters[:3])
-                       # k = parameters[3]
-                        #mu = parameters[4:]
-                        
-                        #val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-coord, n)
-                        #result[0] += d_val - 1j*mu[domain_index]*k*val
-                        #result[0] = d_val - 1j*mu[domain_index]*k*val
-                    
-                    @bempp.api.callable(complex=True, jit=True)
-                    def monopole_data(r, n, domain_index, result):
                         result[0]=0
+                        
+                        coord = np.real(parameters[:3])
+                        k = parameters[3]
+                        mu = parameters[4:]
+                        
+                        val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-coord, n)
+                        #result[0] += d_val - 1j*mu[domain_index]*k*val
+                        result[0] = d_val - 1j*mu[domain_index]*k*val
+                    
+                    #@bempp.api.callable(complex=True, jit=True)
+                    #def monopole_data(r, n, domain_index, result):
+                     #   result[0]=0
                         #pos = np.linalg.norm(r-sources[s_i,:])
-                        val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-source.coord, n)
+                      #  val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-source.coord, n)
                         #result[0] += d_val - 1j*mu[domain_index]*k*val*np.dot(r-sources[s_i,:],n)
-                        result[0] += d_val - 1j*mu[domain_index]*k*val
+                       # result[0] += d_val - 1j*mu[domain_index]*k*val
                     
                     source_parameters = np.zeros(4+len(admittance),dtype = 'complex128')
 
