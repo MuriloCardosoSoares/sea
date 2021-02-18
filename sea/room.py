@@ -339,6 +339,10 @@ class Room:
                     except:
                         raise ValueError("The spherical harmonic coefficients were not defined for frequency %0.3f Hz." % f)
                     
+                    try:
+                        1/(10**(source.power_correction/20)) * sh_coefficients
+                    except:
+                        pass
                     
                     sh_coefficients_rotated = sh_coefficients.reshape((np.size(sh_coefficients),1))
                     
