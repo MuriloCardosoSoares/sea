@@ -327,6 +327,9 @@ class Room:
                     source_parameters[3] = k
                     source_parameters[4] = source.q
                     source_parameters[5:] = admittance
+                    
+                    rhs = bempp.api.GridFunction(space,fun=source_fun,
+                                      function_parameters=source_parameters)
                         
                 else:             
                     
@@ -359,7 +362,7 @@ class Room:
                         #result[0] = d_val - 1j*mu[domain_index]*k*val
                     
                     @bempp.api.complex_callable(jit=False)
-                    def monopole_data(r, n, domain_index, result):
+                    def source_fun(r, n, domain_index, result):
                         result[0]=0
                         pos = np.linalg.norm(r-sources[s_i,:])
                         val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-source.coord, n)
@@ -372,9 +375,8 @@ class Room:
                     #source_parameters[4:] = admittance
                 
                 #rhs = bempp.api.GridFunction.from_zeros(self.space)
-                
-                rhs = bempp.api.GridFunction(space,fun=source_fun,
-                                                      function_parameters=source_parameters)
+                    rhs = bempp.api.GridFunction(space, fun=source_fun)
+
                                     
                 a = 1j*k*self.air.c0*self.air.rho0
                 Y = a*(mu_op)
