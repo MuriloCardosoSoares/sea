@@ -362,7 +362,7 @@ class Room:
                     def monopole_data(r, n, domain_index, result):
                         result[0]=0
                         #pos = np.linalg.norm(r-sources[s_i,:])
-                        val, d_val  = spherical_basis_out_all(k, sh_coefficients_rotated, r-source.coord, n)
+                        val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-source.coord, n)
                         #result[0] += d_val - 1j*mu[domain_index]*k*val*np.dot(r-sources[s_i,:],n)
                         result[0] += d_val - 1j*mu[domain_index]*k*val
                     
