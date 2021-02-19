@@ -341,7 +341,7 @@ class Room:
                     
                     try:
                         sh_coefficients = 1/(10**(source.power_correction/20)) * sh_coefficients
-                        print("Fiz a conta aqui, meu rei...")
+                        
                     except:
                         pass
                     
