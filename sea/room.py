@@ -417,10 +417,11 @@ class Room:
                         
                     else:
                         
-                        AnmInc  = np.zeros([(order_r + 1) ** 2], np.complex64)
+                        AnmInc  = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
                         AnmInc  = sh.get_translation_matrix(receiver.coord - source.coord, k, source.sh_order, receiver.sh_order) * sh_coefficients_top
                         
-                        AnmScat = np.zeros([(order_r + 1) ** 2], np.complex64)
+                        AnmScat = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
+                        
                         for n in range(receiver.sh_order + 1):
                             for m in range(-n, n+1):
 
