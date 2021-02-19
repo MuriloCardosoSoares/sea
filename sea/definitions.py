@@ -159,7 +159,7 @@ class Receiver():
         '''
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
         
-        if type == "head":
+        if type == "binaural":
             from google.colab import files
             print("Upload the file with the spherical harmonic information for this receiver:")
             uploaded = files.upload()
