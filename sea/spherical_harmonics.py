@@ -193,7 +193,7 @@ def GetStructuralTranslationCoefficients(OrderS,OrderR):
 
 							# Compute coefficient if within non-zero range:
 							if nT >= abs(nR-nS) and nT <= (nR+nS):
-								S[iT, sub2indSH(mR,nR), sub2indSH(mS,nS)] = (
+								S[iT, sub2indSH(mR,nR).astype(int), sub2indSH(mS,nS).astype(int)] = (
 											1j**(nR+nT-nS) * epS * epR * epT 
 											* np.sqrt(4*np.pi*(2*nS+1)*(2*nR+1)*(2*nT+1))
 											* Wigner3jSymbol(nS, nR, nT, mS, -mR, -mT)
