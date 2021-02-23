@@ -115,32 +115,32 @@ def get_translation_matrix(t,k,OrderS,OrderR):
 	GetStructuralTranslationCoefficients and Wigner3jSymbol.
 	"""
 
-    OrderT = OrderS + OrderR
+	OrderT = OrderS + OrderR
 
-    S = GetStructuralTranslationCoefficients(OrderS,OrderR)
-    print(np.shape(S))
+	S = GetStructuralTranslationCoefficients(OrderS,OrderR)
+	print(np.shape(S))
 
-    # Express t in spherical coordinates:
-    [r,alpha,sinbeta,cosbeta] = cart2sph(t[0],t[1],t[2])
+	# Express t in spherical coordinates:
+	[r,alpha,sinbeta,cosbeta] = cart2sph(t[0],t[1],t[2])
 
-    # Evaluate spherical harmonic functions:
-    Y, dy_dbeta, dy_dalpha = spherical_harmonic_all(OrderT, np.array([[alpha]]), np.array([[sinbeta]]), np.array([[cosbeta]]))
-    
-    print(np.shape(Y))
+	# Evaluate spherical harmonic functions:
+	Y, dy_dbeta, dy_dalpha = spherical_harmonic_all(OrderT, np.array([[alpha]]), np.array([[sinbeta]]), np.array([[cosbeta]]))
 
-    # Allocated results array:
-    T = np.zeros(((OrderR+1)**2, (OrderS+1)**2))
+	print(np.shape(Y))
+
+	# Allocated results array:
+	T = np.zeros(((OrderR+1)**2, (OrderS+1)**2))
 
 
-    # Loop over translation order & compute summation:
-    for nT in np.arange(OrderT+1):
-        h, dhdz = spherical_hankel_out(nT,k*r) # Compute radial function:
-            
-        for mT in np.arange(-nT, nT+1):
-            iT = sub2indSH(mT,nT)
-            T = T + h * Y[0][iT] * S[iT,:,:] #!!!
-            
-    return T
+	# Loop over translation order & compute summation:
+	for nT in np.arange(OrderT+1):
+		h, dhdz = spherical_hankel_out(nT,k*r) # Compute radial function:
+
+		for mT in np.arange(-nT, nT+1):
+			iT = sub2indSH(mT,nT)
+			T = T + h * Y[0][iT] * S[iT,:,:] #!!!
+
+	return T
                 
 
 def GetStructuralTranslationCoefficients(OrderS,OrderR):
@@ -160,47 +160,47 @@ def GetStructuralTranslationCoefficients(OrderS,OrderR):
 	(OrderR+OrderS+1)**2]. 
 	"""
 
-    # Order required for translation:
-    OrderT = OrderS + OrderR
+	# Order required for translation:
+	OrderT = OrderS + OrderR
 
-    # Allocate cell array:
-    S = np.zeros(((OrderT+1)**2, (OrderR+1)**2, (OrderS+1)**2), dtype = np.complex64)
+	# Allocate cell array:
+	S = np.zeros(((OrderT+1)**2, (OrderR+1)**2, (OrderS+1)**2), dtype = np.complex64)
 
-    # Loop over translation order (n2 & m2):
-    for nT in  np.arange(OrderT+1, dtype = np.float64): # n'' in book
-        for mT in np.arange(-nT, nT+1, dtype = np.float64): # m'' in book
-            iT = sub2indSH(mT,nT)
-            if mT < 0: # because m'' is negated
-                epT = (-1)**mT
-            else:
-                epT = 1.0
+	# Loop over translation order (n2 & m2):
+	for nT in  np.arange(OrderT+1, dtype = np.float64): # n'' in book
+		for mT in np.arange(-nT, nT+1, dtype = np.float64): # m'' in book
+			iT = sub2indSH(mT,nT)
+			if mT < 0: # because m'' is negated
+				epT = (-1)**mT
+			else:
+				epT = 1.0
 
-            # Loop over source order (nS & mS):
-            for nS in np.arange(OrderS+1, dtype = np.float64): # n in book
-                for mS in np.arange(-nS, nS+1, dtype = np.float64): # m in book
-                    if mS > 0:
-                        epS = (-1)**mS
-                    else:
-                        epS = 1.0
+			# Loop over source order (nS & mS):
+			for nS in np.arange(OrderS+1, dtype = np.float64): # n in book
+				for mS in np.arange(-nS, nS+1, dtype = np.float64): # m in book
+					if mS > 0:
+						epS = (-1)**mS
+					else:
+						epS = 1.0
 
-                    # Loop over recevier order (nR & mR):
-                    for nR in np.arange(OrderR+1, dtype = np.float64): # n' in book
-                        for mR in np.arange(-nR, nR+1, dtype = np.float64): # m' in book
-                            if mR < 0: # because m' is negated
-                                epR = (-1)**mR
-                            else:
-                                epR = 1.0
+					# Loop over recevier order (nR & mR):
+					for nR in np.arange(OrderR+1, dtype = np.float64): # n' in book
+						for mR in np.arange(-nR, nR+1, dtype = np.float64): # m' in book
+							if mR < 0: # because m' is negated
+								epR = (-1)**mR
+							else:
+								epR = 1.0
 
-                            # Compute coefficient if within non-zero range:
-                            if nT >= abs(nR-nS) and nT <= (nR+nS):
-                                S[iT, sub2indSH(mR,nR), sub2indSH(mS,nS)] = (
-                                            1j**(nR+nT-nS) * epS * epR * epT 
-                                            * np.sqrt(4*np.pi*(2*nS+1)*(2*nR+1)*(2*nT+1))
-                                            * Wigner3jSymbol(nS, nR, nT, mS, -mR, -mT)
-                                            * Wigner3jSymbol(nS, nR, nT, 0, 0, 0) 
-                                            )
-                                            
-    return S
+							# Compute coefficient if within non-zero range:
+							if nT >= abs(nR-nS) and nT <= (nR+nS):
+								S[iT, sub2indSH(mR,nR), sub2indSH(mS,nS)] = (
+											1j**(nR+nT-nS) * epS * epR * epT 
+											* np.sqrt(4*np.pi*(2*nS+1)*(2*nR+1)*(2*nT+1))
+											* Wigner3jSymbol(nS, nR, nT, mS, -mR, -mT)
+											* Wigner3jSymbol(nS, nR, nT, 0, 0, 0) 
+											)
+
+	return S
 
         
 def Wigner3jSymbol(j1, j2, j3, m1, m2, m3):
@@ -218,38 +218,38 @@ def Wigner3jSymbol(j1, j2, j3, m1, m2, m3):
 	Nullifying any of these means the symbol equals zero.
 	"""
 
-    if abs(m1)<=abs(j1) and abs(m2)<=abs(j2) and abs(m3)<=abs(j3) and m1+m2+m3==0 and abs(j1-j2)<=j3 and j3<=(j1+j2) and np.remainder(j1+j2+j3,1)==0:
+	if abs(m1)<=abs(j1) and abs(m2)<=abs(j2) and abs(m3)<=abs(j3) and m1+m2+m3==0 and abs(j1-j2)<=j3 and j3<=(j1+j2) and np.remainder(j1+j2+j3,1)==0:
 
-        # Evaluate the symbol using the Racah formula (Equation 7):
+		# Evaluate the symbol using the Racah formula (Equation 7):
 
-        # Evalaute summation:
-        W3jS = 0
-        for t in np.arange(min([j1+j2-j3, j1-m1, j2+m2])+1):
-            if (j3-j2+t+m1>=0) and (j3-j1+t-m2>=0) and (j1+j2-j3-t>=0) and (j1-t-m1>=0) and (j2-t+m2>=0):
-                
-                # Only include term in summation if all factorials have non-negative arguments
-                x = (np.math.factorial(t)
-                  * np.math.factorial(j3-j2+t+m1)
-                  * np.math.factorial(j3-j1+t-m2)
-                  * np.math.factorial(j1+j2-j3-t)
-                  * np.math.factorial(j1-t-m1)
-                  * np.math.factorial(j2-t+m2)
-                  )
-                  
-                W3jS = W3jS + (-1)**t/x
+		# Evalaute summation:
+		W3jS = 0
+		for t in np.arange(min([j1+j2-j3, j1-m1, j2+m2])+1):
+			if (j3-j2+t+m1>=0) and (j3-j1+t-m2>=0) and (j1+j2-j3-t>=0) and (j1-t-m1>=0) and (j2-t+m2>=0):
+
+				# Only include term in summation if all factorials have non-negative arguments
+				x = (np.math.factorial(t)
+				  * np.math.factorial(j3-j2+t+m1)
+				  * np.math.factorial(j3-j1+t-m2)
+				  * np.math.factorial(j1+j2-j3-t)
+				  * np.math.factorial(j1-t-m1)
+				  * np.math.factorial(j2-t+m2)
+				  )
+
+				W3jS = W3jS + (-1)**t/x
 
 
-        # Coefficients outside the summation:
-        W3jS = (W3jS
-             * (-1)**(j1-j2-m3)
-             * np.sqrt(float(np.math.factorial(j1+m1)*np.math.factorial(j1-m1)*np.math.factorial(j2+m2)*np.math.factorial(j2-m2)* np.math.factorial(j3+m3)*np.math.factorial(j3-m3)))
-             * np.sqrt(float(np.math.factorial(j1 + j2 - j3)*np.math.factorial(j1 - j2 + j3)*np.math.factorial(-j1 + j2 + j3) / np.math.factorial(j1 + j2 + j3 + 1)))
-             )
+		# Coefficients outside the summation:
+		W3jS = (W3jS
+			 * (-1)**(j1-j2-m3)
+			 * np.sqrt(float(np.math.factorial(j1+m1)*np.math.factorial(j1-m1)*np.math.factorial(j2+m2)*np.math.factorial(j2-m2)* np.math.factorial(j3+m3)*np.math.factorial(j3-m3)))
+			 * np.sqrt(float(np.math.factorial(j1 + j2 - j3)*np.math.factorial(j1 - j2 + j3)*np.math.factorial(-j1 + j2 + j3) / np.math.factorial(j1 + j2 + j3 + 1)))
+			 )
 
-    else:
-        W3jS = 0 # One of the 'Selection Rules' was nullified.
-        
-    return W3jS
+	else:
+		W3jS = 0 # One of the 'Selection Rules' was nullified.
+
+	return W3jS
 
 
 def get_rotation_matrix(a,b,c,Order):
