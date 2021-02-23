@@ -320,7 +320,9 @@ class Room:
 
                         result[0] = -(1j * mu[domain_index] * k * val -
                             val / (pos**2) * (1j*k*pos - 1) * np.dot(r-coord, n))
-                        
+                    
+                    sh_coefficients_rotated = 1j*k/(4*np.pi)**0.5
+                    
                     source_parameters = np.zeros(5+len(admittance),dtype = 'complex128')
 
                     source_parameters[:3] = source.coord
@@ -418,7 +420,7 @@ class Room:
                     else:
                         
                         AnmInc  = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
-                        AnmInc  = sh.get_translation_matrix(receiver.coord - source.coord, k, source.sh_order, receiver.sh_order) * sh_coefficients_top
+                        AnmInc  = sh.get_translation_matrix(receiver.coord - source.coord, k, source.sh_order, receiver.sh_order) * sh_coefficients_rotated
                         
                         AnmScat = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
                         
