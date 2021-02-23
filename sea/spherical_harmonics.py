@@ -14,7 +14,7 @@ def sub2indSH(m,n):
 	Assumes that i iterates from 0 (Python style)
     """
     
-	i = int(n**2 + n + m)
+	i = n**2 + n + m
 	return i
 
 def ind2subSH(i):
