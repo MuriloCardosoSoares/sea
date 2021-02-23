@@ -138,7 +138,7 @@ def get_translation_matrix(t,k,OrderS,OrderR):
 
 		for mT in np.arange(-nT, nT+1):
 			iT = sub2indSH(mT,nT)
-			T = T + h * Y[0][iT] * S[iT,:,:] #!!!
+			T = T + h * Y[0][iT.astype(int)] * S[iT.astype(int),:,:] #!!!
 
 	return T
                 
@@ -193,7 +193,7 @@ def GetStructuralTranslationCoefficients(OrderS,OrderR):
 
 							# Compute coefficient if within non-zero range:
 							if nT >= abs(nR-nS) and nT <= (nR+nS):
-								S[iT, sub2indSH(mR,nR).astype(int), sub2indSH(mS,nS).astype(int)] = (
+								S[iT.astype(int), sub2indSH(mR,nR).astype(int), sub2indSH(mS,nS).astype(int)] = (
 											1j**(nR+nT-nS) * epS * epR * epT 
 											* np.sqrt(4*np.pi*(2*nS+1)*(2*nR+1)*(2*nT+1))
 											* Wigner3jSymbol(nS, nR, nT, mS, -mR, -mT)
