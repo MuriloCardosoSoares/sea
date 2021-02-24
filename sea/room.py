@@ -440,12 +440,22 @@ class Room:
 
 
                                 # Integrate the SH functions with the basis functions from the approximation spaces:
-                                OpSnmGF = bempp.api.GridFunction(space, fun=OpSnmFunc)
-                                OpDnmGF = bempp.api.GridFunction(space, fun=OpDnmFunc)
+                                #OpSnmGF = bempp.api.GridFunction(space, fun=OpSnmFunc)
+                                #OpDnmGF = bempp.api.GridFunction(space, fun=OpDnmFunc)
 
                                 # Extract projections and conjugate to get discrete form of intended operators:
-                                OpSnm = np.conj(OpSnmGF.projections())
-                                OpDnm = np.conj(OpDnmGF.projections())
+                                #OpSnm = np.conj(OpSnmGF.projections())
+                                #OpDnm = np.conj(OpDnmGF.projections())
+                                
+                                
+                                # Integrate the SH functions with the basis functions from the approximation spaces:
+                                OpSnmGF =  bempp.api.MultiplicationOperator(
+                                    bempp.api.GridFunction(space, fun=OpSnmFunc)
+                                    , space, space, space)
+                                
+                                OpDnmGF = bempp.api.MultiplicationOperator(
+                                    bempp.api.GridFunction(space, fun=OpDnmFunc)
+                                    , space, space, space)
                                 
                                 print(boundary_pressure)
                                 print(OpDnm)
