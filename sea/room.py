@@ -430,12 +430,12 @@ class Room:
                                 # Define functions to be evaluated:
                                 @bempp.api.complex_callable(jit=False)
                                 def OpDnmFunc(x, nUV, domain_index, result):
-                                    H, dHdn = sh.spherical_basis_in(n, m, k, x - receiver.coord, nUV)
+                                    H, dHdn = sh.spherical_basis_in(n, m, k, x - receiver.coord.reshape(3), nUV)
                                     result[0] = dHdn
                                 
                                 @bempp.api.complex_callable(jit=False)
                                 def OpSnmFunc (x, nUV, domain_index, result):
-                                    H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord)
+                                    H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord.reshape(3))
                                     result[0] = H
 
 
