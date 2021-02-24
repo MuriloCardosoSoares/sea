@@ -428,12 +428,12 @@ class Room:
                             for m in range(-n, n+1):
 
                                 # Define functions to be evaluated:
-                                @bempp.api.callable(complex=True, jit=True)
+                                @bempp.api.complex_callable(jit=False)
                                 def OpDnmFunc(x, nUV, domain_index, result):
                                     H, dHdn = sh.spherical_basis_in(n, m, k, x - receiver.coord, nUV)
                                     result[0] = dHdn
                                 
-                                @bempp.api.callable(complex=True, jit=True)
+                                @bempp.api.complex_callable(jit=False)
                                 def OpSnmFunc (x, nUV, domain_index, result):
                                     H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord)
                                     result[0] = H
