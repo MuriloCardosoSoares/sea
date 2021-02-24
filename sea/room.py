@@ -444,8 +444,8 @@ class Room:
                                 OpDnmGF = bempp.api.GridFunction(space, fun=OpDnmFunc)
 
                                 # Extract projections and conjugate to get discrete form of intended operators:
-                                OpSnm = np.conj(OpSnmGF.projections)
-                                OpDnm = np.conj(OpDnmGF.projections)
+                                OpSnm = np.conj(OpSnmGF.projections())
+                                OpDnm = np.conj(OpDnmGF.projections())
 
                                 AnmScat[n**2 + n + m] = 1j*k*np.sum(solution * (OpDnm + np.complex128(1j*k*mu_op) * OpSnm))
                                 
