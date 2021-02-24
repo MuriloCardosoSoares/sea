@@ -452,7 +452,7 @@ class Room:
                                 print(mu_op)
                                 print(OpSnm)
                                 
-                                AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + np.complex128(1j*k*mu_op) * OpSnm))
+                                AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
                                 
                             rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
