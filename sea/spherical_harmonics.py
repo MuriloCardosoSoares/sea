@@ -118,7 +118,6 @@ def get_translation_matrix(t,k,OrderS,OrderR):
 	OrderT = OrderS + OrderR
 
 	S = GetStructuralTranslationCoefficients(OrderS,OrderR)
-	print(np.shape(S))
 
 	# Express t in spherical coordinates:
 	[r,alpha,sinbeta,cosbeta] = cart2sph(t[0],t[1],t[2])
@@ -126,7 +125,6 @@ def get_translation_matrix(t,k,OrderS,OrderR):
 	# Evaluate spherical harmonic functions:
 	Y, dy_dbeta, dy_dalpha = spherical_harmonic_all(OrderT, np.array([[alpha]]), np.array([[sinbeta]]), np.array([[cosbeta]]))
 
-	print(np.shape(Y))
 
 	# Allocated results array:
 	T = np.zeros(((OrderR+1)**2, (OrderS+1)**2))
