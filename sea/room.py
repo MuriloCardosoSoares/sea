@@ -475,11 +475,11 @@ class Room:
                                     OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
                                     OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
 
-                                    print(boundary_pressure.coefficients)
-                                    print(OpDnm)
+                                    #print(boundary_pressure.coefficients)
+                                    #print(OpDnm)
                                     #print(OpDnmGF)
                                     #print(mu_op)
-                                    print(OpSnm)
+                                    #print(OpSnm)
                                     #print(OpSnmGF)
 
                                     #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
