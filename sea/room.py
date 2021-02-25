@@ -424,6 +424,15 @@ class Room:
                         
                         AnmScat = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
                         
+                        # Initialize approximation spaces:
+                        sub_spaces = [None] * len(admittances) # Initalise as empty list
+                        spaceNumDOF = np.zeros(len(admittances), dtype=np.int32)
+                        for i in np.arange(len(admittances)): # Loop over subspaces
+                            sub_spaces[i] = bempp.api.function_space(grid, "DP", 0, domains=[i])  # discontinuous piecewise-constant
+                            spaceNumDOF[i] = sub_spaces[i].global_dof_count
+                            print ("\tCreated piecewise-constant space %u with  %u DOF" % (i + 1, spaceNumDOF[iY]))
+                        iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
+                        
                         for n in range(receiver.sh_order + 1):
                             for m in range(-n, n+1):
 
@@ -437,36 +446,48 @@ class Room:
                                 def OpSnmFunc (x, nUV, domain_index, result):
                                     H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord.reshape(3))
                                     result[0] = H
+                                
+                                for i in np.arange(len(admittances)):  # loop over subspaces
+                                    
+                                    # Integrate the SH functions with the basis functions from the approximation spaces:
+                                    OpSnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpSnmFunc)
+                                    OpDnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpDnmFunc)
+                                    
+                                    
+                                    # Integrate the SH functions with the basis functions from the approximation spaces:
+                                    #OpSnmGF = bempp.api.GridFunction(space, fun=OpSnmFunc)
+                                    #OpDnmGF = bempp.api.GridFunction(space, fun=OpDnmFunc)
 
 
-                                # Integrate the SH functions with the basis functions from the approximation spaces:
-                                OpSnmGF = bempp.api.GridFunction(space, fun=OpSnmFunc)
-                                OpDnmGF = bempp.api.GridFunction(space, fun=OpDnmFunc)
-                                
-                                
-                                # Integrate the SH functions with the basis functions from the approximation spaces:
-                                #OpSnmGF =  bempp.api.MultiplicationOperator(
-                                 #   bempp.api.GridFunction(space, fun=OpSnmFunc)
-                                  #  , space, space, space)
-                                
-                                #OpDnmGF = bempp.api.MultiplicationOperator(
-                                 #   bempp.api.GridFunction(space, fun=OpDnmFunc)
-                                  #  , space, space, space)
-                                
-                                # Extract projections and conjugate to get discrete form of intended operators:
-                                #OpSnm = np.conj(OpSnmGF.projections())
-                                #OpDnm = np.conj(OpDnmGF.projections())
-                                
-                                print(boundary_pressure)
-                                #print(OpDnm)
-                                print(OpDnmGF)
-                                print(mu_op)
-                                #print(OpSnm)
-                                print(OpSnmGF)
-                                
-                                #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
-                                
-                                AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
+                                    # Integrate the SH functions with the basis functions from the approximation spaces:
+                                    #OpSnmGF =  bempp.api.MultiplicationOperator(
+                                     #   bempp.api.GridFunction(space, fun=OpSnmFunc)
+                                      #  , space, space, space)
+
+                                    #OpDnmGF = bempp.api.MultiplicationOperator(
+                                     #   bempp.api.GridFunction(space, fun=OpDnmFunc)
+                                      #  , space, space, space)
+
+                                    # Extract projections and conjugate to get discrete form of intended operators:
+                                    #OpSnm = np.conj(OpSnmGF.projections())
+                                    #OpDnm = np.conj(OpDnmGF.projections())
+                                    
+                                    # Extract projections and conjugate to get discrete form of intended operators:
+                                    OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
+                                    OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
+
+                                    print(boundary_pressure)
+                                    #print(OpDnm)
+                                    print(OpDnmGF)
+                                    print(mu_op)
+                                    #print(OpSnm)
+                                    print(OpSnmGF)
+
+                                    #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
+
+                                    #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
+                                    
+                                    AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
                                 
                             rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
