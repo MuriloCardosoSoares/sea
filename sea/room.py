@@ -457,6 +457,9 @@ class Room:
                                     bempp.api.GridFunction(space, fun=OpDnmFunc)
                                     , space, space, space)
                                 
+                                OpSnm = np.conj(OpSnmGF)
+                                OpDnm = np.conj(OpDnmGF)
+                                
                                 print(boundary_pressure)
                                 print(OpDnm)
                                 print(mu_op)
