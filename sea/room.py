@@ -454,15 +454,19 @@ class Room:
                                   #  , space, space, space)
                                 
                                 # Extract projections and conjugate to get discrete form of intended operators:
-                                OpSnm = np.conj(OpSnmGF.projections())
-                                OpDnm = np.conj(OpDnmGF.projections())
+                                #OpSnm = np.conj(OpSnmGF.projections())
+                                #OpDnm = np.conj(OpDnmGF.projections())
                                 
                                 print(boundary_pressure)
-                                print(OpDnm)
+                                #print(OpDnm)
+                                print(OpDnmGF)
                                 print(mu_op)
-                                print(OpSnm)
+                                #print(OpSnm)
+                                print(OpSnmGF)
                                 
-                                AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
+                                #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
+                                
+                                AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
                                 
                             rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
