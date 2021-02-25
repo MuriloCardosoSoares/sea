@@ -475,18 +475,18 @@ class Room:
                                     OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
                                     OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
 
-                                    print(boundary_pressure)
-                                    #print(OpDnm)
-                                    print(OpDnmGF)
-                                    print(mu_op)
-                                    #print(OpSnm)
-                                    print(OpSnmGF)
+                                    print(boundary_pressure.coefficients)
+                                    print(OpDnm)
+                                    #print(OpDnmGF)
+                                    #print(mu_op)
+                                    print(OpSnm)
+                                    #print(OpSnmGF)
 
                                     #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
 
                                     #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
                                     
-                                    AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
+                                    AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
                                 
                             rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
