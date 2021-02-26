@@ -100,6 +100,32 @@ class Room:
         uploaded = files.upload()
         
         for key in uploaded:
+            
+            path_to_msh = key
+            
+            gmsh.initialize(sys.argv)
+            gmsh.open(path_to_msh) # Open msh
+            phgr = gmsh.model.getPhysicalGroups(2)
+            
+            odph = []
+            for i in range(len(phgr)):
+                odph.append(phgr[i][1]) 
+                
+            phgr_ordered = [i for i in range(0, len(phgr))]
+            phgr_ent = []
+            for i in range(len(phgr)):
+                phgr_ent.append(gmsh.model.getEntitiesForPhysicalGroup(phgr[i][0],phgr[i][1]))
+            gmsh.model.removePhysicalGroups()
+            
+            for i in range(len(phgr)):
+                gmsh.model.addPhysicalGroup(2, phgr_ent[i],phgr_ordered[i])
+
+            # gmsh.fltk.run()   
+            #path_name = os.path.dirname(path_to_msh)
+            #gmsh.write(path_name+'/current_mesh.msh')
+            gmsh.write('pudim.msh')
+            gmsh.finalize() 
+            
             self.path_to_msh = key
      
 
