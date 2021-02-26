@@ -125,7 +125,7 @@ class Room:
             # gmsh.fltk.run()   
             #path_name = os.path.dirname(path_to_msh)
             #gmsh.write(path_name+'/current_mesh.msh')
-            gmsh.write('pudim.msh')
+            gmsh.write(path_to_msh)
             gmsh.finalize() 
             
             self.path_to_msh = key
