@@ -431,6 +431,7 @@ class Room:
                             sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
                             spaceNumDOF[i] = sub_spaces[i].global_dof_count
                         iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
+                        print("iDOF =  %s" % iDOF)
                         
                         for n in range(receiver.sh_order + 1):
                             for m in range(-n, n+1):
