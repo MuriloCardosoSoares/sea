@@ -429,7 +429,7 @@ class Room:
                         sub_spaces = [None] * len(admittances) # Initalise as empty list
                         spaceNumDOF = np.zeros(len(admittances), dtype=np.int32)
                         for i in np.arange(len(admittances)): # Loop over subspaces
-                            sub_spaces[i] = bempp.api.function_space(msh, "P", 1, segments=[i])  # discontinuous piecewise-constant
+                            sub_spaces[i] = bempp.api.function_space(msh, "P", 1, segments=[i+1])  # discontinuous piecewise-constant
                             spaceNumDOF[i] = sub_spaces[i].global_dof_count
                         iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
                         print("iDOF =  %s" % iDOF)
@@ -489,7 +489,7 @@ class Room:
 
                                     #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
                                     
-                                    AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
+                                    AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
                                 
                             rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
