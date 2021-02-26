@@ -3,11 +3,6 @@ import warnings
 import bempp.api
 import numpy as np
 
-from scipy.sparse.linalg import gmres
-# Set GMRES parameters:
-GMRES_tol = 1e-5
-GMRES_maxiter = 1000
-
 from matplotlib import pylab as plt
 import cloudpickle
 import collections
@@ -393,11 +388,11 @@ class Room:
                 Y = a*(mu_op)
                 lhs = (0.5*identity+dlp) - slp*Y
 
-                boundary_pressure, info = gmres(lhs, rhs)
+                boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
                 boundary_velocity = Y*boundary_pressure - rhs
-
-                #self.boundary_pressure.append (boundary_pressure.coefficients)
-                #self.boundary_velocity.append (boundary_velocity.coefficients)
+                print(boundary_pressure)
+                self.boundary_pressure.append (boundary_pressure.coefficients)
+                self.boundary_velocity.append (boundary_velocity.coefficients)
                 
                 self.save()
                 
@@ -481,7 +476,7 @@ class Room:
                                     OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
                                     OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
 
-                                    print(np.shape(boundary_pressure))
+                                    print(np.shape(boundary_pressure.coefficients))
                                     print(np.shape(boundary_pressure[iDOF[i]:iDOF[i+1]]))
                                     print(np.shape(OpDnm))
                                     #print(OpDnmGF)
