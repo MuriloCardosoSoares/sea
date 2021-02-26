@@ -475,7 +475,7 @@ class Room:
                                     OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
                                     OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
 
-                                    print(np.shape(boundary_pressure.coefficients))
+                                    print(np.shape(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]]))
                                     print(np.shape(OpDnm))
                                     #print(OpDnmGF)
                                     #print(mu_op)
