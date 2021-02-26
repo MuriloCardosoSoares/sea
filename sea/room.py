@@ -310,7 +310,8 @@ class Room:
         print(msh.domain_indices)
         print(len(msh.domain_indices))
         
-        space = bempp.api.function_space(msh, "P", 1)
+        #space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
+        space = bempp.api.function_space(msh, "DP", 0)  # como nos code antigos
         print(space.global_dof_count)
         
         for fi,f in enumerate(self.frequencies.freq_vec):
@@ -460,7 +461,7 @@ class Room:
                         sub_spaces = [None] * len(admittances) # Initalise as empty list
                         spaceNumDOF = np.zeros(len(admittances), dtype=np.int32)
                         for i in np.arange(len(admittances)): # Loop over subspaces
-                            sub_spaces[i] = bempp.api.function_space(msh, "P", 1, segments=[i])  # discontinuous piecewise-constant
+                            sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
                             spaceNumDOF[i] = sub_spaces[i].global_dof_count
                         iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
                         print("iDOF =  %s" % iDOF)
