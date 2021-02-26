@@ -527,6 +527,11 @@ class Room:
                             AnmInc = rotation_matrix * AnmInc
                             AnmScat = rotation_matrix * AnmScat
                             
+                            print("AnmInc = %s" % np.shape(AnmInc))
+                            print("AnmScat = %s" % np.shape(AnmScat))
+                            print("receiver.sh_coefficients_left = %s" % np.shape(receiver.sh_coefficients_left))
+                            print("receiver.sh_coefficients_right = %s" % np.shape(receiver.sh_coefficients_right))
+                            
                             pInc = [AnmInc*receiver.sh_coefficients_left, AnmInc*receiver.sh_coefficients_right]
                             pScat = [AnmScat*receiver.sh_coefficients_left, AnmScat*receiver.sh_coefficients_right]
                             pT = c = [a + b for a, b in zip(pInc, pScat)]
