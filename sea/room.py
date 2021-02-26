@@ -2,6 +2,7 @@ import time
 import warnings
 import bempp.api
 import numpy as np
+import sys
 
 from matplotlib import pylab as plt
 import cloudpickle
