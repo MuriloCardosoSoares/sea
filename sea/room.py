@@ -509,12 +509,12 @@ class Room:
                                     OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
                                     OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
 
-                                    print(np.shape(boundary_pressure.coefficients))
-                                    print(np.shape(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]]))
-                                    print(np.shape(OpDnm))
+                                    #print(np.shape(boundary_pressure.coefficients))
+                                    #print(np.shape(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]]))
+                                    #print(np.shape(OpDnm))
                                     #print(OpDnmGF)
                                     #print(mu_op)
-                                    print(np.shape(OpSnm))
+                                    #print(np.shape(OpSnm))
                                     #print(OpSnmGF)
 
                                     #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
@@ -527,10 +527,10 @@ class Room:
                             AnmInc = rotation_matrix * AnmInc
                             AnmScat = rotation_matrix * AnmScat
                             
-                            print("AnmInc = %s" % np.shape(AnmInc))
-                            print("AnmScat = %s" % np.shape(AnmScat))
-                            print("receiver.sh_coefficients_left = %s" % np.shape(receiver.sh_coefficients_left))
-                            print("receiver.sh_coefficients_right = %s" % np.shape(receiver.sh_coefficients_right))
+                            print(np.shape(AnmInc))
+                            print(np.shape(AnmScat))
+                            print(np.shape(receiver.sh_coefficients_left))
+                            print(np.shape(receiver.sh_coefficients_right))
                             
                             pInc = [AnmInc*receiver.sh_coefficients_left, AnmInc*receiver.sh_coefficients_right]
                             pScat = [AnmScat*receiver.sh_coefficients_left, AnmScat*receiver.sh_coefficients_right]
