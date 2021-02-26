@@ -309,7 +309,7 @@ def get_rotation_matrix(a,b,c,Order):
                     H = H + (-1)**(n-s) * np.cos(b/2)**(2*s+m2+m1) * np.sin(b/2)**(2*n-2*s-m2-m1) / (np.math.factorial(s) * np.math.factorial(n-m1-s) * np.math.factorial(n-m2-s) * np.math.factorial(m1+m2+s))
                     #print(H)
                     
-                H = H * ep1 * ep2 * np.sqrt(np.math.factorial(n+m2)*np.math.factorial(n-m2)*np.math.factorial(n+m1)*np.math.factorial(n-m1))
+                H = H * ep1 * ep2 * np.sqrt(float(np.math.factorial(n+m2)*np.math.factorial(n-m2)*np.math.factorial(n+m1)*np.math.factorial(n-m1)))
                 #print(H)
                 # Evaluate Eq. 3.3.37:
                 R[sub2indSH(m2,n).astype(int), sub2indSH(m1,n).astype(int)] = (-1)**m1 * np.exp(-1j*m1*a) * np.exp(-1j*m2*c) * H
