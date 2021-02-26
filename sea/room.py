@@ -308,6 +308,7 @@ class Room:
             msh = bempp.api.import_grid(self.path_to_msh)
             
         print(msh.domain_indices)
+        print(len(msh.domain_indices))
         
         space = bempp.api.function_space(msh, "P", 1)
         print(space.global_dof_count)
