@@ -544,8 +544,8 @@ class Room:
                         print(np.shape(sh_coefficients_receiver_left))
                         print(np.shape(sh_coefficients_receiver_right))
 
-                        pInc = [AnmInc.reshape(1, len(AnmInc))*sh_coefficients_receiver_left, AnmInc.reshape(1, len(AnmInc))*sh_coefficients_receiver_right]
-                        pScat = [AnmScat.reshape(1, len(AnmScat))*sh_coefficients_receiver_left, AnmScat.reshape(1, len(AnmScat))*sh_coefficients_receiver_right]
+                        pInc = [np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_left), np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_right)]
+                        pScat = [np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_left), np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_right)]
                         pT = [a + b for a, b in zip(pInc, pScat)]
                             
 
