@@ -529,7 +529,7 @@ class Room:
 
                         try:
                             i = np.where(receiver.freq_vec == f)[0][0]
-                            sh_coefficients_receiver_left = receiver.sh_coefficients_left[i]
+                            sh_coefficients_receiver_left = receiver.sh_coefficients_left[i].reshape()
                             sh_coefficients_receiver_right = receiver.sh_coefficients_right[i]
                         except:
                             raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
@@ -544,9 +544,9 @@ class Room:
                         print(np.shape(sh_coefficients_receiver_left))
                         print(np.shape(sh_coefficients_receiver_right))
 
-                        pInc = [AnmInc*sh_coefficients_receiver_left, AnmInc*sh_coefficients_receiver_right]
-                        pScat = [AnmScat*sh_coefficients_receiver_left, AnmScat*sh_coefficients_receiver_right]
-                        pT = c = [a + b for a, b in zip(pInc, pScat)]
+                        pInc = [AnmInc.reshape(1, len(AnmInc))*sh_coefficients_receiver_left, AnmInc.reshape(1, len(AnmInc))*sh_coefficients_receiver_right]
+                        pScat = [AnmScat.reshape(1, len(AnmScat))*sh_coefficients_receiver_left, AnmScat.reshape(1, len(AnmScat))*sh_coefficients_receiver_right]
+                        pT = [a + b for a, b in zip(pInc, pScat)]
                             
 
                     self.scattered_pressure.append(pScat)
