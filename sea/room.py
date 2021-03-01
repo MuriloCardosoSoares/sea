@@ -523,30 +523,30 @@ class Room:
                                     
                                     AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
                                 
-                            rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
-                            AnmInc = rotation_matrix * AnmInc
-                            AnmScat = rotation_matrix * AnmScat
-                            
-                            try:
-                                i = np.where(receiver.freq_vec == f)[0][0]
-                                sh_coefficients_receiver_left = receiver.sh_coefficients_left[i]
-                                sh_coefficients_receiver_right = receiver.sh_coefficients_right[i]
-                            except:
-                                raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
+                        rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
+                        AnmInc = rotation_matrix * AnmInc
+                        AnmScat = rotation_matrix * AnmScat
 
-                            try:
-                                pass #Aqui vai entrar o ajuste dos dados do receptor
-                            except:
-                                pass
-                            
-                            print(np.shape(AnmInc))
-                            print(np.shape(AnmScat))
-                            print(np.shape(sh_coefficients_receiver_left))
-                            print(np.shape(sh_coefficients_receiver_right))
-                            
-                            pInc = [AnmInc*sh_coefficients_receiver_left, AnmInc*sh_coefficients_receiver_right]
-                            pScat = [AnmScat*sh_coefficients_receiver_left, AnmScat*sh_coefficients_receiver_right]
-                            pT = c = [a + b for a, b in zip(pInc, pScat)]
+                        try:
+                            i = np.where(receiver.freq_vec == f)[0][0]
+                            sh_coefficients_receiver_left = receiver.sh_coefficients_left[i]
+                            sh_coefficients_receiver_right = receiver.sh_coefficients_right[i]
+                        except:
+                            raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
+
+                        try:
+                            pass #Aqui vai entrar o ajuste dos dados do receptor
+                        except:
+                            pass
+
+                        print(np.shape(AnmInc))
+                        print(np.shape(AnmScat))
+                        print(np.shape(sh_coefficients_receiver_left))
+                        print(np.shape(sh_coefficients_receiver_right))
+
+                        pInc = [AnmInc*sh_coefficients_receiver_left, AnmInc*sh_coefficients_receiver_right]
+                        pScat = [AnmScat*sh_coefficients_receiver_left, AnmScat*sh_coefficients_receiver_right]
+                        pT = c = [a + b for a, b in zip(pInc, pScat)]
                             
 
                     self.scattered_pressure.append(pScat)
