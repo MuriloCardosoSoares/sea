@@ -535,7 +535,7 @@ class Room:
                                 raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
 
                             try:
-                                #Aqui vai entrar o ajuste dos dados do receptor
+                                pass #Aqui vai entrar o ajuste dos dados do receptor
                             except:
                                 pass
                             
