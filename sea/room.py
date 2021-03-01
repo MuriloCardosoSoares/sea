@@ -529,7 +529,7 @@ class Room:
 
                         try:
                             i = np.where(receiver.freq_vec == f)[0][0]
-                            sh_coefficients_receiver_left = receiver.sh_coefficients_left[i].reshape()
+                            sh_coefficients_receiver_left = receiver.sh_coefficients_left[i]
                             sh_coefficients_receiver_right = receiver.sh_coefficients_right[i]
                         except:
                             raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
