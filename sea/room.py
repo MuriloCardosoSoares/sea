@@ -380,11 +380,11 @@ class Room:
                     except:
                         pass
                     
-                    sh_coefficients_rotated_source = sh_coefficients_source.reshape((np.size(sh_coefficients),1))
                     
                     rot_mat_FPTP = sh.get_rotation_matrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
                     rot_mat_AzEl = sh.get_rotation_matrix(0, -source.elevation, source.azimuth, source.sh_order); # Rotation Matrix for Loudspeaker orientation
-
+                                        
+                    sh_coefficients_rotated_source = sh_coefficients_source.reshape((np.size(sh_coefficients_source),1))
                     sh_coefficients_rotated_source = sh.reflect_sh(rot_mat_FPTP * sh_coefficients_rotated_source, 1, 0, 0)  # Convert to top-pole format
                     sh_coefficients_rotated_source = rot_mat_AzEl * sh_coefficients_rotated_source
                     
