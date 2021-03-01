@@ -370,23 +370,23 @@ class Room:
                     
                     try:
                         i = np.where(source.freq_vec == f)[0][0]
-                        sh_coefficients = source.sh_coefficients[i]
+                        sh_coefficients_source = source.sh_coefficients[i]
                     except:
-                        raise ValueError("The spherical harmonic coefficients were not defined for frequency %0.3f Hz." % f)
+                        raise ValueError("The spherical harmonic coefficients for this source were not defined for frequency %0.3f Hz." % f)
                     
                     try:
-                        sh_coefficients = 1/(10**(source.power_correction/20)) * sh_coefficients
+                        sh_coefficients_source = 1/(10**(source.power_correction/20)) * sh_coefficients
                         
                     except:
                         pass
                     
-                    sh_coefficients_rotated = sh_coefficients.reshape((np.size(sh_coefficients),1))
+                    sh_coefficients_rotated_source = sh_coefficients_source.reshape((np.size(sh_coefficients),1))
                     
                     rot_mat_FPTP = sh.get_rotation_matrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
                     rot_mat_AzEl = sh.get_rotation_matrix(0, -source.elevation, source.azimuth, source.sh_order); # Rotation Matrix for Loudspeaker orientation
 
-                    sh_coefficients_rotated = sh.reflect_sh(rot_mat_FPTP * sh_coefficients_rotated, 1, 0, 0)  # Convert to top-pole format
-                    sh_coefficients_rotated = rot_mat_AzEl * sh_coefficients_rotated
+                    sh_coefficients_rotated_source = sh.reflect_sh(rot_mat_FPTP * sh_coefficients_rotated_source, 1, 0, 0)  # Convert to top-pole format
+                    sh_coefficients_rotated_source = rot_mat_AzEl * sh_coefficients_rotated_source
                     
                     #@bempp.api.callable(complex=True, jit=True, parameterized=True)
                     #def source_fun(r, n, domain_index, result, parameters):
@@ -404,7 +404,7 @@ class Room:
                     @bempp.api.complex_callable(jit=False)
                     def source_fun(r, n, domain_index, result):
                         result[0]=0
-                        val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated, r-source.coord.reshape(3), n)
+                        val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated_source, r-source.coord.reshape(3), n)
                         result[0] += d_val - 1j*admittance[domain_index]*k*val
                     
                     #source_parameters = np.zeros(4+len(admittance),dtype = 'complex128')
@@ -453,7 +453,7 @@ class Room:
                     else:
                         
                         AnmInc  = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
-                        AnmInc  = sh.get_translation_matrix((receiver.coord - source.coord).reshape((3,)), k, source.sh_order, receiver.sh_order) @ sh_coefficients_rotated
+                        AnmInc  = sh.get_translation_matrix((receiver.coord - source.coord).reshape((3,)), k, source.sh_order, receiver.sh_order) @ sh_coefficients_rotated_source
                         
                         AnmScat = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
                         
@@ -527,13 +527,25 @@ class Room:
                             AnmInc = rotation_matrix * AnmInc
                             AnmScat = rotation_matrix * AnmScat
                             
+                            try:
+                                i = np.where(receiver.freq_vec == f)[0][0]
+                                sh_coefficients_receiver_left = receiver.sh_coefficients_left[i]
+                                sh_coefficients_receiver_right = receiver.sh_coefficients_right[i]
+                            except:
+                                raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
+
+                            try:
+                                #Aqui vai entrar o ajuste dos dados do receptor
+                            except:
+                                pass
+                            
                             print(np.shape(AnmInc))
                             print(np.shape(AnmScat))
-                            print(np.shape(receiver.sh_coefficients_left))
-                            print(np.shape(receiver.sh_coefficients_right))
+                            print(np.shape(sh_coefficients_receiver_left))
+                            print(np.shape(sh_coefficients_receiver_right))
                             
-                            pInc = [AnmInc*receiver.sh_coefficients_left, AnmInc*receiver.sh_coefficients_right]
-                            pScat = [AnmScat*receiver.sh_coefficients_left, AnmScat*receiver.sh_coefficients_right]
+                            pInc = [AnmInc*sh_coefficients_receiver_left, AnmInc*sh_coefficients_receiver_right]
+                            pScat = [AnmScat*sh_coefficients_receiver_left, AnmScat*sh_coefficients_receiver_right]
                             pT = c = [a + b for a, b in zip(pInc, pScat)]
                             
 
