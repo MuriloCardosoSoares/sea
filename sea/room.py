@@ -358,38 +358,39 @@ class Room:
         self.incident_pressure = []
         self.total_pressure = []
 
-        try:
-            msh = bempp.api.import_grid(self.path_to_msh)
-        except:
-            print("Mesh file not found. Please, upload it again:")
-            uploaded = files.upload()
-            
-            for key in uploaded:
-                self.path_to_msh = key
-                
-            msh = bempp.api.import_grid(self.path_to_msh)
-            
-        print(msh.domain_indices)
-        print(len(msh.domain_indices))
-        
-        #space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
-        space = bempp.api.function_space(msh, "DP", 0)  # como nos code antigos
-        print(space.global_dof_count)
-        
-        if len(my_room.receivers) != 0 and any(receiver.type == "binaural" for receiver in my_room.receivers):  
-            
-            # Initialize approximation spaces:
-            sub_spaces = [None] * len(admittances) # Initalise as empty list
-            spaceNumDOF = np.zeros(len(admittances), dtype=np.int32)
-            for i in np.arange(len(admittances)): # Loop over subspaces
-                sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
-                spaceNumDOF[i] = sub_spaces[i].global_dof_count
-            iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
-            print("iDOF =  %s" % iDOF)
+
         
         for fi,f in enumerate(self.frequencies.freq_vec):
             
             print ("Working on frequency = %0.3f Hz." % f)
+            
+            #Generate mesh for this frequency:
+            try:
+                self.generate_mesh(self.air.c0, f)
+                msh = bempp.api.import_grid(self.path_to_msh)
+            except:
+                print("Geometry file not found. Please, upload it:")
+                self.add_geometry()
+                
+                self.generate_mesh(self.air.c0, f)
+                msh = bempp.api.import_grid(self.path_to_msh)
+
+            #space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
+            space = bempp.api.function_space(msh, "DP", 0)  # como nos code antigos
+            print(space.global_dof_count)
+
+            #Generate subspaces. It is needed if any of the receivers is binaural.
+            if len(my_room.receivers) != 0 and any(receiver.type == "binaural" for receiver in my_room.receivers):  
+
+                # Initialize approximation spaces:
+                sub_spaces = [None] * len(admittances) # Initalise as empty list
+                spaceNumDOF = np.zeros(len(admittances), dtype=np.int32)
+                for i in np.arange(len(admittances)): # Loop over subspaces
+                    sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
+                    spaceNumDOF[i] = sub_spaces[i].global_dof_count
+                iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
+                print("iDOF =  %s" % iDOF)
+            
             
             admittance = np.array([item[fi] for item in admittances])
             k = self.air.k0[fi]
