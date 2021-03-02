@@ -131,6 +131,55 @@ class Room:
             self.path_to_msh = key
      
     
+    def generate_mesh(self, c0, freq):
+        """
+        This function generates a .msh file from the .geo file uploaded.
+        """
+            
+        path_to_msh = key
+
+        gmsh.initialize(sys.argv)
+        try:
+            gmsh.open(self.path_to_geo) # Open msh
+        except:
+            print("Geometry was not find. Please, upload a .geo file:")
+            self.add_geometry()
+        
+        gmsh.option.setNumber("Mesh.MeshSizeMax", (c0/freq)/6)
+        gmsh.model.occ.synchronize()
+        
+        gmsh.model.mesh.generate(2)
+        gmsh.model.mesh.setOrder(1)
+        
+        gmsh.write("last_msh.msh")
+        gmsh.finalize()
+        
+        #Reorder physical groups       
+        gmsh.initialize(sys.argv)
+        gmsh.open("last_msh.msh")
+        
+        phgr = gmsh.model.getPhysicalGroups(2)
+
+        odph = []
+        for i in range(len(phgr)):
+            odph.append(phgr[i][1]) 
+
+        phgr_ordered = [i for i in range(0, len(phgr))]
+        phgr_ent = []
+        for i in range(len(phgr)):
+            phgr_ent.append(gmsh.model.getEntitiesForPhysicalGroup(phgr[i][0],phgr[i][1]))
+        gmsh.model.removePhysicalGroups()
+
+        for i in range(len(phgr)):
+            gmsh.model.addPhysicalGroup(2, phgr_ent[i],phgr_ordered[i])
+
+            
+        gmsh.write("last_msh.msh")
+        gmsh.finalize() 
+
+        self.path_to_msh = "last_msh.msh"
+    
+    
     def add_geometry(self):
         """
         This function imports a .geo file.
@@ -138,30 +187,7 @@ class Room:
         from google.colab import files
         uploaded = files.upload()
         
-        for key in uploaded:
-            
-            path_to_geo = key
-            
-            gmsh.initialize(sys.argv)
-            gmsh.open(path_to_geo) # Open geometry
-            phgr = gmsh.model.getPhysicalGroups(2)
-            
-            odph = []
-            for i in range(len(phgr)):
-                odph.append(phgr[i][1]) 
-                
-            phgr_ordered = [i for i in range(0, len(phgr))]
-            phgr_ent = []
-            for i in range(len(phgr)):
-                phgr_ent.append(gmsh.model.getEntitiesForPhysicalGroup(phgr[i][0],phgr[i][1]))
-            gmsh.model.removePhysicalGroups()
-            
-            for i in range(len(phgr)):
-                gmsh.model.addPhysicalGroup(2, phgr_ent[i],phgr_ordered[i])
-                
-            gmsh.write(path_to_geo)
-            gmsh.finalize() 
-            
+        for key in uploaded:    
             self.path_to_geo = key
     
 
