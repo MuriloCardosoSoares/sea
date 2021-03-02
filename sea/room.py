@@ -3,6 +3,7 @@ import warnings
 import bempp.api
 import numpy as np
 import sys
+import os
 
 from matplotlib import pylab as plt
 import cloudpickle
