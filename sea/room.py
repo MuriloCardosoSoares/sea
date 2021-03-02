@@ -136,14 +136,13 @@ class Room:
         This function generates a .msh file from the .geo file uploaded.
         """
             
-        path_to_msh = key
-
         gmsh.initialize(sys.argv)
         try:
-            gmsh.open(self.path_to_geo) # Open msh
+            gmsh.open(self.path_to_geo) # Open .geo file
         except:
             print("Geometry was not find. Please, upload a .geo file:")
-            self.add_geometry()
+            self.add_geometry()           
+            gmsh.open(self.path_to_geo) # Open .geo file
         
         gmsh.option.setNumber("Mesh.MeshSizeMax", (c0/freq)/6)
         gmsh.model.occ.synchronize()
