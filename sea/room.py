@@ -314,6 +314,17 @@ class Room:
         space = bempp.api.function_space(msh, "DP", 0)  # como nos code antigos
         print(space.global_dof_count)
         
+        if len(my_room.receivers) != 0 and any(receiver.type == "binaural" for receiver in my_room.receivers):  
+            
+            # Initialize approximation spaces:
+            sub_spaces = [None] * len(admittances) # Initalise as empty list
+            spaceNumDOF = np.zeros(len(admittances), dtype=np.int32)
+            for i in np.arange(len(admittances)): # Loop over subspaces
+                sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
+                spaceNumDOF[i] = sub_spaces[i].global_dof_count
+            iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
+            print("iDOF =  %s" % iDOF)
+        
         for fi,f in enumerate(self.frequencies.freq_vec):
             
             print ("Working on frequency = %0.3f Hz." % f)
@@ -423,11 +434,18 @@ class Room:
 
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
                 boundary_velocity = Y*boundary_pressure - rhs
-                print(boundary_pressure)
+
                 self.boundary_pressure.append (boundary_pressure.coefficients)
                 self.boundary_velocity.append (boundary_velocity.coefficients)
                 
-                self.save()
+                if save == True:
+                    self.save()
+                    
+                del mu_op, identity, dlp, slp, rhs, a, Y, lhs, info 
+                try:
+                    del source_parameters
+                except:
+                    del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
                 
             if len(self.receivers) != 0:
                 for receiver in self.receivers:
@@ -450,21 +468,17 @@ class Room:
                             
                         pT = pScat + pInc
                         
+                        del boundary_pressure, boundary_velocity
+                        
+                        if save == True:
+                            self.save()
+                        
                     else:
                         
                         AnmInc  = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
                         AnmInc  = sh.get_translation_matrix((receiver.coord - source.coord).reshape((3,)), k, source.sh_order, receiver.sh_order) @ sh_coefficients_rotated_source
                         
                         AnmScat = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
-                        
-                        # Initialize approximation spaces:
-                        sub_spaces = [None] * len(admittances) # Initalise as empty list
-                        spaceNumDOF = np.zeros(len(admittances), dtype=np.int32)
-                        for i in np.arange(len(admittances)): # Loop over subspaces
-                            sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
-                            spaceNumDOF[i] = sub_spaces[i].global_dof_count
-                        iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
-                        print("iDOF =  %s" % iDOF)
                         
                         for n in range(receiver.sh_order + 1):
                             for m in range(-n, n+1):
@@ -508,6 +522,8 @@ class Room:
                                     # Extract projections and conjugate to get discrete form of intended operators:
                                     OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
                                     OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
+                                    
+                                    del OpSnmGF, OpDnmGF
 
                                     #print(np.shape(boundary_pressure.coefficients))
                                     #print(np.shape(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]]))
@@ -522,7 +538,9 @@ class Room:
                                     #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
                                     
                                     AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
-                                
+                                    
+                                    del OpSnmGF, OpDnm,
+                                    
                         rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                         AnmInc = rotation_matrix * AnmInc
                         AnmScat = rotation_matrix * AnmScat
@@ -539,21 +557,19 @@ class Room:
                         except:
                             pass
 
-                        print(np.shape(AnmInc))
-                        print(np.shape(AnmScat))
-                        print(np.shape(sh_coefficients_receiver_left))
-                        print(np.shape(sh_coefficients_receiver_right))
-
                         pInc = [np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_left), np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_right)]
                         pScat = [np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_left), np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_right)]
                         pT = [a + b for a, b in zip(pInc, pScat)]
                             
 
-                    self.scattered_pressure.append(pScat)
-                    self.incident_pressure.append(pInc)
-                    self.total_pressure.append(pT) 
+                        self.scattered_pressure.append(pScat)
+                        self.incident_pressure.append(pInc)
+                        self.total_pressure.append(pT) 
+                        
+                        del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity    
 
-                    self.save()
+                        if save == True:
+                            self.save()
                 
                 #self.receiver_evaluate(source, receiver, boundary_pressure = boundary_pressure, boundary_velocity = boundary_velocity)
             
