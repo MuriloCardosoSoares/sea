@@ -136,7 +136,9 @@ class Room:
         """
         This function generates a .msh file from the .geo file uploaded.
         """
-            
+        
+        import meshio
+        
         gmsh.initialize(sys.argv)
         try:
             gmsh.open(self.path_to_geo) # Open .geo file
