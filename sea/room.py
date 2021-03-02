@@ -97,7 +97,8 @@ class Room:
     
     def add_mesh(self):
         """
-        This function imports a .msh file.
+        Imports a .msh file.
+        This method is deprecated. Istead, consider using .add_geometry() method.
         """
         from google.colab import files
         uploaded = files.upload()
@@ -267,16 +268,8 @@ class Room:
         from bempp.api import GridFunction
         from bempp.api.grid.grid import Grid
 
-        try:
-            msh = bempp.api.import_grid(self.path_to_msh)
-        except:
-            print("Mesh file not found. Please, upload it again:")
-            uploaded = files.upload()
-            
-            for key in uploaded:
-                self.path_to_msh = key
-                
-            msh = bempp.api.import_grid(self.path_to_msh)
+        self.generate_mesh(self.air.c0, self.frequencies.freq_vec[-1])
+        msh = bempp.api.import_grid(self.path_to_msh)
         
         def configure_plotly_browser_state():
             import IPython
