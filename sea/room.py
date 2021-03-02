@@ -268,7 +268,11 @@ class Room:
         from bempp.api import GridFunction
         from bempp.api.grid.grid import Grid
 
-        self.generate_mesh(self.air.c0, self.frequencies.freq_vec[-1])
+        try:
+            self.generate_mesh(self.air.c0, self.frequencies.freq_vec[-1])
+        except:
+            self.generate_mesh(self.air.c0, 100)
+            
         msh = bempp.api.import_grid(self.path_to_msh)
         
         def configure_plotly_browser_state():
