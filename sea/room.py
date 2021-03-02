@@ -130,6 +130,40 @@ class Room:
             
             self.path_to_msh = key
      
+    
+    def add_geometry(self):
+        """
+        This function imports a .geo file.
+        """
+        from google.colab import files
+        uploaded = files.upload()
+        
+        for key in uploaded:
+            
+            path_to_geo = key
+            
+            gmsh.initialize(sys.argv)
+            gmsh.open(path_to_geo) # Open geometry
+            phgr = gmsh.model.getPhysicalGroups(2)
+            
+            odph = []
+            for i in range(len(phgr)):
+                odph.append(phgr[i][1]) 
+                
+            phgr_ordered = [i for i in range(0, len(phgr))]
+            phgr_ent = []
+            for i in range(len(phgr)):
+                phgr_ent.append(gmsh.model.getEntitiesForPhysicalGroup(phgr[i][0],phgr[i][1]))
+            gmsh.model.removePhysicalGroups()
+            
+            for i in range(len(phgr)):
+                gmsh.model.addPhysicalGroup(2, phgr_ent[i],phgr_ordered[i])
+                
+            gmsh.write(path_to_geo)
+            gmsh.finalize() 
+            
+            self.path_to_geo = key
+    
 
     def add_material(self, normal_incidence_alpha=[], statistical_alpha=[], octave_bands_statistical_alpha=[], octave_bands=[],
                      third_octave_bands_statistical_alpha=[], third_octave_bands=[], admittance=[], 
