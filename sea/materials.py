@@ -749,8 +749,6 @@ class Material():
                 if self.statistical_alpha.size == 0 or self.normal_incidence_alpha.size == 0:
                     if self.surface_impedance.size == 0 and self.admittance.size == 0:
                         raise ValueError("There is no information about this material yet.")
-                    else:
-                        print("Entrou aqui trouxa!")
                 else:
                     if type == "normal incidence":
                         plt.plot (self.freq, self.normal_incidence_alpha)
