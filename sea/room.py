@@ -665,7 +665,43 @@ class Room:
             self.incident_pressure.append(pInc)
             self.total_pressure.append(pT)  
             
-            
+    
+    def plot_frf (self, sources=[], receivers=[]):
+
+        sources = np.array(sources)
+        receivers = np.array(receivers)
+        
+        if sources.size == 0:
+            sources=np.arange(len(self.sources))
+        if receivers.size == 0:
+            receivers=np.arange(len(self.receivers))
+        
+        for source in sources:
+            for receiver in receivers:
+                i=0
+                for s_i in np.arange(len(self.sources)):
+                    for r_i, r in enumerate(self.receivers):
+                        if s_i == source and r_i == receiver: [item[0] for item in a]
+                            
+                            if r_i.type == "omni":
+                                plt.plot(self.frequencies.freq_vec, 20*np.log10(np.abs(self.total_pressure[::len(self.frequencies.freq_vec)])/2e-5))
+                                plt.title("Room transfer function")
+                                plt.legend("Source %s, receiver %s" % (s_i, r_i))
+                            else:
+                                plt.plot(self.frequencies.freq_vec, 20*np.log10(np.abs((self.total_pressure[::len(self.frequencies.freq_vec))[0]])/2e-5))
+                                plt.plot(self.frequencies.freq_vec, 20*np.log10(np.abs((self.total_pressure[::len(self.frequencies.freq_vec))[1]])/2e-5))
+                                plt.title("Binaural room transfer functions for source %s, receiver %s" % (s_i, r_i))
+                                plt.legend(["left", "right"])
+
+                            plt.xlabel('Frequency [Hz]')
+                            plt.ylabel('SPL [dB]')
+                            plt.xscale('log')
+                            plt.show()
+
+                        i+=1
+
+                
+    
     def save(self, place="drive", name = "my_room"):
         
         self.room_name = name
