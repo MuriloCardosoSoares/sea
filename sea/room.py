@@ -681,7 +681,7 @@ class Room:
                 i=0
                 for s_i in np.arange(len(self.sources)):
                     for r_i, r in enumerate(self.receivers):
-                        if s_i == source and r_i == receiver: [item[0] for item in a]
+                        if s_i == source and r_i == receiver: 
                             
                             if r_i.type == "omni":
                                 plt.plot(self.frequencies.freq_vec, 20*np.log10(np.abs(self.total_pressure[::len(self.frequencies.freq_vec)])/2e-5))
