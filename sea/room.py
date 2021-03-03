@@ -683,7 +683,7 @@ class Room:
                     for r_i, r in enumerate(self.receivers):
                         if s_i == source and r_i == receiver: 
                             
-                            if r_i.type == "omni":
+                            if r.type == "omni":
                                 plt.plot(self.frequencies.freq_vec, 20*np.log10(np.abs(self.total_pressure[::len(self.frequencies.freq_vec)])/2e-5))
                                 plt.title("Room transfer function")
                                 plt.legend("Source %s, receiver %s" % (s_i, r_i))
