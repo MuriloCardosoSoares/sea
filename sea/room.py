@@ -380,7 +380,7 @@ class Room:
             print(space.global_dof_count)
 
             #Generate subspaces. It is needed if any of the receivers is binaural.
-            if len(my_room.receivers) != 0 and any(receiver.type == "binaural" for receiver in my_room.receivers):  
+            if len(self.receivers) != 0 and any(receiver.type == "binaural" for receiver in self.receivers):  
 
                 # Initialize approximation spaces:
                 sub_spaces = [None] * len(admittances) # Initalise as empty list
