@@ -377,7 +377,6 @@ class Room:
 
             #space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
             space = bempp.api.function_space(msh, "DP", 0)  # como nos code antigos
-            print(space.global_dof_count)
 
             #Generate subspaces. It is needed if any of the receivers is binaural.
             if len(self.receivers) != 0 and any(receiver.type == "binaural" for receiver in self.receivers):  
@@ -389,8 +388,7 @@ class Room:
                     sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
                     spaceNumDOF[i] = sub_spaces[i].global_dof_count
                 iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
-                print("iDOF =  %s" % iDOF)
-            
+                
             
             admittance = np.array([item[fi] for item in admittances])
             k = self.air.k0[fi]
