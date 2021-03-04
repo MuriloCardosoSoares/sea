@@ -260,9 +260,6 @@ class Room:
             
     def view(self, opacity = 0.2):
         
-        if save == True:
-            self.save()
-        
         from matplotlib import style
         style.use("seaborn-talk")
         
@@ -327,6 +324,9 @@ class Room:
         
     def run(self, method='bem', save=True):
         
+        if save == True:
+            self.save()
+            
         if hasattr(self, "frequencies") != True:
             print("Algorithm frequencies are not defined yet.")
             
