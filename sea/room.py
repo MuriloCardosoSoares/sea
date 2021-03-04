@@ -618,8 +618,8 @@ class Room:
                         except:
                             pass
 
-                        pInc = [np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_left), np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_right)]
-                        pScat = [np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_left), np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_right)]
+                        pInc = [np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_left)[0], np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_right)[0]]
+                        pScat = [np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_left)[0], np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_right)[0]]
                         pT = [a + b for a, b in zip(pInc, pScat)]
                             
 
