@@ -690,10 +690,7 @@ class Room:
                                 plt.plot(self.frequencies.freq_vec, 20*np.log10(np.abs(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)])/2e-5))
                                 plt.title("Room transfer function")
                                 plt.legend("Source %s, receiver %s" % (s_i, r_i))
-                            else:
-                                print([item[0] for item in self.total_pressure[::len(self.frequencies.freq_vec)]])
-                                print([item[1] for item in self.total_pressure[::len(self.frequencies.freq_vec)]])
-                                
+                            else:                            
                                 plt.plot(self.frequencies.freq_vec, 20*np.log10(np.abs([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
                                 plt.plot(self.frequencies.freq_vec, 20*np.log10(np.abs([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
                                 plt.title("Binaural room transfer functions for source %s, receiver %s" % (s_i, r_i))
