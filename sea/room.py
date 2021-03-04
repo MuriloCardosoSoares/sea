@@ -260,6 +260,9 @@ class Room:
             
     def view(self, opacity = 0.2):
         
+        if save == True:
+            self.save()
+        
         from matplotlib import style
         style.use("seaborn-talk")
         
