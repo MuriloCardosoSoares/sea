@@ -360,8 +360,6 @@ class Room:
         self.scattered_pressure = []
         self.incident_pressure = []
         self.total_pressure = []
-
-
         
         for fi,f in enumerate(self.frequencies.freq_vec):
             
@@ -630,7 +628,7 @@ class Room:
                         self.incident_pressure.append(pInc)
                         self.total_pressure.append(pT) 
                         
-                        del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces    
+                        del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces, msh    
                         
                         self.simulated_frequencies.append(f)
                         self.simulated_sources.append(source)
