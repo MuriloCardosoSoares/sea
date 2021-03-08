@@ -45,6 +45,10 @@ class Room:
         self.sources = []
         self.materials = []
         
+        self.simulated_frequencies = []
+        self.simulated_sources = []
+        self.simulated_receivers = []
+        
         
     def air_properties(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
         self.air = Air(c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0)
