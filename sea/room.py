@@ -516,7 +516,7 @@ class Room:
                 except:
                     del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
                 
-                gc.collect()
+                gc.collect(0)
                 
             if len(self.receivers) != 0:
                 for ri, receiver in enumerate(self.receivers):
@@ -543,7 +543,7 @@ class Room:
                         
                         del boundary_pressure, boundary_velocity
                         
-                        gc.collect()
+                        gc.collect(0)
 
                         if save == True:
                             self.save()
@@ -648,7 +648,7 @@ class Room:
                         self.simulated_receivers.append(receiver)
                         
                         print("Collecting garbage...")
-                        gc.collect()
+                        gc.collect(0)
                         print(admittance)
 
                         if save == True:
