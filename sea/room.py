@@ -510,8 +510,10 @@ class Room:
                 del mu_op, identity, dlp, slp, rhs, a, Y, lhs, info 
                 try:
                     del source_parameters
+                    print("Your code is wrong... I am sorry.")
                 except:
                     del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
+                    print("I was here!")
                 
             if len(self.receivers) != 0:
                 for receiver in self.receivers:
@@ -605,7 +607,7 @@ class Room:
                                     
                                     AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
                                     
-                                    del OpSnm, OpDnm,
+                                    del OpSnm, OpDnm
                                     
                         rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                         AnmInc = rotation_matrix * AnmInc
