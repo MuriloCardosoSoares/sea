@@ -4,6 +4,7 @@ import bempp.api
 import numpy as np
 import sys
 import os
+import gc
 
 from matplotlib import pylab as plt
 import cloudpickle
@@ -510,10 +511,10 @@ class Room:
                 del mu_op, identity, dlp, slp, rhs, a, Y, lhs, info 
                 try:
                     del source_parameters
-                    print("Your code is wrong... I am sorry.")
                 except:
                     del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
-                    print("I was here!")
+                
+                gc.collect()
                 
             if len(self.receivers) != 0:
                 for receiver in self.receivers:
@@ -538,6 +539,8 @@ class Room:
                         
                         del boundary_pressure, boundary_velocity
                         
+                        gc.collect()
+
                         if save == True:
                             self.save()
                         
@@ -634,17 +637,18 @@ class Room:
                         self.incident_pressure.append(pInc)
                         self.total_pressure.append(pT) 
                         
-                        del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces, msh    
+                        del admittance, AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces, msh, spaceNumDOF, iDOF, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
                         
                         self.simulated_frequencies.append(f)
                         self.simulated_sources.append(source)
                         self.simulated_receivers.append(receiver)
+                        
+                        gc.collect()
 
                         if save == True:
                             self.save()
                 
-                #self.receiver_evaluate(source, receiver, boundary_pressure = boundary_pressure, boundary_velocity = boundary_velocity)
-            
+                
 
     def receiver_evaluate (self, source, receiver, **kwargs):
         
