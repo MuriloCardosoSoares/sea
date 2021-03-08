@@ -416,7 +416,7 @@ class Room:
 
             for si, source in enumerate(self.sources):
                 
-                print ("Working on source %s of %s." % (si+1, len(self.sources))
+                print ("Working on source %s of %s." % (si+1, len(self.sources)))
                 
                 if source.type == "monopole":
                 
@@ -521,7 +521,7 @@ class Room:
             if len(self.receivers) != 0:
                 for ri, receiver in enumerate(self.receivers):
                        
-                    print ("Working on receiver %s of %s." % (ri+1, len(self.receivers))
+                    print ("Working on receiver %s of %s." % (ri+1, len(self.receivers)))
                            
                     if receiver.type == "omni":
                         
