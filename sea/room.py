@@ -414,7 +414,9 @@ class Room:
             slp = bempp.api.operators.boundary.helmholtz.single_layer(
                 space, space, space, k,assembler="dense", device_interface='numba')
 
-            for source in self.sources:
+            for si, source in enumerate(self.sources):
+                
+                print ("Working on source %s of %s." % (si+1, len(self.sources))
                 
                 if source.type == "monopole":
                 
@@ -517,8 +519,10 @@ class Room:
                 gc.collect()
                 
             if len(self.receivers) != 0:
-                for receiver in self.receivers:
-                    
+                for ri, receiver in enumerate(self.receivers):
+                       
+                    print ("Working on receiver %s of %s." % (ri+1, len(self.receivers))
+                           
                     if receiver.type == "omni":
                         
                         dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
@@ -643,6 +647,7 @@ class Room:
                         self.simulated_sources.append(source)
                         self.simulated_receivers.append(receiver)
                         
+                        print("Collecting garbage...")
                         gc.collect()
 
                         if save == True:
