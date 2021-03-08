@@ -641,7 +641,7 @@ class Room:
                         self.incident_pressure.append(pInc)
                         self.total_pressure.append(pT) 
                         
-                        del admittance, AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces, msh, spaceNumDOF, iDOF, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
+                        del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces, msh, spaceNumDOF, iDOF, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
                         
                         self.simulated_frequencies.append(f)
                         self.simulated_sources.append(source)
@@ -649,6 +649,9 @@ class Room:
                         
                         print("Collecting garbage...")
                         gc.collect()
+                        
+                        gc.get_objects()
+                        gc.is_finalized(admittance)
 
                         if save == True:
                             self.save()
