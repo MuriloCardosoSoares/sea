@@ -327,7 +327,7 @@ class Room:
         plotly.offline.iplot(fig)
         
         
-    def run(self, method='bem', save=True):
+    def run(self, save=True):
         
         if save == True:
             self.save()
@@ -517,6 +517,8 @@ class Room:
                     del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
                 
                 gc.collect(0)
+                gc.collect(1)
+                gc.collect(2)
                 
             if len(self.receivers) != 0:
                 for ri, receiver in enumerate(self.receivers):
@@ -649,6 +651,8 @@ class Room:
                         
                         print("Collecting garbage...")
                         gc.collect(0)
+                        gc.collect(1)
+                        gc.collect(2)
                         print(admittance)
 
                         if save == True:
