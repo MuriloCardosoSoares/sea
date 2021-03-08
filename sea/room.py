@@ -649,9 +649,7 @@ class Room:
                         
                         print("Collecting garbage...")
                         gc.collect()
-                        
-                        gc.get_objects()
-                        gc.is_finalized(admittance)
+                        print(admittance)
 
                         if save == True:
                             self.save()
