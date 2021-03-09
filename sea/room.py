@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import os
 import gc
+from numba import cuda 
 
 from matplotlib import pylab as plt
 import cloudpickle
@@ -659,7 +660,9 @@ class Room:
 
                         if save == True:
                             self.save()
-                
+        
+            device = cuda.get_current_device()
+            device.reset()
                 
 
     def receiver_evaluate (self, source, receiver, **kwargs):
