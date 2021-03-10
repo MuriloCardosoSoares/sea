@@ -90,7 +90,7 @@ def reflect_sh(Bnm, xFlag, yFlag, zFlag):
     if xFlag**yFlag: # XOR
         #for n in range(int(np.ceil(np.sqrt(Bnm.size)))-1):
         for n in np.arange(max(n)+1):
-            i = sub2indSH(np.arange(-n,n+1),n).astype(int)
+            i = int(sub2indSH(np.arange(-n,n+1),n))
             Bnm[i,0] = np.flip(Bnm[i,0])
 	
     return Bnm
@@ -145,7 +145,7 @@ def get_translation_matrix(t,k,OrderS,OrderR):
 
 		for mT in np.arange(-nT, nT+1):
 			iT = sub2indSH(mT,nT)
-			T = T + h * Y[0][iT.astype(int)] * S[iT.astype(int),:,:] #!!!
+			T = T + h * Y[0][int(iT)] * S[int(iT),:,:] #!!!
 
 	return T
                 
@@ -201,7 +201,7 @@ def GetStructuralTranslationCoefficients(OrderS,OrderR):
 
 							# Compute coefficient if within non-zero range:
 							if nT >= abs(nR-nS) and nT <= (nR+nS):
-								S[iT.astype(int), sub2indSH(mR,nR).astype(int), sub2indSH(mS,nS).astype(int)] = (
+								S[int(iT), int(sub2indSH(mR,nR)), int(sub2indSH(mS,nS))] = (
 											1j**(nR+nT-nS) * epS * epR * epT 
 											* np.sqrt(4*np.pi*(2*nS+1)*(2*nR+1)*(2*nT+1))
 											* Wigner3jSymbol(nS, nR, nT, mS, -mR, -mT)
@@ -324,7 +324,7 @@ def get_rotation_matrix(a,b,c,Order):
                 H = H * ep1 * ep2 * np.sqrt(float(np.math.factorial(n+m2)*np.math.factorial(n-m2)*np.math.factorial(n+m1)*np.math.factorial(n-m1)))
                 #print(H)
                 # Evaluate Eq. 3.3.37:
-                R[sub2indSH(m2,n).astype(int), sub2indSH(m1,n).astype(int)] = (-1)**m1 * np.exp(-1j*m1*a) * np.exp(-1j*m2*c) * H
+                R[int(sub2indSH(m2,n)), int(sub2indSH(m1,n))] = (-1)**m1 * np.exp(-1j*m1*a) * np.exp(-1j*m2*c) * H
                 #print((-1)**m1 * np.exp(-1j*m1*a) * np.exp(-1j*m2*c) * H)
     R = scipy.sparse.csr_matrix(R)
     
