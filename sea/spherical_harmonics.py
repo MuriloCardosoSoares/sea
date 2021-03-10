@@ -5,6 +5,8 @@ This module contains the functions needed to use the spherical harmonic techniqu
 import numpy as np
 import scipy.sparse
 from scipy.special import lpmv, spherical_jn, spherical_yn
+from numba import jit
+
 
 @jit
 def sub2indSH(m,n):
