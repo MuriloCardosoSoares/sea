@@ -481,7 +481,8 @@ class Room:
                         #result[0] += d_val - 1j*mu[domain_index]*k*val
                         #result[0] = d_val - 1j*mu[domain_index]*k*val
                     
-                    @bempp.api.complex_callable(jit=False)
+                    #@bempp.api.complex_callable(jit=False)
+                    @bempp.api.callable(complex=True, jit=True)
                     def source_fun(r, n, domain_index, result):
                         result[0]=0
                         val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated_source, r-source.coord.reshape(3), n)
@@ -563,12 +564,14 @@ class Room:
                             for m in range(-n, n+1):
 
                                 # Define functions to be evaluated:
-                                @bempp.api.complex_callable(jit=False)
+                                #@bempp.api.complex_callable(jit=False)
+                                @bempp.api.callable(complex=True, jit=True)
                                 def OpDnmFunc(x, nUV, domain_index, result):
                                     H, dHdn = sh.spherical_basis_in(n, m, k, x - receiver.coord.reshape(3), nUV)
                                     result[0] = dHdn
                                 
-                                @bempp.api.complex_callable(jit=False)
+                                #@bempp.api.complex_callable(jit=False)
+                                @bempp.api.callable(complex=True, jit=True)
                                 def OpSnmFunc (x, nUV, domain_index, result):
                                     H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord.reshape(3))
                                     result[0] = H
