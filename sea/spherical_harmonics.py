@@ -90,7 +90,7 @@ def reflect_sh(Bnm, xFlag, yFlag, zFlag):
     if xFlag**yFlag: # XOR
         #for n in range(int(np.ceil(np.sqrt(Bnm.size)))-1):
         for n in np.arange(max(n)+1):
-            i = int(sub2indSH(np.arange(-n,n+1),n))
+            i = sub2indSH(np.arange(-n,n+1),n).astype(int)
             Bnm[i,0] = np.flip(Bnm[i,0])
 	
     return Bnm
