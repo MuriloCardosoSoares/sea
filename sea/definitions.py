@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import sys
 import pickle
 
+from numba import jitclass
+
 from sea import directivity
 
 class Air():
@@ -85,6 +87,8 @@ class Algorithm():
     def __str__(self):
         return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz and a step of " + str(self.freq_step) + " Hz. \n"
 
+
+@jitclass
 class Source():
     '''
     A sound source class to initialize the following sound source properties.
@@ -144,7 +148,8 @@ class Source():
     def __str__(self):
         return "Source coordinate is " + str(self.coord) + ". It is a " + str(self.type) + " source.\n"
 
-        
+
+@jitclass
 class Receiver():
     '''
     A receiver class to initialize the following receiver properties:
