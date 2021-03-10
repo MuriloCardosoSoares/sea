@@ -357,7 +357,7 @@ class Room:
             for material in self.materials:
                 admittances.append(material.admittance)
                 
-            bempp.api.DEVICE_PRECISION_CPU = 'single'  
+        bempp.api.DEVICE_PRECISION_CPU = 'single'  
             
         self.boundary_pressure = [] 
         self.boundary_velocity = [] 
