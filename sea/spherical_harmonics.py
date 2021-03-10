@@ -6,6 +6,7 @@ import numpy as np
 import scipy.sparse
 from scipy.special import lpmv, spherical_jn, spherical_yn
 
+@jit
 def sub2indSH(m,n):
 	"""
 	i = sub2indSH(m,n)
@@ -17,6 +18,8 @@ def sub2indSH(m,n):
 	i = n**2 + n + m
 	return i
 
+
+@jit
 def ind2subSH(i):
 	"""
 	(m,n) = ind2subSH(i)
@@ -30,6 +33,8 @@ def ind2subSH(i):
 	m = i - n**2 - n;	
 	return (m,n)
 
+
+@jit
 def cart2sph(x,y,z):
     """
     (r, alpha, sinbeta, cosbeta) = Cart2Sph(x,y,z)
@@ -54,6 +59,7 @@ def cart2sph(x,y,z):
     return r, alpha, sinbeta, cosbeta
 
 
+@jit
 def reflect_sh(Bnm, xFlag, yFlag, zFlag):
     """
     Bnm = ReflectSH(Bnm, xFlag, yFlag, zFlag)   
@@ -88,6 +94,7 @@ def reflect_sh(Bnm, xFlag, yFlag, zFlag):
     return Bnm
 
 
+@jit
 def get_translation_matrix(t,k,OrderS,OrderR):
 	"""
 	T = GetTranslationMatrix(t,k,OrderS,OrderR)
@@ -141,6 +148,7 @@ def get_translation_matrix(t,k,OrderS,OrderR):
 	return T
                 
 
+@jit
 def GetStructuralTranslationCoefficients(OrderS,OrderR):
 	"""
 	S = GetStructuralTranslationCoefficients(OrderS,OrderR)
@@ -200,7 +208,8 @@ def GetStructuralTranslationCoefficients(OrderS,OrderR):
 
 	return S
 
-        
+
+@jit
 def Wigner3jSymbol(j1, j2, j3, m1, m2, m3):
 	"""
 	W3jS = Wigner3j(j1, j2, j3, m1, m2, m3)
@@ -250,6 +259,7 @@ def Wigner3jSymbol(j1, j2, j3, m1, m2, m3):
 	return W3jS
 
 
+@jit
 def get_rotation_matrix(a,b,c,Order):
     """
     [R, Q] = GetRotationMatrix(a,b,c,Order)
@@ -326,6 +336,7 @@ def get_rotation_matrix(a,b,c,Order):
     return R
 
 
+@jit
 def spherical_harmonic(n, m, alpha, sinbeta, cosbeta):
 	
     """
@@ -374,6 +385,7 @@ def spherical_harmonic(n, m, alpha, sinbeta, cosbeta):
     return (y, dy_dbeta, dy_dalpha)
 
 
+@jit
 def spherical_harmonic_all (max_order, alpha, sinbeta, cosbeta):
     
     """
@@ -453,6 +465,7 @@ def spherical_harmonic_all (max_order, alpha, sinbeta, cosbeta):
     return y, dy_dbeta, dy_dalpha
 
 
+@jit
 def spherical_hankel_out (n, z):
     '''
     (h, dhdz) = SphericalHankelOut(n, z)
@@ -466,6 +479,7 @@ def spherical_hankel_out (n, z):
     return h, dhdz
 
 
+@jit
 def spherical_basis_out_all(k, Bnm, pos, nUV):
     '''
     (phi, dphi_dn) = SphericalBasisOutAll(k, Bnm, x, nUV)
@@ -512,6 +526,7 @@ def spherical_basis_out_all(k, Bnm, pos, nUV):
     return (phi, dphi_dn)
 
 
+@jit
 def spherical_basis_out_p0_only(k, Bnm, pos):
     '''
     phi = SphericalBasisOutAll(k, Bnm, x)
@@ -553,6 +568,7 @@ def spherical_basis_out_p0_only(k, Bnm, pos):
     return phi
 
 
+@jit
 def spherical_hankel_in_p0_only(n, z):
     '''	
     h = SphericalHankelIn_pOnly(n, z)
@@ -566,6 +582,7 @@ def spherical_hankel_in_p0_only(n, z):
     return h
 
 
+@jit
 def spherical_hankel_in(n, z):
     '''
     (h, dhdz) = SphericalHankelIn(n, z)
@@ -579,6 +596,7 @@ def spherical_hankel_in(n, z):
     return (h, dhdz)
 
 
+@jit
 def spherical_harmonic_p0_only(n, m, alpha, sinbeta, cosbeta):
     '''
     Y = SphericalHarmonic_pOnly(n, m, alpha, sinbeta, cosbeta)
@@ -612,6 +630,7 @@ def spherical_harmonic_p0_only(n, m, alpha, sinbeta, cosbeta):
     return y
 
 
+@jit
 def spherical_basis_in_p0_only(n, m, k, pos):
     '''
 	Phi = SphericalBasisIn_pOnly(n, m, k, x)
@@ -644,6 +663,7 @@ def spherical_basis_in_p0_only(n, m, k, pos):
     return Phi
 
 
+@jit
 def spherical_basis_in(n, m, k, pos, nUV):
     '''
    	(Phi, dPhi_dn) = SphericalBasisIn(n, m, k, x, nUV)
@@ -680,6 +700,7 @@ def spherical_basis_in(n, m, k, pos, nUV):
     return (Phi, dPhi_dn)
 
 
+@jit
 def cart2sphUV(x,y,z,nUV):
     '''
     [nUVrUV, nUValphaUV, nUVbetaUV] = Cart2SphUV(x,y,z,nUV)
