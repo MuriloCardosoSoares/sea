@@ -522,147 +522,147 @@ class Room:
                 gc.collect(generation=1)
                 gc.collect(generation=2)
                 
-            if len(self.receivers) != 0:
-                for ri, receiver in enumerate(self.receivers):
-                       
-                    print ("Working on receiver %s of %s." % (ri+1, len(self.receivers)))
-                           
-                    if receiver.type == "omni":
-                        
-                        dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
-                            space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
-                        slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
-                            space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+                if len(self.receivers) != 0:
+                    for ri, receiver in enumerate(self.receivers):
 
-                        pScat = (-dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]).reshape(1)
-                        distance  = np.linalg.norm(receiver.coord - source.coord)
-                        
-                        if source.type == "monopole":
-                            pInc = (source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)).reshape(1)
-                            
+                        print ("Working on receiver %s of %s." % (ri+1, len(self.receivers)))
+
+                        if receiver.type == "omni":
+
+                            dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
+                                space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+                            slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
+                                space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
+
+                            pScat = (-dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]).reshape(1)
+                            distance  = np.linalg.norm(receiver.coord - source.coord)
+
+                            if source.type == "monopole":
+                                pInc = (source.q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)).reshape(1)
+
+                            else:
+                                pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated, receiver.coord.reshape(3) - source.coord.reshape(3))).reshape(1)
+
+                            pT = pScat + pInc
+
+                            del boundary_pressure, boundary_velocity
+
+                            gc.collect(generation=0)
+                            gc.collect(generation=1)
+                            gc.collect(generation=2)
+
+                            if save == True:
+                                self.save()
+
                         else:
-                            pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated, receiver.coord.reshape(3) - source.coord.reshape(3))).reshape(1)
-                            
-                        pT = pScat + pInc
-                        
-                        del boundary_pressure, boundary_velocity
-                        
-                        gc.collect(generation=0)
-                        gc.collect(generation=1)
-                        gc.collect(generation=2)
 
-                        if save == True:
-                            self.save()
-                        
-                    else:
-                        
-                        AnmInc  = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
-                        AnmInc  = sh.get_translation_matrix((receiver.coord - source.coord).reshape((3,)), k, source.sh_order, receiver.sh_order) @ sh_coefficients_rotated_source
-                        
-                        AnmScat = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
-                        
-                        for n in range(receiver.sh_order + 1):
-                            for m in range(-n, n+1):
+                            AnmInc  = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
+                            AnmInc  = sh.get_translation_matrix((receiver.coord - source.coord).reshape((3,)), k, source.sh_order, receiver.sh_order) @ sh_coefficients_rotated_source
 
-                                # Define functions to be evaluated:
-                                #@bempp.api.complex_callable(jit=False)
-                                @bempp.api.callable(complex=True, jit=True)
-                                def OpDnmFunc(x, nUV, domain_index, result):
-                                    H, dHdn = sh.spherical_basis_in(n, m, k, x - receiver.coord.reshape(3), nUV)
-                                    result[0] = dHdn
-                                
-                                #@bempp.api.complex_callable(jit=False)
-                                @bempp.api.callable(complex=True, jit=True)
-                                def OpSnmFunc (x, nUV, domain_index, result):
-                                    H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord.reshape(3))
-                                    result[0] = H
-                                
-                                for i in np.arange(len(admittances)):  # loop over subspaces
-                                    
-                                    # Integrate the SH functions with the basis functions from the approximation spaces:
-                                    OpSnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpSnmFunc)
-                                    OpDnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpDnmFunc)
-                                    
-                                    
-                                    # Integrate the SH functions with the basis functions from the approximation spaces:
-                                    #OpSnmGF = bempp.api.GridFunction(space, fun=OpSnmFunc)
-                                    #OpDnmGF = bempp.api.GridFunction(space, fun=OpDnmFunc)
+                            AnmScat = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
+
+                            for n in range(receiver.sh_order + 1):
+                                for m in range(-n, n+1):
+
+                                    # Define functions to be evaluated:
+                                    @bempp.api.complex_callable(jit=False)
+                                    #@bempp.api.callable(complex=True, jit=True)
+                                    def OpDnmFunc(x, nUV, domain_index, result):
+                                        H, dHdn = sh.spherical_basis_in(n, m, k, x - receiver.coord.reshape(3), nUV)
+                                        result[0] = dHdn
+
+                                    @bempp.api.complex_callable(jit=False)
+                                    #@bempp.api.callable(complex=True, jit=True)
+                                    def OpSnmFunc (x, nUV, domain_index, result):
+                                        H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord.reshape(3))
+                                        result[0] = H
+
+                                    for i in np.arange(len(admittances)):  # loop over subspaces
+
+                                        # Integrate the SH functions with the basis functions from the approximation spaces:
+                                        OpSnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpSnmFunc)
+                                        OpDnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpDnmFunc)
 
 
-                                    # Integrate the SH functions with the basis functions from the approximation spaces:
-                                    #OpSnmGF =  bempp.api.MultiplicationOperator(
-                                     #   bempp.api.GridFunction(space, fun=OpSnmFunc)
-                                      #  , space, space, space)
+                                        # Integrate the SH functions with the basis functions from the approximation spaces:
+                                        #OpSnmGF = bempp.api.GridFunction(space, fun=OpSnmFunc)
+                                        #OpDnmGF = bempp.api.GridFunction(space, fun=OpDnmFunc)
 
-                                    #OpDnmGF = bempp.api.MultiplicationOperator(
-                                     #   bempp.api.GridFunction(space, fun=OpDnmFunc)
-                                      #  , space, space, space)
 
-                                    # Extract projections and conjugate to get discrete form of intended operators:
-                                    #OpSnm = np.conj(OpSnmGF.projections())
-                                    #OpDnm = np.conj(OpDnmGF.projections())
-                                    
-                                    # Extract projections and conjugate to get discrete form of intended operators:
-                                    OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
-                                    OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
-                                    
-                                    del OpSnmGF, OpDnmGF
+                                        # Integrate the SH functions with the basis functions from the approximation spaces:
+                                        #OpSnmGF =  bempp.api.MultiplicationOperator(
+                                         #   bempp.api.GridFunction(space, fun=OpSnmFunc)
+                                          #  , space, space, space)
 
-                                    #print(np.shape(boundary_pressure.coefficients))
-                                    #print(np.shape(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]]))
-                                    #print(np.shape(OpDnm))
-                                    #print(OpDnmGF)
-                                    #print(mu_op)
-                                    #print(np.shape(OpSnm))
-                                    #print(OpSnmGF)
+                                        #OpDnmGF = bempp.api.MultiplicationOperator(
+                                         #   bempp.api.GridFunction(space, fun=OpDnmFunc)
+                                          #  , space, space, space)
 
-                                    #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
+                                        # Extract projections and conjugate to get discrete form of intended operators:
+                                        #OpSnm = np.conj(OpSnmGF.projections())
+                                        #OpDnm = np.conj(OpDnmGF.projections())
 
-                                    #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
-                                    
-                                    AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
-                                    
-                                    del OpSnm, OpDnm
-                                    
-                        rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
-                        AnmInc = rotation_matrix * AnmInc
-                        AnmScat = rotation_matrix * AnmScat
+                                        # Extract projections and conjugate to get discrete form of intended operators:
+                                        OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
+                                        OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
 
-                        try:
-                            i = np.where(receiver.freq_vec == f)[0][0]
-                            sh_coefficients_receiver_left = receiver.sh_coefficients_left[i]
-                            sh_coefficients_receiver_right = receiver.sh_coefficients_right[i]
-                        except:
-                            raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
+                                        del OpSnmGF, OpDnmGF
 
-                        try:
-                            pass #Aqui vai entrar o ajuste dos dados do receptor
-                        except:
-                            pass
+                                        #print(np.shape(boundary_pressure.coefficients))
+                                        #print(np.shape(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]]))
+                                        #print(np.shape(OpDnm))
+                                        #print(OpDnmGF)
+                                        #print(mu_op)
+                                        #print(np.shape(OpSnm))
+                                        #print(OpSnmGF)
 
-                        pInc = [np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_left)[0], np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_right)[0]]
-                        pScat = [np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_left)[0], np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_right)[0]]
-                        pT = [a + b for a, b in zip(pInc, pScat)]
-                            
+                                        #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
 
-                        self.scattered_pressure.append(pScat)
-                        self.incident_pressure.append(pInc)
-                        self.total_pressure.append(pT) 
-                        
-                        del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces, msh, spaceNumDOF, iDOF, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
-                        
-                        self.simulated_frequencies.append(f)
-                        self.simulated_sources.append(source)
-                        self.simulated_receivers.append(receiver)
-                        
-                        print("Collecting garbage...")
-                        gc.collect(generation=0)
-                        gc.collect(generation=1)
-                        gc.collect(generation=2)
-                        print(admittance)
+                                        #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
 
-                        if save == True:
-                            self.save()
+                                        AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
+
+                                        del OpSnm, OpDnm
+
+                            rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
+                            AnmInc = rotation_matrix * AnmInc
+                            AnmScat = rotation_matrix * AnmScat
+
+                            try:
+                                i = np.where(receiver.freq_vec == f)[0][0]
+                                sh_coefficients_receiver_left = receiver.sh_coefficients_left[i]
+                                sh_coefficients_receiver_right = receiver.sh_coefficients_right[i]
+                            except:
+                                raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
+
+                            try:
+                                pass #Aqui vai entrar o ajuste dos dados do receptor
+                            except:
+                                pass
+
+                            pInc = [np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_left)[0], np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_right)[0]]
+                            pScat = [np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_left)[0], np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_right)[0]]
+                            pT = [a + b for a, b in zip(pInc, pScat)]
+
+
+                            self.scattered_pressure.append(pScat)
+                            self.incident_pressure.append(pInc)
+                            self.total_pressure.append(pT) 
+
+                            del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces, msh, spaceNumDOF, iDOF, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
+
+                            self.simulated_frequencies.append(f)
+                            self.simulated_sources.append(source)
+                            self.simulated_receivers.append(receiver)
+
+                            print("Collecting garbage...")
+                            gc.collect(generation=0)
+                            gc.collect(generation=1)
+                            gc.collect(generation=2)
+                            print(admittance)
+
+                            if save == True:
+                                self.save()
         
             bempp.api.clear_fmm_cache()
                 
