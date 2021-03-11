@@ -301,9 +301,9 @@ def get_rotation_matrix(a,b,c,Order):
     R = np.zeros(((Order+1)**2, (Order+1)**2), dtype = np.complex128)
     
     # Loop over SH order:
-    for n in np.arange(Order + 1, dtype=float):
-        for m1 in np.arange(-n, n + 1, dtype=float):
-            for m2 in np.arange(-n, n + 1, dtype=float):
+    for n in range(Order + 1):
+        for m1 in range(-n, n + 1):
+            for m2 in range(-n, n + 1):
                 
                 # Evalute Eq. 3.3.39:
                 if m1 > 0:
@@ -317,7 +317,7 @@ def get_rotation_matrix(a,b,c,Order):
                     ep2 = 1
                 
                 H = 0
-                for s in np.arange(max(0, -(m1+m2)), min(n-m1,n-m2) + 1):                
+                for s in range(max(0, -(m1+m2)), min(n-m1,n-m2) + 1):                
                     H = H + (-1)**(n-s) * np.cos(b/2)**(2*s+m2+m1) * np.sin(b/2)**(2*n-2*s-m2-m1) / (np.math.factorial(s) * np.math.factorial(n-m1-s) * np.math.factorial(n-m2-s) * np.math.factorial(m1+m2+s))
                     #print(H)
                     
