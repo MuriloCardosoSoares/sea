@@ -5,7 +5,7 @@ This module contains the functions needed to use the spherical harmonic techniqu
 import numpy as np
 import scipy.sparse
 from scipy.special import lpmv, spherical_jn, spherical_yn
-#from numba import jit
+from numba import jit
 
 
 #@jit(nopython=True)
@@ -100,7 +100,6 @@ def reflect_sh(Bnm, xFlag, yFlag, zFlag):
 def get_translation_matrix(t,k,OrderS,OrderR):
 	"""
 	T = GetTranslationMatrix(t,k,OrderS,OrderR)
-
 	Computes a translation matrix T from the coefficients of a Spherical
 	Harmonic source (outgoing spherical Hankel radial functions) to the
 	coefficients at a Spherical Harmonic receiver (spherical Bessel radial
@@ -108,18 +107,14 @@ def get_translation_matrix(t,k,OrderS,OrderR):
 	that both spherical coordinate systems (source and receiver) are aligned
 	to the same Cartesian system in which t is expressed. a is the polar
 	angle from the postive z axis.
-
 	Essentially computes equation 3.2.17 of: 
 	Gumerov, N., & Duraiswami, R. (2005). Fast Multipole Methods for the
 	Helmholtz Equation in Three Dimensions (1st ed.). Elsevier Science.
-
 	Arguments:
-
 	t         Cartesian translation vector (1x3 real row vector)
 	k         Wavenumber (positive real scalar or vector in radians/meter)
 	OrderS    Order of the source (non-negative real integer scalar)
 	OrderR    Order of the receiver (non-negative real integer scalar)
-
 	This file also contains the sub-functions
 	GetStructuralTranslationCoefficients and Wigner3jSymbol.
 	"""
@@ -154,16 +149,13 @@ def get_translation_matrix(t,k,OrderS,OrderR):
 def GetStructuralTranslationCoefficients(OrderS,OrderR):
 	"""
 	S = GetStructuralTranslationCoefficients(OrderS,OrderR)
-
 	Computes the 'Structural Translation Coefficients' used in Spherical
 	Harmonic translation routines, as defined in section 3.2.1 of: 
 	Gumerov, N., & Duraiswami, R. (2005). Fast Multipole Methods for the
 	Helmholtz Equation in Three Dimensions (1st ed.). Elsevier Science.
-
 	Arguments:
 	OrderS    Order of the source   (non-negative real integer scalar)
 	OrderR    Order of the receiver (non-negative real integer scalar)
-
 	Returned variable is a 3D array of size [(OrderR+1)**2, (OrderS+1)**2,
 	(OrderR+OrderS+1)**2]. 
 	"""
@@ -215,14 +207,10 @@ def GetStructuralTranslationCoefficients(OrderS,OrderR):
 def Wigner3jSymbol(j1, j2, j3, m1, m2, m3):
 	"""
 	W3jS = Wigner3j(j1, j2, j3, m1, m2, m3)
-
 	Computes the Wigner 3j symbol following the formulation given at
 	http://mathworld.wolfram.com/Wigner3j-Symbol.html.
-
 	Arguments:
-
 	j1, j2, j3, m1, m2 and m3     All must be scalar half-integers
-
 	Check arguments against 'selection rules' (cited to Messiah 1962, pp. 1054-1056; Shore and Menzel 1968, p. 272)
 	Nullifying any of these means the symbol equals zero.
 	"""
@@ -301,9 +289,9 @@ def get_rotation_matrix(a,b,c,Order):
     R = np.zeros(((Order+1)**2, (Order+1)**2), dtype = np.complex128)
     
     # Loop over SH order:
-    for n in range(Order + 1):
-        for m1 in range(-n, n + 1):
-            for m2 in range(-n, n + 1):
+    for n in np.arange(Order + 1, dtype=float):
+        for m1 in np.arange(-n, n + 1, dtype=float):
+            for m2 in np.arange(-n, n + 1, dtype=float):
                 
                 # Evalute Eq. 3.3.39:
                 if m1 > 0:
@@ -317,7 +305,7 @@ def get_rotation_matrix(a,b,c,Order):
                     ep2 = 1
                 
                 H = 0
-                for s in range(max(0, -(m1+m2)), min(n-m1,n-m2) + 1):                
+                for s in np.arange(max(0, -(m1+m2)), min(n-m1,n-m2) + 1):                
                     H = H + (-1)**(n-s) * np.cos(b/2)**(2*s+m2+m1) * np.sin(b/2)**(2*n-2*s-m2-m1) / (np.math.factorial(s) * np.math.factorial(n-m1-s) * np.math.factorial(n-m2-s) * np.math.factorial(m1+m2+s))
                     #print(H)
                     
