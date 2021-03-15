@@ -572,7 +572,7 @@ class Material():
             """
 
             self.impedance_thru_rmk1(parameters=parameters, f_list=f_list)
-            
+            print(self.third_octave_bands_statistical_alpha)
             if type == "third_octave_bands":
                 difference = alpha_in - self.third_octave_bands_statistical_alpha
             else:
