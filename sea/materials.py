@@ -555,7 +555,7 @@ class Material():
             freqs = np.array([np.mean((center_freq[aux], lower_limit[aux])), center_freq[aux], np.mean((upper_limit[aux], center_freq[aux]))])
             f_list = np.append(f_list,freqs)
             aux += 1
-        print(f_list)
+            
         #################################################
         # Defines cost function to be minimized
         
@@ -572,7 +572,7 @@ class Material():
             """
 
             self.impedance_thru_rmk1(parameters=parameters, f_list=f_list)
-            print(self.third_octave_bands_statistical_alpha)
+            print(self.third_octave_bands)
             if type == "third_octave_bands":
                 difference = alpha_in - self.third_octave_bands_statistical_alpha
             else:
