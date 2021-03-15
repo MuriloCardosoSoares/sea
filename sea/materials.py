@@ -494,7 +494,7 @@ class Material():
 
         The **kwargs (optional input argument) must be passed if you have not calculated the material properties using the methods of this module.
         It must be passed as the keyword "absorber".
-        absorber -> string that defines the type of the absorber. It is gonna be used to define 
+        absorber_type -> string that defines the type of the absorber. It is gonna be used to define 
                     the constraints of the optimization problem. The possible values are:
 
                         - "soft porous" -> porous absorber with flow resistivity < 20 000 [rayl/m] and
@@ -510,7 +510,7 @@ class Material():
         '''
 
         if "absorber_type" in kwargs:
-            self.absorber_type = kwargs.get("absorber")
+            self.absorber_type = kwargs.get("absorber_type")
             
         elif hasattr(self, "absorber_type") != True:
             raise ValueError("Type of absorber is not defined.")
