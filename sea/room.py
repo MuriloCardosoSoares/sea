@@ -245,7 +245,7 @@ class Room:
                     self.materials.append(material)
                 
                 elif material.admittance.size == 0:
-                    meterial.alpha_from_impedance(absorber_type=kwargs["absorber_type"])
+                    material.alpha_from_impedance(absorber_type=kwargs["absorber_type"])
                     self.materials.append(material)
             
             
