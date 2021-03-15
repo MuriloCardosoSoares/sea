@@ -40,7 +40,7 @@ class Room:
         try:
             self.room_name = kwargs["room_name"]
         except:
-            pass
+            self.room_name = "my_room"
         
         self.receivers = []
         self.sources = []
@@ -546,6 +546,14 @@ class Room:
                             pT = pScat + pInc
 
                             del boundary_pressure, boundary_velocity
+                            
+                            self.scattered_pressure.append(pScat)
+                            self.incident_pressure.append(pInc)
+                            self.total_pressure.append(pT) 
+
+                            self.simulated_frequencies.append(f)
+                            self.simulated_sources.append(source)
+                            self.simulated_receivers.append(receiver)
 
                             gc.collect(generation=0)
                             gc.collect(generation=1)
@@ -655,12 +663,11 @@ class Room:
                             self.simulated_sources.append(source)
                             self.simulated_receivers.append(receiver)
 
-                            print("Collecting garbage...")
+                            #print("Collecting garbage...")
                             gc.collect(generation=0)
                             gc.collect(generation=1)
                             gc.collect(generation=2)
-                            print(admittance)
-
+                            
                             if save == True:
                                 self.save()
         
@@ -734,10 +741,8 @@ class Room:
 
                 
     
-    def save(self, place="drive", name = "my_room"):
-        
-        self.room_name = name
-        
+    def save(self, place="drive"):
+                
         saved_name = "%s.pickle" % self.room_name
         pickle_obj = open(saved_name, "wb")
         pickle.dump(self, pickle_obj)
