@@ -555,7 +555,7 @@ class Material():
             freqs = np.array([np.mean((center_freq[aux], lower_limit[aux])), center_freq[aux], np.mean((upper_limit[aux], center_freq[aux]))])
             f_list = np.append(f_list,freqs)
             aux += 1
-        print(f_list)    
+            
         #################################################
         # Defines cost function to be minimized
         
@@ -572,7 +572,7 @@ class Material():
             """
 
             self.impedance_thru_rmk1(parameters=parameters, f_list=f_list)
-            print(self.third_octave_bands)
+
             if type == "third_octave_bands":
                 difference = alpha_in - self.third_octave_bands_statistical_alpha
             else:
@@ -638,12 +638,12 @@ class Material():
         print ("Working on the solution of the constrained optimization problem :)")
 
 
-        solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 1e-10, 'maxiter': 1000})
+        solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 0.015, 'maxiter': 1000})
 
-        while cost_fun (solution.x) > 0.1:
+        while cost_fun (solution.x) > 0.015:
 
             guesses = np.array([uniform(0,2), uniform(0,2), uniform(0,2), uniform(0,2), uniform(-1,1)]) # assign random values between 0 and 2 to all the normalized parameters, with the exception of the exponent, -1 <= gama <= 1
-            solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol':1e-10, 'maxiter': 1000})
+            solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 0.015, 'maxiter': 1000})
         
 
         self.impedance_thru_rmk1()
@@ -692,33 +692,26 @@ class Material():
             data_in_bands = {}
             f_aux = 0
             for fi, f in enumerate(f_list):
-                print(f)
+                
                 if f < upper_limit[aux]:
-                    print(f)
-                    print(fi)
-                    print(len(f_list) - 1)
+
                     if fi == (len(f_list) - 1):
                         data_in_bands [center_freq[aux]] = np.mean(self.statistical_alpha[f_aux:fi+1])
-                        print(11)
 
                     else:
                         pass   
-                        print(111)
 
                 else:
                     data_in_bands [center_freq[aux]] = np.mean(self.statistical_alpha[f_aux:fi])
-                    print(2)
 
                     aux = aux + 1
                     f_aux = fi
 
                     if fi == (len(f_list) - 1): 
                         data_in_bands [center_freq[aux]] = self.statistical_alpha[fi]
-                        print(22)
 
                     while f > upper_limit[aux]:
                         aux = aux + 1
-                        print(222)
 
             lists = sorted(data_in_bands.items()) # sorted by key, return a list of tuples
             bands, data_in_bands = zip(*lists) # unpack a list of pairs into two tuples
