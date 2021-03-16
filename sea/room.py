@@ -368,6 +368,8 @@ class Room:
         
         for fi,f in enumerate(self.frequencies.freq_vec):
             
+            self.current_freq = f
+            
             print ("Working on frequency = %0.3f Hz." % f)
             
             #Generate mesh for this frequency:
@@ -423,6 +425,7 @@ class Room:
             for si, source in enumerate(self.sources):
                 
                 print ("Working on source %s of %s." % (si+1, len(self.sources)))
+                self.current_source = source
                 
                 if source.type == "monopole":
                 
@@ -528,6 +531,7 @@ class Room:
                     for ri, receiver in enumerate(self.receivers):
 
                         print ("Working on receiver %s of %s." % (ri+1, len(self.receivers)))
+                        self.current_receiver = receiver
 
                         if receiver.type == "omni":
 
@@ -552,10 +556,6 @@ class Room:
                             self.total_pressure.append(pT) 
                             
                             del dlp_pot, slp_pot, pScat, distance, pInc, pT
-
-                            self.simulated_frequencies.append(f)
-                            self.simulated_sources.append(source)
-                            self.simulated_receivers.append(receiver)
                                                       
                             gc.collect(generation=0)
                             gc.collect(generation=1)
@@ -661,10 +661,6 @@ class Room:
 
                             del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
 
-                            self.simulated_frequencies.append(f)
-                            self.simulated_sources.append(source)
-                            self.simulated_receivers.append(receiver)
-
                             #print("Collecting garbage...")
                             gc.collect(generation=0)
                             gc.collect(generation=1)
@@ -732,13 +728,19 @@ class Room:
                     for r_i, r in enumerate(self.receivers):
                         if s_i == source and r_i == receiver: 
                             
+                            try:
+                                i = np.where(self.frequencies.freq_vec == self.current_freq)[0][0]
+                                simulated_frequencies = self.frequencies.freq_vec[0:i+1]
+                            except:
+                                raise ValueError("There is no result yet.")
+                            
                             if r.type == "omni":
-                                plt.plot(self.simulated_frequencies, 20*np.log10(np.abs(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)])/2e-5))
+                                plt.plot(simulated_frequencies, 20*np.log10(np.abs(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)])/2e-5))
                                 plt.title("Room transfer function")
                                 plt.legend("Source %s, receiver %s" % (s_i, r_i))
                             else:                                 
-                                plt.plot(self.simulated_frequencies, 20*np.log10(np.abs([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
-                                plt.plot(self.simulated_frequencies, 20*np.log10(np.abs([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
+                                plt.plot(simulated_frequencies, 20*np.log10(np.abs([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
+                                plt.plot(simulated_frequencies, 20*np.log10(np.abs([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
                                 plt.title("Binaural room transfer functions for source %s, receiver %s" % (s_i, r_i))
                                 plt.legend(["left", "right"])
 
