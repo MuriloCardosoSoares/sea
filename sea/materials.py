@@ -648,7 +648,7 @@ class Material():
 
         self.impedance_thru_rmk1()
         
-        print("The solution of the optimization problem leads to rmk+1 parameters equal to %s.\n Impedances, admittances and everything else related to it was already calculated." % self.rmk1)
+        print("The solution of the optimization problem leads to rmk+1 parameters equal to %s.\n Impedances, admittances and everything else related to it was already calculated.\n" % self.rmk1)
         
         
     def alpha_in_bands (self, **kwargs):
