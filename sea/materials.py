@@ -848,6 +848,9 @@ class Material():
                 + str(self.openings_radius) + " [m], being the perforation rate " + str(self.perforation_rate) 
                 + ".\nThe air cavity depth is " + str(self.air_cavity_depth) + " [m].\n")
         
+            elif self.absorber_type == "hard":
+                return ("Generic hard material.\n")
+        
         else:
             return("Generic material. Use plot method to get more information.\n")
         
