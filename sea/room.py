@@ -544,17 +544,17 @@ class Room:
                                 pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated, receiver.coord.reshape(3) - source.coord.reshape(3))).reshape(1)
 
                             pT = pScat + pInc
-
-                            del boundary_pressure, boundary_velocity
                             
                             self.scattered_pressure.append(pScat)
                             self.incident_pressure.append(pInc)
                             self.total_pressure.append(pT) 
+                            
+                            del dlp_pot, slp_pot, pScat, distance, pInc, pT
 
                             self.simulated_frequencies.append(f)
                             self.simulated_sources.append(source)
                             self.simulated_receivers.append(receiver)
-
+                                                      
                             gc.collect(generation=0)
                             gc.collect(generation=1)
                             gc.collect(generation=2)
@@ -657,7 +657,7 @@ class Room:
                             self.incident_pressure.append(pInc)
                             self.total_pressure.append(pT) 
 
-                            del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, boundary_pressure, boundary_velocity, space, sub_spaces, msh, spaceNumDOF, iDOF, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
+                            del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
 
                             self.simulated_frequencies.append(f)
                             self.simulated_sources.append(source)
@@ -670,7 +670,15 @@ class Room:
                             
                             if save == True:
                                 self.save()
-        
+                                
+                    del boundary_pressure, boundary_velocity
+                    
+            del space, msh
+            try:
+                sub_spaces, spaceNumDOF, iDOF 
+            except:
+                pass
+            
             bempp.api.clear_fmm_cache()
                 
 
