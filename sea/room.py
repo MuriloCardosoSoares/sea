@@ -413,6 +413,12 @@ class Room:
                 space, space, space, k, assembler="dense", device_interface='numba')
             slp = bempp.api.operators.boundary.helmholtz.single_layer(
                 space, space, space, k,assembler="dense", device_interface='numba')
+            
+            a = 1j*k*self.air.c0*self.air.rho0
+            Y = a*(mu_op)
+            lhs = (0.5*identity+dlp) - slp*Y
+            
+            del mu_op, identity, dlp, slp, a
 
             for si, source in enumerate(self.sources):
                 
@@ -497,11 +503,7 @@ class Room:
                 
                 #rhs = bempp.api.GridFunction.from_zeros(self.space)
                     rhs = bempp.api.GridFunction(space, fun=source_fun)
-
-                                    
-                a = 1j*k*self.air.c0*self.air.rho0
-                Y = a*(mu_op)
-                lhs = (0.5*identity+dlp) - slp*Y
+                    
 
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
                 boundary_velocity = Y*boundary_pressure - rhs
@@ -512,7 +514,7 @@ class Room:
                 if save == True:
                     self.save()
                     
-                del mu_op, identity, dlp, slp, rhs, a, Y, lhs, info 
+                del rhs 
                 try:
                     del source_parameters
                 except:
@@ -673,7 +675,7 @@ class Room:
                                 
                     del boundary_pressure, boundary_velocity
                     
-            del space, msh
+            del space, msh, Y, lhs
             try:
                 sub_spaces, spaceNumDOF, iDOF 
             except:
