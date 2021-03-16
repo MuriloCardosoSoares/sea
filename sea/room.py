@@ -274,7 +274,7 @@ class Room:
         from bempp.api.grid.grid import Grid
 
         try:
-            self.generate_mesh(self.air.c0, self.frequencies.freq_vec[-1])
+            self.generate_mesh(self.air.c0, self.frequencies.freq_vec[0])
         except:
             self.generate_mesh(self.air.c0, 100)
             
