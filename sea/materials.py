@@ -579,7 +579,7 @@ class Material():
                 difference = alpha_in - self.octave_bands_statistical_alpha
                 
             squared_l2_norm = np.real(np.inner(difference, difference))
-
+            print(squared_l2_norm)
             return squared_l2_norm
 
 
