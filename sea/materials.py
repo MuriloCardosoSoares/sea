@@ -464,7 +464,7 @@ class Material():
             self.rmk1 = kwargs.get("parameters")
             
         elif self.rmk1.size == 0:
-            raise ValueError("It not defined rmk+1 parameters yet.")  
+            raise ValueError("It is not defined rmk+1 parameters yet.")  
         
         ############################################################    
         k = self.rmk1[0]*(10**4)
