@@ -694,7 +694,9 @@ class Material():
             for fi, f in enumerate(f_list):
                 print(f)
                 if f < upper_limit[aux]:
-                    print(1)
+                    print(f)
+                    print(fi)
+                    print(len(self.freq) - 1)
                     if fi == (len(self.freq) - 1):
                         data_in_bands [center_freq[aux]] = np.mean(self.statistical_alpha[f_aux:fi+1])
                         print(11)
