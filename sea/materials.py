@@ -555,7 +555,7 @@ class Material():
             freqs = np.array([np.mean((center_freq[aux], lower_limit[aux])), center_freq[aux], np.mean((upper_limit[aux], center_freq[aux]))])
             f_list = np.append(f_list,freqs)
             aux += 1
-            
+        print(f_list)    
         #################################################
         # Defines cost function to be minimized
         
