@@ -76,7 +76,7 @@ class Room:
         
         
     def list_receivers(self):
-        print("Receivers coordinates are:")
+        print("Receivers are:")
         for receiver in self.receivers:
             print (receiver)
             
