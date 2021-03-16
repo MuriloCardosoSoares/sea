@@ -692,28 +692,31 @@ class Material():
             data_in_bands = {}
             f_aux = 0
             for fi, f in enumerate(f_list):
-
+                print(fi)
                 if f < upper_limit[aux]:
-
+                    print(1)
                     if fi == (len(self.freq) - 1):
                         data_in_bands [center_freq[aux]] = np.mean(self.statistical_alpha[f_aux:fi+1])
+                        print(11)
 
                     else:
                         pass   
+                        print(111)
 
                 else:
                     data_in_bands [center_freq[aux]] = np.mean(self.statistical_alpha[f_aux:fi])
+                    print(2)
 
                     aux = aux + 1
                     f_aux = fi
 
                     if fi == (len(self.freq) - 1): 
-
                         data_in_bands [center_freq[aux]] = self.statistical_alpha[fi]
+                        print(22)
 
                     while f > upper_limit[aux]:
-
                         aux = aux + 1
+                        print(222)
 
             lists = sorted(data_in_bands.items()) # sorted by key, return a list of tuples
             bands, data_in_bands = zip(*lists) # unpack a list of pairs into two tuples
