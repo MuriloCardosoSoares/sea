@@ -513,9 +513,6 @@ class Room:
 
                 self.boundary_pressure.append (boundary_pressure.coefficients)
                 self.boundary_velocity.append (boundary_velocity.coefficients)
-                
-                if save == True:
-                    self.save()
                     
                 del rhs 
                 try:
@@ -560,9 +557,6 @@ class Room:
                             gc.collect(generation=0)
                             gc.collect(generation=1)
                             gc.collect(generation=2)
-
-                            if save == True:
-                                self.save()
 
                         else:
 
@@ -665,9 +659,6 @@ class Room:
                             gc.collect(generation=0)
                             gc.collect(generation=1)
                             gc.collect(generation=2)
-                            
-                            if save == True:
-                                self.save()
                                 
                     del boundary_pressure, boundary_velocity
                     
@@ -678,6 +669,10 @@ class Room:
                 pass
             
             bempp.api.clear_fmm_cache()
+            
+                                        
+            if save == True:
+                self.save()
                 
 
     def receiver_evaluate (self, source, receiver, **kwargs):
