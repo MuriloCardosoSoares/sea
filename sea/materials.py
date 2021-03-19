@@ -225,7 +225,7 @@ class Material():
         self.flow_resistivity = parameters[4]
         self.porous_layer_thickness = parameters[5]
 
-        m = self.rho0/self.perforation_rate*(self.panel_thickness + 1.7*self.openings_radius)       # superficial density of the gas in each perfuration
+        m = self.rho0*self.perforation_rate*(self.panel_thickness + 1.7*self.openings_radius)       # superficial density of the gas in each perfuration
         z_t = 1j*self.w*m                 # impedance of a single opening
 
         # cavity impedance 
