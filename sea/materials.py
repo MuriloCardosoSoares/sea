@@ -324,7 +324,7 @@ class Material():
         
         z_e = (((self.rho0*self.air_dynamic_viscosity*self.w)/2)**0.5 + 1j*1.7*self.rho0*self.w*self.openings_radius)/(self.rho0*self.c0)
         
-        self.normalized_surface_impedance = (z_t+z_e)/self.perforation_rate - 1j*1/(np.tan((self.k0)*self.air_cavity_depth))
+        self.normalized_surface_impedance = np.conj((z_t+z_e)/self.perforation_rate - 1j*1/(np.tan((self.k0)*self.air_cavity_depth)))
         
         self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
         self.admittance = 1/self.normalized_surface_impedance
