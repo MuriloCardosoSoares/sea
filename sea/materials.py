@@ -106,7 +106,7 @@ class Material():
         self.surface_impedance = -1j*(self.characteristic_impedance)/(np.cos(theta_t))/np.tan((self.characteristic_k)*np.cos(theta_t)*self.thickness) 
         
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
-        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        self.admittance = 1/self.normalized_surface_impedance
         
         self.impedance2alpha()
         
@@ -148,7 +148,7 @@ class Material():
         self.surface_impedance = double_layer(air_surf_imp, self.characteristic_impedance, self.characteristic_c, self.characteristic_k, self.thickness, self.c0, self.theta)
 
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
-        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        self.admittance = 1/self.normalized_surface_impedance
         
         self.impedance2alpha()
         
@@ -187,7 +187,7 @@ class Material():
         self.surface_impedance = 1j*self.w*self.mass_per_unit_area + z_si
         
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
-        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        self.admittance = 1/self.normalized_surface_impedance
         
         self.impedance2alpha()
         
@@ -238,7 +238,7 @@ class Material():
         self.surface_impedance = z_t/self.perforation_rate + z_cav
         
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
-        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        self.admittance = 1/self.normalized_surface_impedance
         
         self.impedance2alpha()
         
@@ -283,7 +283,7 @@ class Material():
         self.surface_impedance = r + 1j*self.w*m - 1j*(self.rho0*self.c0)*1/(np.tan((self.k0)*self.air_cavity_depth)) 
         
         self.normalized_surface_impedance = np.conj(self.surface_impedance)/(self.rho0*self.c0)
-        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        self.admittance = 1/self.normalized_surface_impedance
         
         self.impedance2alpha()
         
@@ -327,7 +327,7 @@ class Material():
         self.normalized_surface_impedance = (z_t+z_e)/self.perforation_rate - 1j*1/(np.tan((self.k0)*self.air_cavity_depth))
         
         self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
-        self.admittance = 1/np.conj(self.normalized_surface_impedance)
+        self.admittance = 1/self.normalized_surface_impedance
         
         self.impedance2alpha()
         
