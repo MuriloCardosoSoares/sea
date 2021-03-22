@@ -164,7 +164,7 @@ class Room:
         #gmsh.option.setNumber("Mesh.MeshSizeMin", 0)
         #gmsh.model.occ.synchronize()
         
-        gmsh.model.mesh.generate(1)
+        gmsh.model.mesh.generate(3)
         gmsh.model.mesh.setOrder(1)
         
         gmsh.write("last_msh.msh")
@@ -283,7 +283,6 @@ class Room:
         except:
             self.generate_mesh(self.air.c0, 100)
             
-        msh = bempp.api.import_grid(self.path_to_msh)
         
         def configure_plotly_browser_state():
             import IPython
