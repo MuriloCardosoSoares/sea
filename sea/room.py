@@ -10,8 +10,8 @@ from matplotlib import pylab as plt
 import cloudpickle
 import collections
 bempp.api.PLOT_BACKEND = "gmsh"
-#import gmsh_api.gmsh as gmsh
-import gmsh
+import gmsh_api.gmsh as gmsh
+#import gmsh
 
 import plotly
 
