@@ -159,8 +159,8 @@ class Room:
         #gmsh.option.setNumber("Mesh.CharacteristicLengthMin", 0)
         #gmsh.option.setNumber("Mesh.CharacteristicLengthMax", (c0/freq)/6)
         
-        gmsh.option.setNumber("Mesh.MeshSizeMax", 0)
         gmsh.option.setNumber("Mesh.MeshSizeMax", (c0/freq)/6)
+        gmsh.option.setNumber("Mesh.MeshSizeMin", 0)
         #gmsh.model.occ.synchronize()
         
         gmsh.model.mesh.generate(3)
