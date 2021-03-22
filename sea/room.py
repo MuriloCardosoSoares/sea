@@ -165,7 +165,7 @@ class Room:
         #gmsh.model.occ.synchronize()
         
         gmsh.model.mesh.generate(2)
-        #gmsh.model.mesh.setOrder(1)
+        gmsh.model.mesh.setOrder(1)
         
         gmsh.write("last_msh.msh")
         gmsh.finalize()
