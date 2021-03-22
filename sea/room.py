@@ -46,9 +46,12 @@ class Room:
         self.sources = []
         self.materials = []
         
-        self.simulated_frequencies = []
-        self.simulated_sources = []
-        self.simulated_receivers = []
+        self.boundary_pressure = [] 
+        self.boundary_velocity = [] 
+        
+        self.scattered_pressure = []
+        self.incident_pressure = []
+        self.total_pressure = []
         
         
     def air_properties(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
@@ -358,13 +361,6 @@ class Room:
                 admittances.append(material.admittance)
                 
         bempp.api.DEVICE_PRECISION_CPU = 'single'  
-            
-        self.boundary_pressure = [] 
-        self.boundary_velocity = [] 
-        
-        self.scattered_pressure = []
-        self.incident_pressure = []
-        self.total_pressure = []
         
         for fi,f in enumerate(self.frequencies.freq_vec):
             
