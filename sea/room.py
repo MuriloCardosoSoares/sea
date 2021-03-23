@@ -10,8 +10,8 @@ from matplotlib import pylab as plt
 import cloudpickle
 import collections
 bempp.api.PLOT_BACKEND = "gmsh"
-#import gmsh_api.gmsh as gmsh
-import gmsh.api.gmsh as gmsh
+import gmsh_api.gmsh as gmsh
+#import gmsh.api.gmsh as gmsh
 
 import plotly
 
@@ -164,7 +164,7 @@ class Room:
         gmsh.option.setNumber("Mesh.MeshSizeMin", 0)
         #gmsh.model.occ.synchronize()
         
-        gmsh.model.mesh.generate(2)
+        gmsh.model.mesh.generate(6)
         gmsh.model.mesh.setOrder(1)
         
         gmsh.write("last_msh.msh")
