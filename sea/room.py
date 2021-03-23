@@ -174,9 +174,9 @@ class Room:
         max_element_size = (c0/freq)/6
         #os.system("!gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh")
         
-        from subprocess import check_call
+        from subprocess 
 
-        check_call(["!gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh"])
+        subprocess.call("gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh")
         
         '''
         #Reorder physical groups       
