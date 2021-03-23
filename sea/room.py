@@ -149,6 +149,7 @@ class Room:
         
         import meshio
         
+        '''
         gmsh.initialize(sys.argv)
         try:
             gmsh.open(self.path_to_geo) # Open .geo file
@@ -169,6 +170,9 @@ class Room:
         
         gmsh.write("last_msh.msh")
         gmsh.finalize()
+        '''
+        
+        os.system("!gmsh -clmax $a -2 Scene_9_inverted_faces_domains_Copia.geo -o Scene_9_inverted_faces_domains_teste.msh")
         
         #Reorder physical groups       
         gmsh.initialize(sys.argv)
