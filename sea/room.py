@@ -176,7 +176,7 @@ class Room:
         
         import subprocess 
 
-        subprocess.call("gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh")
+        subprocess.call("!gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh")
         
         '''
         #Reorder physical groups       
