@@ -11,7 +11,7 @@ import cloudpickle
 import collections
 bempp.api.PLOT_BACKEND = "gmsh"
 #import gmsh_api.gmsh as gmsh
-import gmsh.api.gmsh as gmsh
+import gmsh.api as gmsh
 
 import plotly
 
