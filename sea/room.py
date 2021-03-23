@@ -164,7 +164,7 @@ class Room:
         #gmsh.option.setNumber("Mesh.MeshSizeMin", 0)
         #gmsh.model.occ.synchronize()
         
-        gmsh.model.mesh.generate(8)
+        gmsh.model.mesh.generate(2)
         gmsh.model.mesh.setOrder(1)
         
         gmsh.write("last_msh.msh")
