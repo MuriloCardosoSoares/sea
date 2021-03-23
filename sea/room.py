@@ -171,8 +171,8 @@ class Room:
         gmsh.write("last_msh.msh")
         gmsh.finalize()
         '''
-        
-        os.system("!gmsh -clmax $a -2 Scene_9_inverted_faces_domains_Copia.geo -o Scene_9_inverted_faces_domains_teste.msh")
+        max_element_size = (c0/freq)/6
+        os.system("!gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh")
         
         #Reorder physical groups       
         gmsh.initialize(sys.argv)
