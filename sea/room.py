@@ -157,7 +157,7 @@ class Room:
             self.add_geometry()           
             gmsh.open(self.path_to_geo) # Open .geo file
         
-        #gmsh.option.setNumber("Mesh.CharacteristicLengthMin", 0)
+        gmsh.option.setNumber("Mesh.CharacteristicLengthMin", (c0/freq)/6)
         gmsh.option.setNumber("Mesh.CharacteristicLengthMax", (c0/freq)/6)
         
         #gmsh.option.setNumber("Mesh.MeshSizeMax", (c0/freq)/6)
