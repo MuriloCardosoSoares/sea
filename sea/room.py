@@ -703,9 +703,9 @@ class Room:
                                 
                     del boundary_pressure, boundary_velocity
                     
-            del space, msh, Y, lhs
+            del space, grid, Y, lhs
             try:
-                sub_spaces, spaceNumDOF, iDOF 
+                del sub_spaces, spaceNumDOF, iDOF 
             except:
                 pass
             
