@@ -279,7 +279,7 @@ class Room:
             print(material)          
 
             
-    def view(self, f=self.frequencies.freq_vec[0], opacity=0.2):
+    def view(self, freqs=[], opacity=0.2):
         
         from matplotlib import style
         style.use("seaborn-talk")
@@ -298,58 +298,63 @@ class Room:
         msh = bempp.api.import_grid(self.path_to_msh)
         '''
         
-        try:
-            msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
-            reorder_physical_groups(msh_path)
-            grid = bempp.api.import_grid(msh_path)
-        except:
-            raise ValueError("Mesh file for %s Hz was not found." % f)
-                
-        def configure_plotly_browser_state():
-            import IPython
-            display(IPython.core.display.HTML('''
-                    <script src="/static/components/requirejs/require.js"></script>
-                    <script>
-                      requirejs.config({
-                        paths: {
-                          base: '/static/base',
-                          plotly: 'https://cdn.plot.ly/plotly-1.5.1.min.js?noext',
-                        },
-                      });
-                    </script>
-                    '''))
+        if freqs.size == 0:
+            freqs = [self.frequencies.freq_vec[0]]
+        
+        for f in freqs:
+            
+            try:
+                msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
+                reorder_physical_groups(msh_path)
+                grid = bempp.api.import_grid(msh_path)
+            except:
+                raise ValueError("Mesh file for %s Hz was not found." % f)
 
-        plotly.offline.init_notebook_mode()
+            def configure_plotly_browser_state():
+                import IPython
+                display(IPython.core.display.HTML('''
+                        <script src="/static/components/requirejs/require.js"></script>
+                        <script>
+                          requirejs.config({
+                            paths: {
+                              base: '/static/base',
+                              plotly: 'https://cdn.plot.ly/plotly-1.5.1.min.js?noext',
+                            },
+                          });
+                        </script>
+                        '''))
 
-        vertices = grid.vertices
-        elements = grid.elements
-        fig = ff.create_trisurf(
-            x=vertices[0, :],
-            y=vertices[1, :],
-            z=vertices[2, :],
-            simplices=elements.T,
-            color_func=elements.shape[1] * ["rgb(255, 222, 173)"],
-        )
-        fig['data'][0].update(opacity=opacity)
-        fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
+            plotly.offline.init_notebook_mode()
 
-        if hasattr(self, "receivers"):
-            x = []; y = []; z = []
-            for receiver in self.receivers:
-                x = np.append(x, receiver.coord[0,0]); y = np.append(y, receiver.coord[0,1]); z = np.append(z, receiver.coord[0,2])
-            fig.add_trace(go.Scatter3d(x=x, y=y, z=z, marker=dict(size=8, color='rgb(0, 0, 128)', symbol='circle'),name="Receivers"))
-       
-        if hasattr(self, "sources"):
-            x = []; y = []; z = []
-            for source in self.sources:
-                x = np.append(x, source.coord[0,0]); y = np.append(y, source.coord[0,1]); z = np.append(z, source.coord[0,2])
-            fig.add_trace(go.Scatter3d(x=x, y=y, z=z, marker=dict(size=8, color='rgb(128, 0, 0)', symbol='square'),name="Sources"))
+            vertices = grid.vertices
+            elements = grid.elements
+            fig = ff.create_trisurf(
+                x=vertices[0, :],
+                y=vertices[1, :],
+                z=vertices[2, :],
+                simplices=elements.T,
+                color_func=elements.shape[1] * ["rgb(255, 222, 173)"],
+            )
+            fig['data'][0].update(opacity=opacity)
+            fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
 
-       
-        fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
+            if hasattr(self, "receivers"):
+                x = []; y = []; z = []
+                for receiver in self.receivers:
+                    x = np.append(x, receiver.coord[0,0]); y = np.append(y, receiver.coord[0,1]); z = np.append(z, receiver.coord[0,2])
+                fig.add_trace(go.Scatter3d(x=x, y=y, z=z, marker=dict(size=8, color='rgb(0, 0, 128)', symbol='circle'),name="Receivers"))
 
-        configure_plotly_browser_state() 
-        plotly.offline.iplot(fig)
+            if hasattr(self, "sources"):
+                x = []; y = []; z = []
+                for source in self.sources:
+                    x = np.append(x, source.coord[0,0]); y = np.append(y, source.coord[0,1]); z = np.append(z, source.coord[0,2])
+                fig.add_trace(go.Scatter3d(x=x, y=y, z=z, marker=dict(size=8, color='rgb(128, 0, 0)', symbol='square'),name="Sources"))
+
+
+            fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
+
+            configure_plotly_browser_state() 
+            plotly.offline.iplot(fig)
         
         
     def run(self, save=True):
