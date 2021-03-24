@@ -54,6 +54,8 @@ class Room:
         self.incident_pressure = []
         self.total_pressure = []
         
+        self.simulated_freqs = []
+        
         
     def air_properties(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
         self.air = Air(c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0)
@@ -149,7 +151,7 @@ class Room:
         
         import meshio
         
-        '''
+        
         gmsh.initialize(sys.argv)
         try:
             gmsh.open(self.path_to_geo) # Open .geo file
@@ -170,17 +172,15 @@ class Room:
         
         gmsh.write("last_msh.msh")
         gmsh.finalize()
-        '''
+
         max_element_size = (c0/freq)/6
         #os.system("gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh")
         
         #import subprocess 
 
         #subprocess.run(["gmsh", "-clmax", "$max_element_size", "-2", "$self.path_to_geo", "-o", "last_msh.msh"])
+                
         
-        !gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh
-        
-        '''
         #Reorder physical groups       
         gmsh.initialize(sys.argv)
         gmsh.open("last_msh.msh")
@@ -203,7 +203,7 @@ class Room:
             
         gmsh.write("last_msh.msh")
         gmsh.finalize() 
-        '''
+        
         self.path_to_msh = "last_msh.msh"
     
     
@@ -279,7 +279,7 @@ class Room:
             print(material)          
 
             
-    def view(self, opacity = 0.2):
+    def view(self, f=self.frequencies.freq_vec[0], opacity=0.2):
         
         from matplotlib import style
         style.use("seaborn-talk")
@@ -289,13 +289,22 @@ class Room:
         from bempp.api import GridFunction
         from bempp.api.grid.grid import Grid
 
+        '''
         try:
             self.generate_mesh(self.air.c0, self.frequencies.freq_vec[0])
         except:
             self.generate_mesh(self.air.c0, 20)
             
         msh = bempp.api.import_grid(self.path_to_msh)
+        '''
         
+        try:
+            msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
+            reorder_physical_groups(msh_path)
+            grid = bempp.api.import_grid(msh_path)
+        except:
+            raise ValueError("Mesh file for %s Hz was not found." % f)
+                
         def configure_plotly_browser_state():
             import IPython
             display(IPython.core.display.HTML('''
@@ -312,8 +321,8 @@ class Room:
 
         plotly.offline.init_notebook_mode()
 
-        vertices = msh.vertices
-        elements = msh.elements
+        vertices = grid.vertices
+        elements = grid.elements
         fig = ff.create_trisurf(
             x=vertices[0, :],
             y=vertices[1, :],
@@ -380,7 +389,7 @@ class Room:
             self.current_freq = f
             
             print ("Working on frequency = %0.3f Hz." % f)
-            
+            '''
             #Generate mesh for this frequency:
             try:
                 self.generate_mesh(self.air.c0, f)
@@ -391,9 +400,19 @@ class Room:
                 
                 self.generate_mesh(self.air.c0, f)
                 msh = bempp.api.import_grid(self.path_to_msh)
-
+            '''
+            
+            #Open and reorder physical groups of the .msh file for this frequency:
+            try:
+                msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
+                reorder_physical_groups(msh_path)
+                grid = bempp.api.import_grid(msh_path)
+            except:
+                raise ValueError("Mesh file for %s Hz was not found." % f)
+                
+            
             #space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
-            space = bempp.api.function_space(msh, "DP", 0)  # como nos code antigos
+            space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos
 
             #Generate subspaces. It is needed if any of the receivers is binaural.
             if len(self.receivers) != 0 and any(receiver.type == "binaural" for receiver in self.receivers):  
@@ -681,6 +700,8 @@ class Room:
             if save == True:
                 self.save()
                 
+            self.simulated_freqs.append(f)
+            
 
     def receiver_evaluate (self, source, receiver, **kwargs):
         
@@ -775,3 +796,33 @@ class Room:
         elif place == "local":
             files.download(saved_name)
             
+            
+def reorder_physical_groups(msh_path):
+    """
+    This function reorders the physical groups of the .msh file
+    """
+
+    import meshio
+
+    #Reorder physical groups       
+    gmsh.initialize(sys.argv)
+    gmsh.open(msh_path)
+
+    phgr = gmsh.model.getPhysicalGroups(2)
+
+    odph = []
+    for i in range(len(phgr)):
+        odph.append(phgr[i][1]) 
+
+    phgr_ordered = [i for i in range(0, len(phgr))]
+    phgr_ent = []
+    for i in range(len(phgr)):
+        phgr_ent.append(gmsh.model.getEntitiesForPhysicalGroup(phgr[i][0],phgr[i][1]))
+    gmsh.model.removePhysicalGroups()
+
+    for i in range(len(phgr)):
+        gmsh.model.addPhysicalGroup(2, phgr_ent[i],phgr_ordered[i])
+
+
+    gmsh.write(msh_path)
+    gmsh.finalize() 
