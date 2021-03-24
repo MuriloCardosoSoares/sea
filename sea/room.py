@@ -144,7 +144,7 @@ class Room:
             self.path_to_msh = key
      
     
-    def generate_mesh(self, c0, freq):
+    def generate_mesh(self, c0, freq, factor):
         """
         This function generates a .msh file from the .geo file uploaded.
         """
@@ -161,7 +161,7 @@ class Room:
             gmsh.open(self.path_to_geo) # Open .geo file
         
         gmsh.option.setNumber("Mesh.CharacteristicLengthMin", 0)
-        gmsh.option.setNumber("Mesh.CharacteristicLengthMax", (c0/freq)/8)
+        gmsh.option.setNumber("Mesh.CharacteristicLengthMax", (c0/freq)/factor)
         
         #gmsh.option.setNumber("Mesh.MeshSizeMax", (c0/freq)/6)
         #gmsh.option.setNumber("Mesh.MeshSizeMin", 0)
@@ -307,7 +307,7 @@ class Room:
             '''
             
             
-            self.generate_mesh(self.air.c0, f)
+            self.generate_mesh(self.air.c0, f, 6)
 
             grid = bempp.api.import_grid(self.path_to_msh)
             
@@ -397,14 +397,23 @@ class Room:
             print ("Working on frequency = %0.3f Hz." % f)
 
             #Generate mesh for this frequency:
+            if f <= 50:
+                factor = 12
+            elif f <= 100:
+                factor = 10
+            elif f <= 150:
+                factor = 8            
+            else:
+                factor = 6
+                
             try:
-                self.generate_mesh(self.air.c0, f)
+                self.generate_mesh(self.air.c0, f, factor)
                 grid = bempp.api.import_grid(self.path_to_msh)
             except:
                 print("Geometry file not found. Please, upload it:")
                 self.add_geometry()
                 
-                self.generate_mesh(self.air.c0, f)
+                self.generate_mesh(self.air.c0, f, factor)
                 grid = bempp.api.import_grid(self.path_to_msh)
 
             '''
