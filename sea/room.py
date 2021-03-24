@@ -297,7 +297,7 @@ class Room:
             
         msh = bempp.api.import_grid(self.path_to_msh)
         '''
-        
+        freqs = np.array(freqs)
         if freqs.size == 0:
             freqs = [self.frequencies.freq_vec[0]]
         
