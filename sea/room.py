@@ -161,19 +161,19 @@ class Room:
             gmsh.open(self.path_to_geo) # Open .geo file
         
         gmsh.option.setNumber("Mesh.CharacteristicLengthMin", 0)
-        gmsh.option.setNumber("Mesh.CharacteristicLengthMax", (c0/freq)/6)
+        gmsh.option.setNumber("Mesh.CharacteristicLengthMax", (c0/freq)/8)
         
         #gmsh.option.setNumber("Mesh.MeshSizeMax", (c0/freq)/6)
         #gmsh.option.setNumber("Mesh.MeshSizeMin", 0)
         #gmsh.model.occ.synchronize()
         
         gmsh.model.mesh.generate(2)
-        gmsh.model.mesh.setOrder(1)
+        #gmsh.model.mesh.setOrder(1)
         
         gmsh.write("last_msh.msh")
         gmsh.finalize()
 
-        max_element_size = (c0/freq)/6
+        #max_element_size = (c0/freq)/6
         #os.system("gmsh -clmax $max_element_size -2 $self.path_to_geo -o last_msh.msh")
         
         #import subprocess 
@@ -289,27 +289,28 @@ class Room:
         from bempp.api import GridFunction
         from bempp.api.grid.grid import Grid
 
-        '''
-        try:
-            self.generate_mesh(self.air.c0, self.frequencies.freq_vec[0])
-        except:
-            self.generate_mesh(self.air.c0, 20)
-            
-        msh = bempp.api.import_grid(self.path_to_msh)
-        '''
         freqs = np.array(freqs)
         if freqs.size == 0:
-            freqs = [self.frequencies.freq_vec[0]]
+            try:
+                freqs = np.array([self.frequencies.freq_vec[0]])
+            except:
+                freqs = np.array([20])
         
         for f in freqs:
-            
+            '''
             try:
                 msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
                 reorder_physical_groups(msh_path)
                 grid = bempp.api.import_grid(msh_path)
             except:
                 raise ValueError("Mesh file for %s Hz was not found." % f)
+            '''
+            
+            
+            self.generate_mesh(self.air.c0, f)
 
+            grid = bempp.api.import_grid(self.path_to_msh)
+            
             def configure_plotly_browser_state():
                 import IPython
                 display(IPython.core.display.HTML('''
@@ -394,19 +395,19 @@ class Room:
             self.current_freq = f
             
             print ("Working on frequency = %0.3f Hz." % f)
-            '''
+
             #Generate mesh for this frequency:
             try:
                 self.generate_mesh(self.air.c0, f)
-                msh = bempp.api.import_grid(self.path_to_msh)
+                grid = bempp.api.import_grid(self.path_to_msh)
             except:
                 print("Geometry file not found. Please, upload it:")
                 self.add_geometry()
                 
                 self.generate_mesh(self.air.c0, f)
-                msh = bempp.api.import_grid(self.path_to_msh)
+                grid = bempp.api.import_grid(self.path_to_msh)
+
             '''
-            
             #Open and reorder physical groups of the .msh file for this frequency:
             try:
                 msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
@@ -414,7 +415,7 @@ class Room:
                 grid = bempp.api.import_grid(msh_path)
             except:
                 raise ValueError("Mesh file for %s Hz was not found." % f)
-                
+            '''   
             
             #space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
             space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos
