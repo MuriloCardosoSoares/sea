@@ -426,7 +426,7 @@ class Room:
                 raise ValueError("Mesh file for %s Hz was not found." % f)
             '''   
             
-            space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
+            space = bempp.api.function_space(grid, "P", 1) # como nos code do Guto
             #space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos
 
             #Generate subspaces. It is needed if any of the receivers is binaural.
