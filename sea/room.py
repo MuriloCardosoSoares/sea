@@ -426,8 +426,8 @@ class Room:
                 raise ValueError("Mesh file for %s Hz was not found." % f)
             '''   
             
-            #space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
-            space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos
+            space = bempp.api.function_space(msh, "P", 1) # como nos code do Guto
+            #space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos
 
             #Generate subspaces. It is needed if any of the receivers is binaural.
             if len(self.receivers) != 0 and any(receiver.type == "binaural" for receiver in self.receivers):  
@@ -442,6 +442,7 @@ class Room:
                 
             
             admittance = np.array([item[fi] for item in admittances])
+            print(admittance)
             k = self.air.k0[fi]
             
             @bempp.api.callable(complex=True, jit=True, parameterized=True)
