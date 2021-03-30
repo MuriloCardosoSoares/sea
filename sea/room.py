@@ -442,7 +442,6 @@ class Room:
                 
             
             admittance = np.array([item[fi] for item in admittances])
-            print(admittance)
             k = self.air.k0[fi]
             
             @bempp.api.callable(complex=True, jit=True, parameterized=True)
