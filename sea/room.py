@@ -722,12 +722,11 @@ class Room:
             
             bempp.api.clear_fmm_cache()
             
+            self.simulated_freqs.append(f)
                                         
             if save == True:
                 self.save()
-                
-            self.simulated_freqs.append(f)
-            
+                            
 
     def receiver_evaluate (self, source, receiver, **kwargs):
         
