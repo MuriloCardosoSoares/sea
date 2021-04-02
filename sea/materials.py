@@ -360,7 +360,7 @@ class Material():
             raise ValueError("Frequency vector is empty.")  
             
         else:
-            f_list = self.freq
+            f_list = self.frequencies.freq_vec
             k0 = self.k0
             
         ############################################################             
@@ -438,7 +438,55 @@ class Material():
         else:
             self.alpha_in_bands()
 
+           
+    def _55_rule(self):
+        
+        """
+        Computes real valued impedances from statistical absorption coefficients in octave bands considering the 55 degree rule.
+        """
+        
+        if self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.") 
+            
+        if self.third_octave_bands_statistical_alpha.size != 0 and self.third_octave_bands.size != 0:
+            lower_limit = lower[1]
+            upper_limit = upper[1]
+            center_freq = center[1]
+            
+            bands = self.third_octave_bands
+            alpha = self.third_octave_bands_statistical_alpha
 
+        elif self.octave_bands_statistical_alpha.size != 0 and self.octave_bands.size != 0:
+            lower_limit = lower[0]
+            upper_limit = upper[0]
+            center_freq = center[0]
+            
+            bands = self.octave_bands
+            alpha = self.octave_bands_statistical_alpha
+            
+        else:
+            raise ValueError("There is not enough information about this material yet.") 
+            
+        tck_alpha = interpolate.splrep(bands, alpha, k=1)
+        
+        for fi,f in enumerate(self.freq):
+            
+            if f < bands[0]:
+                self.admittance.append(np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0))          
+                self.statistical_alpha.append(interpolate.splev(bands[0], tck_alpha, der=0))
+                
+            elif f > bands[-1]:
+                self.admittance.append((np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0) )
+                self.statistical_alpha.append(interpolate.splev(bands[-1], tck_alpha, der=0))
+                
+            else:
+                self.admittance.append((np.cos(55*np.pi/180)*(1-(1-interpolate.splev(f, tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(f, tck_alpha, der=0))**0.5)) / (self.rho0*self.c0))            
+                self.statistical_alpha.append(interpolate.splev(f, tck_alpha, der=0))
+                
+        self.surface_impedance = 1/self.admittance
+        self.normalized_surface_impedance = self.surface_impedance/(self.rho0*self.c0)
+             
+        
     def impedance_thru_rmk1(self, **kwargs):
     
         """
