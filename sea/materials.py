@@ -449,17 +449,17 @@ class Material():
             raise ValueError("Frequency vector is empty.") 
             
         if self.third_octave_bands_statistical_alpha.size != 0 and self.third_octave_bands.size != 0:
-            lower_limit = lower[1]
-            upper_limit = upper[1]
-            center_freq = center[1]
+            lower_limit = self.lower[1]
+            upper_limit = self.upper[1]
+            center_freq = self.center[1]
             
             bands = self.third_octave_bands
             alpha = self.third_octave_bands_statistical_alpha
 
         elif self.octave_bands_statistical_alpha.size != 0 and self.octave_bands.size != 0:
-            lower_limit = lower[0]
-            upper_limit = upper[0]
-            center_freq = center[0]
+            lower_limit = self.lower[0]
+            upper_limit = self.upper[0]
+            center_freq = self.center[0]
             
             bands = self.octave_bands
             alpha = self.octave_bands_statistical_alpha
