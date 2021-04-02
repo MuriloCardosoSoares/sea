@@ -472,7 +472,7 @@ class Material():
         for fi,f in enumerate(self.freq):
             
             if f < bands[0]:
-                self.admittance.append(np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0))          
+                self.admittance.append((np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0))          
                 self.statistical_alpha.append(interpolate.splev(bands[0], tck_alpha, der=0))
                 
             elif f > bands[-1]:
