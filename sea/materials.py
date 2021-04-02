@@ -469,20 +469,24 @@ class Material():
             
         tck_alpha = interpolate.splrep(bands, alpha, k=1)
         
+        admittance = np.zeros(len(self.freq))
+        statistical_alpha = np.zeros(len(self.freq))
         for fi,f in enumerate(self.freq):
             
             if f < bands[0]:
-                self.admittance.append((np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0))          
-                self.statistical_alpha.append(interpolate.splev(bands[0], tck_alpha, der=0))
+                admittance[fi] = (np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0)          
+                statistical_alpha[fi] = interpolate.splev(bands[0], tck_alpha, der=0)
                 
             elif f > bands[-1]:
-                self.admittance.append((np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0) )
-                self.statistical_alpha.append(interpolate.splev(bands[-1], tck_alpha, der=0))
+                admittance[fi] = (np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0) 
+                statistical_alpha[fi] = interpolate.splev(bands[-1], tck_alpha, der=0)
                 
             else:
-                self.admittance.append((np.cos(55*np.pi/180)*(1-(1-interpolate.splev(f, tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(f, tck_alpha, der=0))**0.5)) / (self.rho0*self.c0))            
-                self.statistical_alpha.append(interpolate.splev(f, tck_alpha, der=0))
-                
+                admittance[fi] = (np.cos(55*np.pi/180)*(1-(1-interpolate.splev(f, tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(f, tck_alpha, der=0))**0.5)) / (self.rho0*self.c0)           
+                sstatistical_alpha[fi] = interpolate.splev(f, tck_alpha, der=0)
+        
+        self.admittance = admittance
+        self.sstatistical_alpha = sstatistical_alpha
         self.surface_impedance = 1/self.admittance
         self.normalized_surface_impedance = self.surface_impedance/(self.rho0*self.c0)
              
