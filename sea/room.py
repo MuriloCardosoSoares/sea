@@ -778,20 +778,14 @@ class Room:
                 for s_i in np.arange(len(self.sources)):
                     for r_i, r in enumerate(self.receivers):
                         if s_i == source and r_i == receiver: 
-                            
-                            try:
-                                i = np.where(self.frequencies.freq_vec == self.current_freq)[0][0]
-                                simulated_frequencies = self.frequencies.freq_vec[0:i+1]
-                            except:
-                                raise ValueError("There is no result yet.")
-                            
+                                                            
                             if r.type == "omni":
-                                plt.plot(simulated_frequencies, 20*np.log10(np.abs(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)])/2e-5))
+                                plt.plot(self.simulated_frequencies, 20*np.log10(np.abs(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)])/2e-5))
                                 plt.title("Room transfer function")
                                 plt.legend(["Source %s, receiver %s" % (s_i, r_i)])
                             else:                                 
-                                plt.plot(simulated_frequencies, 20*np.log10(np.abs([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
-                                plt.plot(simulated_frequencies, 20*np.log10(np.abs([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
+                                plt.plot(self.simulated_frequencies, 20*np.log10(np.abs([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
+                                plt.plot(self.simulated_frequencies, 20*np.log10(np.abs([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
                                 plt.title("Binaural room transfer functions for source %s, receiver %s" % (s_i, r_i))
                                 plt.legend(["left", "right"])
 
