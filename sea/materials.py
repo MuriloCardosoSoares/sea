@@ -483,10 +483,10 @@ class Material():
                 
             else:
                 admittance[fi] = (np.cos(55*np.pi/180)*(1-(1-interpolate.splev(f, tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(f, tck_alpha, der=0))**0.5)) / (self.rho0*self.c0)           
-                sstatistical_alpha[fi] = interpolate.splev(f, tck_alpha, der=0)
+                statistical_alpha[fi] = interpolate.splev(f, tck_alpha, der=0)
         
         self.admittance = admittance
-        self.sstatistical_alpha = sstatistical_alpha
+        self.statistical_alpha = statistical_alpha
         self.surface_impedance = 1/self.admittance
         self.normalized_surface_impedance = self.surface_impedance/(self.rho0*self.c0)
              
