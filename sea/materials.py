@@ -360,7 +360,7 @@ class Material():
             raise ValueError("Frequency vector is empty.")  
             
         else:
-            f_list = self.frequencies.freq_vec
+            f_list = self.freq
             k0 = self.k0
             
         ############################################################             
