@@ -98,7 +98,7 @@ class Source():
         q - volume velocity [m^3/s]
         
     '''
-    def __init__(self, coord=[0.0, 0.0, 1.0], type="monopole", **kwargs):
+    def __init__(self, freq_vec, coord=[0.0, 0.0, 1.0], type="monopole", **kwargs):
         
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
         
@@ -137,8 +137,59 @@ class Source():
         elif type == "monopole":
             if "q" in kwargs:
                 self.q = np.array([kwargs["q"]], dtype = np.float32)
+                
+            elif "power_spec" in kwargs and "bands" in kwargs:
+                
+                power_spec = kwargs["power_spec"]
+                bands = kwargs["bands"]
+                
+                try:
+                    rho0 = kwargs["rho0"]
+                    c0 = kwargs["c0"]
+                except:
+                    raise ValueError("Rho0, c0 or both of them were not defined.") 
+
+                tck_power_spec = interpolate.splrep(bands, power_spec, k=1)
+
+                q = np.zeros(np.size(f_range))
+                power = np.zeros(np.size(f_range))
+
+                for fi,f in enumerate(freq_vec):
+
+                    if f < bands[0]:
+                        power[fi] = interpolate.splev(bands[0], tck_power_spec, der=0)
+
+                    else:    
+                        power[fi] = interpolate.splev(f, tck_power_spec, der=0)
+
+
+                for fi,f in enumerate(freq_vec):
+
+                    if f < bands[0]:
+                        q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(bands[0], tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
+
+                    else:    
+                        q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(f, tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
+
+                plt.plot (bands, power_spec, '.', f_range, power, '-' )
+                plt.title('Source power')
+                plt.legend(['Data','Polynomial fit'])
+                plt.xlim (f_range[0],f_range[-1])
+                plt.show()
+                
+            elif "nws" in kwargs:
+                
+                nws = kwargs["nws"]
+                try:
+                    rho0 = kwargs["rho0"]
+                    c0 = kwargs["c0"]
+                except:
+                    raise ValueError("Rho0, c0 or both of them were not defined.") 
+                
+                q = np.ones(len(freq_vec), dtype = np.float32) * (4*np.pi/rho0)*((rho0*c0*10**(nws/10)*10**(-12))/(2*np.pi))**0.5
+                
             else:
-                self.q = np.array([[1]], dtype = np.float32)  
+                self.q = np.ones(len(freq_vec), dtype = np.float32)  
         
         else:
             raise ValueError("Source type is not valid. It must be monopole or directional.") 
