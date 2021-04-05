@@ -101,6 +101,7 @@ class Source():
     '''
     def __init__(self, freq_vec, coord=[0.0, 0.0, 1.0], type="monopole", **kwargs):
         
+        self.freq_vec = freq_vec
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
         
         if type == "directional":
@@ -152,9 +153,9 @@ class Source():
 
                 tck_power_spec = interpolate.splrep(bands, power_spec, k=1)
 
-                q = np.zeros(np.size(freq_vec))
+                q = np.zeros(np.size(self.freq_vec))
 
-                for fi,f in enumerate(freq_vec):
+                for fi,f in enumerate(self.freq_vec):
 
                     if f < bands[0]:
                         q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(bands[0], tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
@@ -173,10 +174,10 @@ class Source():
                 except:
                     raise ValueError("Rho0, c0 or both of them were not defined.") 
                 
-                self.q = np.ones(len(freq_vec), dtype = np.float32) * (4*np.pi/rho0)*((rho0*c0*10**(nws/10)*10**(-12))/(2*np.pi))**0.5
+                self.q = np.ones(len(self.freq_vec), dtype = np.float32) * (4*np.pi/rho0)*((rho0*c0*10**(nws/10)*10**(-12))/(2*np.pi))**0.5
                 
             else:
-                self.q = np.ones(len(freq_vec), dtype = np.float32)  
+                self.q = np.ones(len(self.freq_vec), dtype = np.float32)  
         
         else:
             raise ValueError("Source type is not valid. It must be monopole or directional.") 
