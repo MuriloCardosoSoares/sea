@@ -171,6 +171,8 @@ class Source():
                     else:    
                         q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(f, tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
 
+                self.q = q
+                
                 plt.plot (bands, power_spec, '.', f_range, power, '-' )
                 plt.title('Source power')
                 plt.legend(['Data','Polynomial fit'])
@@ -186,7 +188,7 @@ class Source():
                 except:
                     raise ValueError("Rho0, c0 or both of them were not defined.") 
                 
-                q = np.ones(len(freq_vec), dtype = np.float32) * (4*np.pi/rho0)*((rho0*c0*10**(nws/10)*10**(-12))/(2*np.pi))**0.5
+                self.q = np.ones(len(freq_vec), dtype = np.float32) * (4*np.pi/rho0)*((rho0*c0*10**(nws/10)*10**(-12))/(2*np.pi))**0.5
                 
             else:
                 self.q = np.ones(len(freq_vec), dtype = np.float32)  
