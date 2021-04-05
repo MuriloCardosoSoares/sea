@@ -88,7 +88,7 @@ class Room:
             
             
     def add_source(self, coord=[0.0, 0.0, 1.0], type="monopole", **kwargs):
-        self.sources.append(Source(coord, type, **kwargs))  
+        self.sources.append(Source(self.frequencies.freq_vec, coord, type, rho0 = self.air.rho0, c0 = self.air.c0, **kwargs))  
 
         
     def del_sources(self, *args):
