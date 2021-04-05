@@ -478,6 +478,13 @@ class Room:
                 print ("Working on source %s of %s." % (si+1, len(self.sources)))
                 
                 if source.type == "monopole":
+                    
+                    try:
+                        i = np.where(source.freq_vec == f)[0][0]
+                        q = np.array([[source.q[i]]])    
+                    except:
+                        raise ValueError("The is no information about the power of source %s for frequency %0.3f Hz." % (si, f))
+                    
                     print("source_fun")
                     @bempp.api.callable(complex=True, jit=True, parameterized=True)
                     def source_fun(r, n, domain_index, result, parameters):
