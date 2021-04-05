@@ -138,7 +138,7 @@ class Source():
                 
         elif type == "monopole":
             if "q" in kwargs:
-                self.q = np.array([kwargs["q"]], dtype = np.float32)
+                self.q = np.array(kwargs["q"], dtype = np.float32)
                 
             elif "power_spec" in kwargs and "bands" in kwargs:
                 
@@ -153,7 +153,7 @@ class Source():
 
                 tck_power_spec = interpolate.splrep(bands, power_spec, k=1)
 
-                q = np.zeros(np.size(self.freq_vec))
+                q = np.zeros(np.size(self.freq_vec), dtype = np.float32)
 
                 for fi,f in enumerate(self.freq_vec):
 
