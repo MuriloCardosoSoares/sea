@@ -153,16 +153,6 @@ class Source():
                 tck_power_spec = interpolate.splrep(bands, power_spec, k=1)
 
                 q = np.zeros(np.size(freq_vec))
-                power = np.zeros(np.size(freq_vec))
-
-                for fi,f in enumerate(freq_vec):
-
-                    if f < bands[0]:
-                        power[fi] = interpolate.splev(bands[0], tck_power_spec, der=0)
-
-                    else:    
-                        power[fi] = interpolate.splev(f, tck_power_spec, der=0)
-
 
                 for fi,f in enumerate(freq_vec):
 
@@ -173,12 +163,6 @@ class Source():
                         q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(f, tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
 
                 self.q = q
-                
-                plt.plot (bands, power_spec, '.', freq_vec, power, '-' )
-                plt.title('Source power')
-                plt.legend(['Data','Polynomial fit'])
-                plt.xlim (freq_vec[0],freq_vec[-1])
-                plt.show()
                 
             elif "nws" in kwargs:
                 
