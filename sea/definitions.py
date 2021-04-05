@@ -152,8 +152,8 @@ class Source():
 
                 tck_power_spec = interpolate.splrep(bands, power_spec, k=1)
 
-                q = np.zeros(np.size(f_range))
-                power = np.zeros(np.size(f_range))
+                q = np.zeros(np.size(freq_vec))
+                power = np.zeros(np.size(freq_vec))
 
                 for fi,f in enumerate(freq_vec):
 
