@@ -174,10 +174,10 @@ class Source():
 
                 self.q = q
                 
-                plt.plot (bands, power_spec, '.', f_range, power, '-' )
+                plt.plot (bands, power_spec, '.', freq_vec, power, '-' )
                 plt.title('Source power')
                 plt.legend(['Data','Polynomial fit'])
-                plt.xlim (f_range[0],f_range[-1])
+                plt.xlim (freq_vec[0],freq_vec[-1])
                 plt.show()
                 
             elif "nws" in kwargs:
