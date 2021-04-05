@@ -506,7 +506,7 @@ class Room:
 
                     source_parameters[:3] = source.coord
                     source_parameters[3] = k
-                    source_parameters[4] = source.q
+                    source_parameters[4] = q
                     source_parameters[5:] = admittance
                     
                     print("rhs")
