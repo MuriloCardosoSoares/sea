@@ -447,6 +447,7 @@ class Room:
             
             admittance = np.array([item[fi] for item in admittances])
             k = self.air.k0[fi]
+            
             print("Defining mu_op...")
             @bempp.api.callable(complex=True, jit=True, parameterized=True)
             def mu_fun(x, n, domain_index, result, admittance):
@@ -455,19 +456,25 @@ class Room:
             mu_op = bempp.api.MultiplicationOperator(
                 bempp.api.GridFunction(space, fun=mu_fun, function_parameters=admittance)
                 , space, space, space)
+            
             print("identity")
             identity = bempp.api.operators.boundary.sparse.identity(
                 space, space, space)
+            
             print("dlp")
             dlp = bempp.api.operators.boundary.helmholtz.double_layer(
-                space, space, space, k, assembler="dense", device_interface='numba')
+                space, space, space, k, assembler="fmm")
+            
             print("slp")
             slp = bempp.api.operators.boundary.helmholtz.single_layer(
-                space, space, space, k,assembler="dense", device_interface='numba')
+                space, space, space, k, assembler="fmm")
+            
             print("a")
             a = 1j*k*self.air.c0*self.air.rho0
+            
             print("Y")
             Y = a*(mu_op)
+            
             print("lhs")
             lhs = (0.5*identity+dlp) - slp*Y
             
