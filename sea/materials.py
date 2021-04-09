@@ -698,7 +698,7 @@ class Material():
 
         solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 0.015, 'maxiter': 1000})
 
-        while cost_fun (solution.x) > 0.1:
+        while cost_fun (solution.x) > 0.05:
 
             guesses = np.array([uniform(0,2), uniform(0,2), uniform(0,2), uniform(0,2), uniform(-1,1)]) # assign random values between 0 and 2 to all the normalized parameters, with the exception of the exponent, -1 <= gama <= 1
             solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 0.015, 'maxiter': 1000})
