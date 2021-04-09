@@ -469,7 +469,7 @@ class Material():
             
         tck_alpha = interpolate.splrep(bands, alpha, k=1)
         
-        admittance = np.zeros(len(self.freq))
+        admittance = np.zeros(len(self.freq), dtype = np.complex64)
         statistical_alpha = np.zeros(len(self.freq))
         for fi,f in enumerate(self.freq):
             
