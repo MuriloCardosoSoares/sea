@@ -396,6 +396,7 @@ class Room:
         for fi,f in enumerate(self.frequencies.freq_vec):
             
             self.current_freq = f
+            k = self.air.k0[fi]
             
             print ("Working on frequency = %0.3f Hz." % f)
 
@@ -431,22 +432,21 @@ class Room:
             '''   
             print("Defining space...")
             #space = bempp.api.function_space(grid, "P", 1) # como nos code do Guto
-            space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos
-
+            space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos               
+            
+            admittance = np.array([item[fi] for item in admittances])
+            
             #Generate subspaces. It is needed if any of the receivers is binaural.
             if len(self.receivers) != 0 and any(receiver.type == "binaural" for receiver in self.receivers):  
                 print("Defining subspaces...")
                 # Initialize approximation spaces:
-                sub_spaces = [None] * len(admittances) # Initalise as empty list
-                spaceNumDOF = np.zeros(len(admittances), dtype=np.int32)
-                for i in np.arange(len(admittances)): # Loop over subspaces
+                sub_spaces = [None] * len(admittance) # Initalise as empty list
+                spaceNumDOF = np.zeros(len(admittance), dtype=np.int32)
+                for i in np.arange(len(admittance)): # Loop over subspaces
                     sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
                     spaceNumDOF[i] = sub_spaces[i].global_dof_count
                 iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
-                
             
-            admittance = np.array([item[fi] for item in admittances])
-            k = self.air.k0[fi]
             print("Defining mu_op...")
             @bempp.api.callable(complex=True, jit=True, parameterized=True)
             def mu_fun(x, n, domain_index, result, admittance):
