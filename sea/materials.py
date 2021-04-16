@@ -711,6 +711,7 @@ class Material():
         else:
             validation = 0.015
         
+        validation = 0.015
         print(validation)
         
         while cost_fun (solution.x) > validation:
