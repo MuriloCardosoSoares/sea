@@ -696,12 +696,26 @@ class Material():
         print ("Working on the solution of the constrained optimization problem :)")
 
 
-        solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 0.015, 'maxiter': 1000})
+        solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 0.015, 'disp': True, 'maxiter': 1000})
+        
+        i = 0
+        for alpha in alpha_in:
+            if alpha < 0.1:
+                i += 1
 
-        while cost_fun (solution.x) > 0.05:
+        if any(alpha_in) > 1:
+            validation = 0.25
+        elif i >= 3:
+            validation = 0.001
+        else:
+            validation = 0.015
+        
+        print(validation)
+        
+        while cost_fun (solution.x) > validation:
 
             guesses = np.array([uniform(0,2), uniform(0,2), uniform(0,2), uniform(0,2), uniform(-1,1)]) # assign random values between 0 and 2 to all the normalized parameters, with the exception of the exponent, -1 <= gama <= 1
-            solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 0.015, 'maxiter': 1000})
+            solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 0.015, 'disp': True, 'maxiter': 1000})
         
 
         self.impedance_thru_rmk1()
