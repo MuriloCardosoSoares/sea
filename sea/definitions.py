@@ -169,7 +169,7 @@ class Source():
 
                 for fi,f in enumerate(self.freq_vec):
 
-                    if f < bands[0]:
+                    if f < self.bands[0]:
                         q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(self.bands[0], tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
 
                     else:    
