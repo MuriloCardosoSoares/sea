@@ -1,11 +1,9 @@
 import numpy as np
-#import toml
 from scipy import interpolate
 import matplotlib.pyplot as plt
 import sys
 import pickle
 
-#from numba import jitclass
 
 from sea import directivity
 
@@ -68,9 +66,9 @@ class Algorithm():
         '''
         Set up algorithm controls. You set-up your frequency span:
         Inputs:
-            freq_init (default - 100 Hz)
-            freq_end (default - 10000 Hz)
-            freq_step (default - 10 Hz)
+            freq_init (default - 20 Hz)
+            freq_end (default - 200 Hz)
+            freq_step (default - 1 Hz)
         '''
         freq_vec = np.array(freq_vec)
         if freq_vec.size == 0:
@@ -89,14 +87,19 @@ class Algorithm():
         return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz and a step of " + str(self.freq_step) + " Hz. \n"
 
 
-#@jitclass
 class Source():
     '''
     A sound source class to initialize the following sound source properties.
-    :
     Inputs:
-        cood - 3D coordinates of the sound sources
-        q - volume velocity [m^3/s]
+        freq_vec - frequencies for wich source properties will be generated
+        cood - 3D coordinates of the sound source
+        type - must be "monopole" or "directional". 
+               If "monopole" is setted, you can use the keywords "nws" or "power_spec" and "bands" to characterize the source. 
+               If "directional" is setted, you will need to upload a .pickle file with the spherical harmonics information. 
+               
+        The following keyworded arguments are optionals:
+        
+        q - 
         
     '''
     def __init__(self, freq_vec, coord=[0.0, 0.0, 1.0], type="monopole", **kwargs):
@@ -105,6 +108,7 @@ class Source():
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
         
         if type == "directional":
+            
             from google.colab import files
             print("Upload the file with the spherical harmonic information for this source:")
             uploaded = files.upload()
@@ -137,13 +141,14 @@ class Source():
                 pass
                 
         elif type == "monopole":
+            
             if "q" in kwargs:
                 self.q = np.array(kwargs["q"], dtype = np.float32)
                 
             elif "power_spec" in kwargs and "bands" in kwargs:
                 
-                power_spec = kwargs["power_spec"]
-                bands = kwargs["bands"]
+                self.power_spec = kwargs["power_spec"]
+                self.bands = kwargs["bands"]
                 
                 try:
                     rho0 = kwargs["rho0"]
@@ -151,14 +156,14 @@ class Source():
                 except:
                     raise ValueError("Rho0, c0 or both of them were not defined.") 
 
-                tck_power_spec = interpolate.splrep(bands, power_spec, k=1)
+                tck_power_spec = interpolate.splrep(self.bands, self.power_spec, k=1)
 
                 q = np.zeros(np.size(self.freq_vec), dtype = np.float32)
 
                 for fi,f in enumerate(self.freq_vec):
 
                     if f < bands[0]:
-                        q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(bands[0], tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
+                        q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(self.bands[0], tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
 
                     else:    
                         q[fi] = (4*np.pi/rho0)*((rho0*c0*10**((interpolate.splev(f, tck_power_spec, der=0))/10)*10**(-12))/(2*np.pi))**0.5
@@ -188,7 +193,6 @@ class Source():
         return "Source coordinate is " + str(self.coord) + ". It is a " + str(self.type) + " source.\n"
 
 
-#@jitclass
 class Receiver():
     '''
     A receiver class to initialize the following receiver properties:
