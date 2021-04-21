@@ -8,17 +8,17 @@ import pickle
 from sea import directivity
 
 class Air():
+    '''
+    Set up air properties.
+    Inputs:
+        c0 - sound speed (default 343 m/s - it can be overwriten using standardized calculation).
+        rho0 - sound speed (default 1.21 kg/m3 - it can be overwriten using standardized calculation).
+        temperature - temperature in degrees (default 20 C).
+        humid - relative humidity (default 50 %).
+        p_atm - atmospheric pressure (default 101325.0 Pa).
+    '''
     
     def __init__(self, c0 = 343.0, rho0 = 1.21, temperature = 20.0, humid = 50.0, p_atm = 101325.0):
-        '''
-        Set up air properties
-        Inputs:
-            c0 - sound speed (default 343 m/s - it can be overwriten using standardized calculation)
-            rho0 - sound speed (default 1.21 kg/m3 - it can be overwriten using standardized calculation)
-            temperature - temperature in degrees (default 20 C)
-            humid - relative humidity (default 50 %)
-            p_atm - atmospheric pressure (default 101325.0 Pa)
-        '''
         
         self.c0 = np.array(c0)
         self.rho0 = np.array(rho0)
@@ -32,6 +32,7 @@ class Air():
         air density based on measurements of temperature, humidity and atm pressure.
         It will overwrite the user supplied values
         '''
+        
         # kappla = 0.026
         temp_kelvin = self.temperature + 273.16 # temperature in [K]
         R = 287.031                 # gas constant
@@ -61,15 +62,16 @@ class Air():
     
     
 class Algorithm():
+    '''
+    Set up algorithm controls.
+    Inputs:
+        freq_init (default - 20 Hz).
+        freq_end (default - 200 Hz).
+        freq_step (default - 1 Hz).
+    '''
     
     def __init__(self, freq_init=20.0, freq_end=200.0, freq_step=1, freq_vec=[]):
-        '''
-        Set up algorithm controls. You set-up your frequency span:
-        Inputs:
-            freq_init (default - 20 Hz)
-            freq_end (default - 200 Hz)
-            freq_step (default - 1 Hz)
-        '''
+
         freq_vec = np.array(freq_vec)
         if freq_vec.size == 0:
             self.freq_init = np.array(freq_init)
@@ -89,19 +91,24 @@ class Algorithm():
 
 class Source():
     '''
-    A sound source class to initialize the following sound source properties.
+    A sound source class.
     Inputs:
-        freq_vec - frequencies for wich source properties will be generated
-        cood - 3D coordinates of the sound source
-        type - must be "monopole" or "directional". 
-               If "monopole" is setted, you can use the keywords "nws" or "power_spec" and "bands" to characterize the source. 
-               If "directional" is setted, you will need to upload a .pickle file with the spherical harmonics information. 
+        freq_vec - frequencies for wich source properties will be generated.
+        cood - 3D coordinates of the sound source (default is [0.0, 0.0, 1.0]).
+        type - must be "monopole" or "directional". If "directional" is setted, you will need to upload a .pickle file with the spherical harmonics information. 
                
-        The following keyworded arguments are optionals:
-        
-        q - 
-        
+        The following keyworded arguments are optionals for a "monopole" source type:
+            q - volume velocity [m^3/s].
+            nws - source acoustic power. The same power will be setted for all frequencies.
+            power_spec - source acoustic power in frequency bands.
+            bands - frequency bands related to the argument "power_spec".
+            
+        The following keyworded arguments are optionals for a "directional" source type:
+            elevation - characterizes source orientantion in the vertical plan. Must be given in degrees (default is 0°).
+            azimuth - characterizes source orientantion in the horizontal plan. Must be given in degrees (default is 0°).
+            power_correction - value to be subtracted from source power to fit desired power.
     '''
+    
     def __init__(self, freq_vec, coord=[0.0, 0.0, 1.0], type="monopole", **kwargs):
         
         self.freq_vec = freq_vec
@@ -138,7 +145,7 @@ class Source():
             try:
                 self.power_correction = kwargs["power_correction"] 
             except:
-                pass
+                self.power_correction = 0
                 
         elif type == "monopole":
             
@@ -195,16 +202,17 @@ class Source():
 
 class Receiver():
     '''
-    A receiver class to initialize the following receiver properties:
-    coord - 3D coordinates of a receiver
+    A receiver class.
+    Inputs:
+        coord - 3D coordinates of the receiver (default is [1.0, 0.0, 0.0]).
+        type - must be "omni" or "binaural". If "binaural" is setted, you will need to upload a .pickle file with the spherical harmonics information. 
+
+        The following keyworded arguments are optionals for a "binaural" receiver type:
+            azimuth - characterizes receiver orientantion in the horizontal plan. Must be given in degrees (default is 0°).
     '''
+    
     def __init__(self, coord = [1.0, 0.0, 0.0], type="omni", **kwargs):
-        '''
-        The class constructor initializes a single receiver with a given 3D coordinates
-        The default is a height of 1 [cm]. User must be sure that the receiver lies out of
-        the sample being emulated. This can go wrong if we allow the sample to have a thickness
-        going on z>0
-        '''
+
         self.coord = np.reshape(np.array(coord, dtype = np.float32), (1,3))
         
         if type == "binaural":
