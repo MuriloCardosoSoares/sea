@@ -443,7 +443,7 @@ class Room:
                 sub_spaces = [None] * len(admittance) # Initalise as empty list
                 spaceNumDOF = np.zeros(len(admittance), dtype=np.int32)
                 for i in np.arange(len(admittance)): # Loop over subspaces
-                    sub_spaces[i] = bempp.api.function_space(msh, "DP", 0, segments=[i])  # discontinuous piecewise-constant
+                    sub_spaces[i] = bempp.api.function_space(grid, "DP", 0, segments=[i])  # discontinuous piecewise-constant
                     spaceNumDOF[i] = sub_spaces[i].global_dof_count
                 iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
             
