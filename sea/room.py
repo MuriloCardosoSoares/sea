@@ -673,7 +673,7 @@ class Room:
                                         #OpDnm = np.conj(OpDnmGF.projections())
 
                                         # Extract projections and conjugate to get discrete form of intended operators:
-                                        print('OpSnm")
+                                        print("OpSnm")
                                         OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
                                         print("OpDnm")
                                         OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
