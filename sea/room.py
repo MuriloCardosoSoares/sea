@@ -643,7 +643,7 @@ class Room:
                                         H = sh.spherical_basis_in_p0_only(n, m, k, x - receiver.coord.reshape(3))
                                         result[0] = H
 
-                                    for i in np.arange(len(admittances)):  # loop over subspaces
+                                    for i in np.arange(len(admittance)):  # loop over subspaces
 
                                         # Integrate the SH functions with the basis functions from the approximation spaces:
                                         OpSnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpSnmFunc)
