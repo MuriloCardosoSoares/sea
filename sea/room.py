@@ -624,19 +624,21 @@ class Room:
 
                             AnmInc  = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
                             AnmInc  = sh.get_translation_matrix((receiver.coord - source.coord).reshape((3,)), k, source.sh_order, receiver.sh_order) @ sh_coefficients_rotated_source
-
+                            print(AnmInc)
                             AnmScat = np.zeros([(receiver.sh_order + 1) ** 2], np.complex64)
+                            print(AnmScat)
 
                             for n in range(receiver.sh_order + 1):
                                 for m in range(-n, n+1):
-
+                                    print(OpDnmFunc)
                                     # Define functions to be evaluated:
                                     @bempp.api.complex_callable(jit=False)
                                     #@bempp.api.callable(complex=True, jit=True)
                                     def OpDnmFunc(x, nUV, domain_index, result):
                                         H, dHdn = sh.spherical_basis_in(n, m, k, x - receiver.coord.reshape(3), nUV)
                                         result[0] = dHdn
-
+                                        
+                                    print(OpSnmFunc)
                                     @bempp.api.complex_callable(jit=False)
                                     #@bempp.api.callable(complex=True, jit=True)
                                     def OpSnmFunc (x, nUV, domain_index, result):
@@ -646,7 +648,9 @@ class Room:
                                     for i in np.arange(len(admittance)):  # loop over subspaces
 
                                         # Integrate the SH functions with the basis functions from the approximation spaces:
+                                        print(OpSnmGF)
                                         OpSnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpSnmFunc)
+                                        print(OpDnmGF)
                                         OpDnmGF = bempp.api.GridFunction(sub_spaces[i], fun=OpDnmFunc)
 
 
@@ -669,7 +673,9 @@ class Room:
                                         #OpDnm = np.conj(OpDnmGF.projections())
 
                                         # Extract projections and conjugate to get discrete form of intended operators:
+                                        print(OpSnm)
                                         OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
+                                        print(OpDnm)
                                         OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
 
                                         del OpSnmGF, OpDnmGF
@@ -685,11 +691,11 @@ class Room:
                                         #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
 
                                         #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnmGF + 1j*k*mu_op * OpSnmGF))
-
+                                        print(AnmScat)
                                         AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
 
                                         del OpSnm, OpDnm
-
+                            
                             rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
                             AnmScat = rotation_matrix * AnmScat
