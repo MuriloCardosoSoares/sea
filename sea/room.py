@@ -448,7 +448,7 @@ class Room:
                 iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
             
             print("Defining mu_op...")
-            @bempp.api.callable(complex=True, jit=True, parameterized=True)
+            @bempp.api.callable(complex=True, jit=False, parameterized=True)
             def mu_fun(x, n, domain_index, result, admittance):
                     result[0]=np.conj(admittance[domain_index])
 
@@ -486,7 +486,7 @@ class Room:
                         raise ValueError("The is no information about the power of source %s for frequency %0.3f Hz." % (si, f))
                     
                     print("source_fun")
-                    @bempp.api.callable(complex=True, jit=True, parameterized=True)
+                    @bempp.api.callable(complex=True, jit=False, parameterized=True)
                     def source_fun(r, n, domain_index, result, parameters):
 
                         coord = np.real(parameters[:3])
