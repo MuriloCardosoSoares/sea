@@ -431,8 +431,8 @@ class Room:
                 raise ValueError("Mesh file for %s Hz was not found." % f)
             '''   
             print("Defining space...")
-            space = bempp.api.function_space(grid, "P", 1) # como nos code do Guto
-            #space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos               
+            #space = bempp.api.function_space(grid, "P", 1) # como nos code do Guto
+            space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos               
             
             admittance = np.array([item[fi] for item in admittances])
             
