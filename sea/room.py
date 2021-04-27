@@ -605,7 +605,7 @@ class Room:
                                 pInc = (q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)).reshape(1)
 
                             else:
-                                pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated, receiver.coord.reshape(3) - source.coord.reshape(3))).reshape(1)
+                                pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated_source, receiver.coord.reshape(3) - source.coord.reshape(3))).reshape(1)
 
                             print("pT")
                             pT = pScat + pInc
