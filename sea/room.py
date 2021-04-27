@@ -410,7 +410,7 @@ class Room:
             else:
                 factor = 6
             
-            print("Generating mesh...")
+            #print("Generating mesh...")
             try:
                 self.generate_mesh(self.air.c0, f, factor)
                 grid = bempp.api.import_grid(self.path_to_msh)
@@ -430,7 +430,7 @@ class Room:
             except:
                 raise ValueError("Mesh file for %s Hz was not found." % f)
             '''   
-            print("Defining space...")
+            #print("Defining space...")
             #space = bempp.api.function_space(grid, "P", 1) # como nos code do Guto
             space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos               
             
@@ -447,7 +447,7 @@ class Room:
                     spaceNumDOF[i] = sub_spaces[i].global_dof_count
                 iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
             
-            print("Defining mu_op...")
+            #print("Defining mu_op...")
             @bempp.api.callable(complex=True, jit=False, parameterized=True)
             def mu_fun(x, n, domain_index, result, admittance):
                     result[0]=np.conj(admittance[domain_index])
@@ -455,20 +455,20 @@ class Room:
             mu_op = bempp.api.MultiplicationOperator(
                 bempp.api.GridFunction(space, fun=mu_fun, function_parameters=admittance)
                 , space, space, space)
-            print("identity")
+            #print("identity")
             identity = bempp.api.operators.boundary.sparse.identity(
                 space, space, space)
-            print("dlp")
+            #print("dlp")
             dlp = bempp.api.operators.boundary.helmholtz.double_layer(
                 space, space, space, k, assembler="dense", device_interface='numba')
-            print("slp")
+            #print("slp")
             slp = bempp.api.operators.boundary.helmholtz.single_layer(
                 space, space, space, k,assembler="dense", device_interface='numba')
-            print("a")
+            #print("a")
             a = 1j*k*self.air.c0*self.air.rho0
-            print("Y")
+            #print("Y")
             Y = a*(mu_op)
-            print("lhs")
+            #print("lhs")
             lhs = (0.5*identity+dlp) - slp*Y
             
             del mu_op, identity, dlp, slp, a
@@ -485,7 +485,7 @@ class Room:
                     except:
                         raise ValueError("The is no information about the power of source %s for frequency %0.3f Hz." % (si, f))
                     
-                    print("source_fun")
+                    #print("source_fun")
                     @bempp.api.callable(complex=True, jit=False, parameterized=True)
                     def source_fun(r, n, domain_index, result, parameters):
 
@@ -565,9 +565,9 @@ class Room:
                 #rhs = bempp.api.GridFunction.from_zeros(self.space)
                     rhs = bempp.api.GridFunction(space, fun=source_fun)
                     
-                print("boundary_pressure")
+                #print("boundary_pressure")
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
-                print("boundary_velocity")
+                #print("boundary_velocity")
                 boundary_velocity = Y*boundary_pressure - rhs
 
                 self.boundary_pressure.append (boundary_pressure.coefficients)
@@ -589,14 +589,14 @@ class Room:
                         print ("Working on receiver %s of %s." % (ri+1, len(self.receivers)))
 
                         if receiver.type == "omni":
-                            print("dlp_pot")
+                            #print("dlp_pot")
                             dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
                                 space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
-                            print("slp_pot")
+                            #print("slp_pot")
                             slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
                                 space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
                             
-                            print("pScat")
+                            #print("pScat")
                             pScat = (-dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]).reshape(1)
                             distance  = np.linalg.norm(receiver.coord - source.coord)
 
@@ -607,7 +607,7 @@ class Room:
                             else:
                                 pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated_source, receiver.coord.reshape(3) - source.coord.reshape(3))).reshape(1)
 
-                            print("pT")
+                            #print("pT")
                             pT = pScat + pInc
                             
                             self.scattered_pressure.append(pScat)
