@@ -588,16 +588,15 @@ class Room:
                             dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
                                 space, receiver.coord.T, k)
                             
-                            pScat =  (slp_pot*un - dlp_pot*boundary_pressure)[0]
+                            pScat =  (slp_pot*un - dlp_pot*boundary_pressure)[0][0]
                             print(pScat)
 
                             distance  = np.linalg.norm(receiver.coord - source.coord)
                             if source.type == "monopole":
-                                print("pInc")
-                                pInc = (q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)).reshape(1)
+                                pInc = (q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)).[0][0]
 
                             else:
-                                pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated_source, receiver.coord.reshape(3) - source.coord.reshape(3))).reshape(1)
+                                pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated_source, receiver.coord.reshape(3) - source.coord.reshape(3))).[0][0]
 
                             #print("pT")
                             print(pInc)
