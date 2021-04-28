@@ -468,10 +468,7 @@ class Room:
                 space, space, space, k)
             
             lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
-           
             
-            del identity, dlp, slp
-
             
             for si, source in enumerate(self.sources):
                 
@@ -517,9 +514,7 @@ class Room:
                         val  = q*np.exp(1j*k*pos)/(4*np.pi*pos)
                         result[0] +=  -(1j*admittance[domain_index-1]*k*val - val/(pos*pos) * (1j*k*pos-1)* np.dot(r-source.coord,n))
                         
-                    print("rhs")
-                    rhs = bempp.api.GridFunction(space,fun=source_fun,
-                                      function_parameters=source_parameters)
+                    rhs = -slp * bempp.api.GridFunction(space,fun=source_fun)
                         
                 else:             
                     
@@ -571,25 +566,16 @@ class Room:
                     #source_parameters[4:] = admittance
                 
                 #rhs = bempp.api.GridFunction.from_zeros(self.space)
-                    rhs = bempp.api.GridFunction(space, fun=source_fun)
+                    source_grid = bempp.api.GridFunction(space, fun=source_fun)
+                    rhs =  -slp * source_grid
                     
                 #print("boundary_pressure")
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
-                
-                boundary_velocity = 1j*k*(mu_op_r+1j*mu_op_i)*boundary_pressure - rhs
+                                
+                un = 1j*(mu_op_r+1j*mu_op_i)*k*boundary_pressure - source_grid
 
                 self.boundary_pressure.append (boundary_pressure.coefficients)
-                self.boundary_velocity.append (boundary_velocity.coefficients)
                     
-                del rhs 
-                try:
-                    del source_parameters
-                except:
-                    del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
-                
-                gc.collect(generation=0)
-                gc.collect(generation=1)
-                gc.collect(generation=2)
                 
                 if len(self.receivers) != 0:
                     for ri, receiver in enumerate(self.receivers):
@@ -597,17 +583,16 @@ class Room:
                         print ("Working on receiver %s of %s." % (ri+1, len(self.receivers)))
 
                         if receiver.type == "omni":
-                            #print("dlp_pot")
-                            dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
-                                space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
-                            #print("slp_pot")
-                            slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
-                                space, receiver.coord.T, k, assembler = "dense", device_interface = "numba")
                             
-                            #print("pScat")
-                            pScat = (-dlp_pot.evaluate(boundary_pressure)[0][0] + slp_pot.evaluate(boundary_velocity)[0][0]).reshape(1)
-                            distance  = np.linalg.norm(receiver.coord - source.coord)
+                            slp_pot = bempp.api.operators.potential.helmholtz.single_layer(
+                                space, receiver.coord.T, k)
+                            
+                            dlp_pot = bempp.api.operators.potential.helmholtz.double_layer(
+                                space, receiver.coord.T, k)
+                            
+                            pScat =  (slp_pot*un - dlp_pot*boundary_pressure)
 
+                            distance  = np.linalg.norm(receiver.coord - source.coord)
                             if source.type == "monopole":
                                 print("pInc")
                                 pInc = (q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)).reshape(1)
@@ -621,12 +606,6 @@ class Room:
                             self.scattered_pressure.append(pScat)
                             self.incident_pressure.append(pInc)
                             self.total_pressure.append(pT) 
-                            
-                            del dlp_pot, slp_pot, pScat, distance, pInc, pT
-                                                      
-                            gc.collect(generation=0)
-                            gc.collect(generation=1)
-                            gc.collect(generation=2)
 
                         else:
 
@@ -686,15 +665,6 @@ class Room:
                                         #print("OpDnm")
                                         OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
 
-                                        del OpSnmGF, OpDnmGF
-
-                                        #print(np.shape(boundary_pressure.coefficients))
-                                        #print(np.shape(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]]))
-                                        #print(np.shape(OpDnm))
-                                        #print(OpDnmGF)
-                                        #print(mu_op)
-                                        #print(np.shape(OpSnm))
-                                        #print(OpSnmGF)
 
                                         #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
 
@@ -702,7 +672,6 @@ class Room:
                                         #print("AnmScat")
                                         AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
 
-                                        del OpSnm, OpDnm
                             
                             rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
@@ -727,24 +696,7 @@ class Room:
 
                             self.scattered_pressure.append(pScat)
                             self.incident_pressure.append(pInc)
-                            self.total_pressure.append(pT) 
-
-                            del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
-
-                            #print("Collecting garbage...")
-                            gc.collect(generation=0)
-                            gc.collect(generation=1)
-                            gc.collect(generation=2)
-                                
-                    del boundary_pressure, boundary_velocity
-                    
-            del space, grid, lhs
-            try:
-                del sub_spaces, spaceNumDOF, iDOF 
-            except:
-                pass
-            
-            bempp.api.clear_fmm_cache()
+                            self.total_pressure.append(pT)  
             
             self.simulated_freqs.append(f)
                                         
