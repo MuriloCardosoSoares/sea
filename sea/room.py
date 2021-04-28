@@ -469,7 +469,7 @@ class Room:
             
             lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
             
-            del mu_op_r, mu_op_r, identity, dlp, slp
+            del mu_op_r, mu_op_i, identity, dlp, slp
 
             
             for si, source in enumerate(self.sources):
