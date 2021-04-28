@@ -468,8 +468,9 @@ class Room:
                 space, space, space, k)
             
             lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
+           
             
-            del mu_op_r, mu_op_i, identity, dlp, slp
+            del identity, dlp, slp
 
             
             for si, source in enumerate(self.sources):
@@ -574,8 +575,11 @@ class Room:
                     
                 #print("boundary_pressure")
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
+                
+                boundary_velocity = 1j*k*(mu_op_r+1j*mu_op_i)*boundary_pressure - rhs
 
                 self.boundary_pressure.append (boundary_pressure.coefficients)
+                self.boundary_velocity.append (boundary_velocity.coefficients)
                     
                 del rhs 
                 try:
