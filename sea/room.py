@@ -447,13 +447,15 @@ class Room:
                     spaceNumDOF[i] = sub_spaces[i].global_dof_count
                 iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
             
-            #print("Defining mu_op...")
-            @bempp.api.complex_callable(jit=False)
-            def mu_fun(r, n, domain_index, result):
-                    result[0]=np.conj(admittance[domain_index-1])
-
-            mu_op = bempp.api.MultiplicationOperator(
-                bempp.api.GridFunction(space, fun=mu_fun), space, space, space)
+            @bempp.api.complex_callable(jit=False) 
+            def mu_fun_r(r,n,domain_index,result):
+                result[0]=np.real(admittance[domain_index-1])
+            @bempp.api.complex_callable(jit=False) 
+            def mu_fun_i(r,n,domain_index,result):
+                result[0]=np.imag(admittance[domain_index-1])
+            
+            mu_op_r = bempp.api.MultiplicationOperator(bempp.api.GridFunction(space,fun=mu_fun_r),space,space,space)
+            mu_op_i = bempp.api.MultiplicationOperator(bempp.api.GridFunction(space,fun=mu_fun_i),space,space,space)
             
             #print("identity")
             identity = bempp.api.operators.boundary.sparse.identity(
@@ -467,7 +469,7 @@ class Room:
             
             lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
             
-            del mu_op, identity, dlp, slp
+            del mu_op_r, mu_op_r, identity, dlp, slp
 
             
             for si, source in enumerate(self.sources):
