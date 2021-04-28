@@ -474,15 +474,15 @@ class Material():
         for fi,f in enumerate(self.freq):
             
             if f < bands[0]:
-                admittance[fi] = (np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0)          
+                admittance[fi] = np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[0], tck_alpha, der=0))**0.5)       
                 statistical_alpha[fi] = interpolate.splev(bands[0], tck_alpha, der=0)
                 
             elif f > bands[-1]:
-                admittance[fi] = (np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)) / (self.rho0*self.c0) 
+                admittance[fi] = np.cos(55*np.pi/180)*(1-(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(bands[-1], tck_alpha, der=0))**0.5) 
                 statistical_alpha[fi] = interpolate.splev(bands[-1], tck_alpha, der=0)
                 
             else:
-                admittance[fi] = (np.cos(55*np.pi/180)*(1-(1-interpolate.splev(f, tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(f, tck_alpha, der=0))**0.5)) / (self.rho0*self.c0)           
+                admittance[fi] = np.cos(55*np.pi/180)*(1-(1-interpolate.splev(f, tck_alpha, der=0))**0.5)/(1+(1-interpolate.splev(f, tck_alpha, der=0))**0.5)       
                 statistical_alpha[fi] = interpolate.splev(f, tck_alpha, der=0)
         
         self.admittance = admittance
