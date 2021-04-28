@@ -484,7 +484,7 @@ class Room:
                         q = np.array([[source.q[i]]])    
                     except:
                         raise ValueError("The is no information about the power of source %s for frequency %0.3f Hz." % (si, f))
-                    
+                    '''
                     #print("source_fun")
                     @bempp.api.callable(complex=True, jit=False, parameterized=True)
                     def source_fun(r, n, domain_index, result, parameters):
@@ -497,18 +497,26 @@ class Room:
                         pos  = np.linalg.norm(r-coord)
                         val  = q*np.exp(1j*k*pos)/(4*np.pi*pos)
 
-                        result[0] = -(1j * mu[domain_index] * k * val -
+                        result[0] = -(1j * mu[domain_index-1] * k * val -
                             val / (pos**2) * (1j*k*pos - 1) * np.dot(r-coord, n))
-                    
+                    '''
                     sh_coefficients_rotated = 1j*k/(4*np.pi)**0.5
-                    
-                    source_parameters = np.zeros(5+len(admittance),dtype = 'complex128')
+                    '''
+                    source_parameters = np.zeros(5+len(admittance),dtype = 'complex64')
 
                     source_parameters[:3] = source.coord
                     source_parameters[3] = k
                     source_parameters[4] = q
                     source_parameters[5:] = admittance
+                    '''
                     
+                    @bempp.api.complex_callable(jit=False)
+                    def source_fun(r, n, domain_index, result):
+                        result[0]=0
+                        pos = np.linalg.norm(r-source.coord)
+                        val  = q*np.exp(1j*k*pos)/(4*np.pi*pos)
+                        result[0] +=  -(1j*admittance[domain_index-1]*k*val - val/(pos*pos) * (1j*k*pos-1)* np.dot(r-source.coord,n))
+                        
                     print("rhs")
                     rhs = bempp.api.GridFunction(space,fun=source_fun,
                                       function_parameters=source_parameters)
@@ -522,10 +530,10 @@ class Room:
                         raise ValueError("The spherical harmonic coefficients for this source were not defined for frequency %0.3f Hz." % f)
                     
                     try:
-                        sh_coefficients_source = 1/(10**(source.power_correction/20)) * sh_coefficients
+                        sh_coefficients_source = 1/(10**(source.power_correction/20)) * sh_coefficients_source
                         
                     except:
-                        pass
+                        print("There was not found any power correction for this source.")
                     
                     
                     rot_mat_FPTP = sh.get_rotation_matrix(0, -np.pi/2, 0, source.sh_order)   # Rotation Matrix front pole to top pole
@@ -554,7 +562,7 @@ class Room:
                     def source_fun(r, n, domain_index, result):
                         result[0]=0
                         val, d_val  = sh.spherical_basis_out_all(k, sh_coefficients_rotated_source, r-source.coord.reshape(3), n)
-                        result[0] += d_val - 1j*admittance[domain_index]*k*val
+                        result[0] += d_val - 1j*admittance[domain_index-1]*k*val
                     
                     #source_parameters = np.zeros(4+len(admittance),dtype = 'complex128')
 
