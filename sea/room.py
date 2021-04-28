@@ -593,10 +593,10 @@ class Room:
 
                             distance  = np.linalg.norm(receiver.coord - source.coord)
                             if source.type == "monopole":
-                                pInc = (q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)).[0][0]
+                                pInc = (q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance))[0][0]
 
                             else:
-                                pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated_source, receiver.coord.reshape(3) - source.coord.reshape(3))).[0][0]
+                                pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated_source, receiver.coord.reshape(3) - source.coord.reshape(3)))[0][0]
 
                             #print("pT")
                             print(pInc)
