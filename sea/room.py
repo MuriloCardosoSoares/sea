@@ -448,31 +448,28 @@ class Room:
                 iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
             
             #print("Defining mu_op...")
-            @bempp.api.callable(complex=True, jit=False, parameterized=True)
-            def mu_fun(x, n, domain_index, result, admittance):
-                    result[0]=np.conj(admittance[domain_index])
+            @bempp.api.complex_callable(jit=False)
+            def mu_fun(r, n, domain_index, result):
+                    result[0]=np.conj(admittance[domain_index-1])
 
             mu_op = bempp.api.MultiplicationOperator(
-                bempp.api.GridFunction(space, fun=mu_fun, function_parameters=admittance)
-                , space, space, space)
+                bempp.api.GridFunction(space, fun=mu_fun), space, space, space)
+            
             #print("identity")
             identity = bempp.api.operators.boundary.sparse.identity(
                 space, space, space)
             #print("dlp")
             dlp = bempp.api.operators.boundary.helmholtz.double_layer(
-                space, space, space, k, assembler="dense", device_interface='numba')
+                space, space, space, k)
             #print("slp")
             slp = bempp.api.operators.boundary.helmholtz.single_layer(
-                space, space, space, k,assembler="dense", device_interface='numba')
-            #print("a")
-            a = 1j*k*self.air.c0*self.air.rho0
-            #print("Y")
-            Y = a*(mu_op)
-            #print("lhs")
-            lhs = (0.5*identity+dlp) - slp*Y
+                space, space, space, k)
             
-            del mu_op, identity, dlp, slp, a
+            lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
+            
+            del mu_op, identity, dlp, slp
 
+            
             for si, source in enumerate(self.sources):
                 
                 print ("Working on source %s of %s." % (si+1, len(self.sources)))
@@ -575,11 +572,8 @@ class Room:
                     
                 #print("boundary_pressure")
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
-                #print("boundary_velocity")
-                boundary_velocity = Y*boundary_pressure - rhs
 
                 self.boundary_pressure.append (boundary_pressure.coefficients)
-                self.boundary_velocity.append (boundary_velocity.coefficients)
                     
                 del rhs 
                 try:
