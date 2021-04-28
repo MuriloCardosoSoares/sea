@@ -738,7 +738,7 @@ class Room:
                                 
                     del boundary_pressure, boundary_velocity
                     
-            del space, grid, Y, lhs
+            del space, grid, lhs
             try:
                 del sub_spaces, spaceNumDOF, iDOF 
             except:
