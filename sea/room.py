@@ -512,9 +512,7 @@ class Room:
                         result[0]=0
                         pos = np.linalg.norm(r-source.coord)
                         val  = q*np.exp(1j*k*pos)/(4*np.pi*pos)
-                        result[0] +=  -(1j*admittance[domain_index-1]*k*val - val/(pos*pos) * (1j*k*pos-1)* np.dot(r-source.coord,n))
-                        
-                    rhs = -slp * bempp.api.GridFunction(space,fun=source_fun)
+                        result[0] +=  -(1j*admittance[domain_index-1]*k*val - val/(pos*pos) * (1j*k*pos-1)* np.dot(r-source.coord,n))                  
                         
                 else:             
                     
@@ -566,8 +564,8 @@ class Room:
                     #source_parameters[4:] = admittance
                 
                 #rhs = bempp.api.GridFunction.from_zeros(self.space)
-                    source_grid = bempp.api.GridFunction(space, fun=source_fun)
-                    rhs =  -slp * source_grid
+                source_grid = bempp.api.GridFunction(space, fun=source_fun)
+                rhs =  -slp * source_grid
                     
                 #print("boundary_pressure")
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
