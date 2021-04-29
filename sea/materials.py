@@ -535,7 +535,7 @@ class Material():
         self.normalized_surface_impedance = k*(1j*w)**(-1) + r + m*(1j*w) + g*(1j*w)**gama   
 
         self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
-        self.admittance = 1/self.surface_impedance
+        self.admittance = 1/np.conj(self.surface_impedance)
         
         if "f_list" in kwargs:
             self.impedance2alpha(f_list=f_list)
