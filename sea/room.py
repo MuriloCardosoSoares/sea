@@ -460,7 +460,7 @@ class Room:
             
             @bempp.api.callable(complex=True, jit=False, parameterized=True)
             def mu_fun(x, n, domain_index, result, admittance):
-                    result[0]=admittance[domain_index]
+                    result[0]=admittance[domain_index-1]
             
             mu_op = bempp.api.MultiplicationOperator(
                 bempp.api.GridFunction(space, fun=mu_fun, function_parameters=admittance)
