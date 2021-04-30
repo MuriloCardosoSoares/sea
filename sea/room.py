@@ -477,7 +477,7 @@ class Room:
                 space, space, space, k)
             
             #lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
-            lhs = (.5 * identity + dlp - 1j*k*slp*mu_op
+            lhs = (.5 * identity + dlp - 1j*k*slp*mu_op)
             
             
             for si, source in enumerate(self.sources):
