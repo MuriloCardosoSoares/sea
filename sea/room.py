@@ -491,31 +491,8 @@ class Room:
                         q = np.array([[source.q[i]]])    
                     except:
                         raise ValueError("The is no information about the power of source %s for frequency %0.3f Hz." % (si, f))
-                    '''
-                    #print("source_fun")
-                    @bempp.api.callable(complex=True, jit=False, parameterized=True)
-                    def source_fun(r, n, domain_index, result, parameters):
-
-                        coord = np.real(parameters[:3])
-                        k = parameters[3]
-                        q = parameters[4]
-                        mu = parameters[5:]
-
-                        pos  = np.linalg.norm(r-coord)
-                        val  = q*np.exp(1j*k*pos)/(4*np.pi*pos)
-
-                        result[0] = -(1j * mu[domain_index-1] * k * val -
-                            val / (pos**2) * (1j*k*pos - 1) * np.dot(r-coord, n))
-                    '''
+                   
                     sh_coefficients_rotated = 1j*k/(4*np.pi)**0.5
-                    '''
-                    source_parameters = np.zeros(5+len(admittance),dtype = 'complex64')
-
-                    source_parameters[:3] = source.coord
-                    source_parameters[3] = k
-                    source_parameters[4] = q
-                    source_parameters[5:] = admittance
-                    '''
                     
                     @bempp.api.callable(complex=True, jit=False)
                     def source_fun(r, n, domain_index, result):
