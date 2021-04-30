@@ -446,7 +446,7 @@ class Room:
                     sub_spaces[i] = bempp.api.function_space(grid, "DP", 0, segments=[i])  # discontinuous piecewise-constant
                     spaceNumDOF[i] = sub_spaces[i].global_dof_count
                 iDOF = np.concatenate((np.array([0]), np.cumsum(spaceNumDOF)))
-            
+            '''
             @bempp.api.complex_callable(jit=False) 
             def mu_fun_r(r,n,domain_index,result):
                 result[0]=np.real(admittance[domain_index-1])
@@ -456,6 +456,15 @@ class Room:
             
             mu_op_r = bempp.api.MultiplicationOperator(bempp.api.GridFunction(space,fun=mu_fun_r),space,space,space)
             mu_op_i = bempp.api.MultiplicationOperator(bempp.api.GridFunction(space,fun=mu_fun_i),space,space,space)
+            '''
+            
+            @bempp.api.callable(complex=True, jit=False, parameterized=True)
+            def mu_fun(x, n, domain_index, result, admittance):
+                    result[0]=admittance[domain_index]
+            
+            mu_op = bempp.api.MultiplicationOperator(
+                bempp.api.GridFunction(space, fun=mu_fun, function_parameters=admittance)
+                , space, space, space)
             
             #print("identity")
             identity = bempp.api.operators.boundary.sparse.identity(
@@ -467,7 +476,8 @@ class Room:
             slp = bempp.api.operators.boundary.helmholtz.single_layer(
                 space, space, space, k)
             
-            lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
+            #lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
+            lhs = (.5 * identity + dlp - 1j*k*slp*mu_op
             
             
             for si, source in enumerate(self.sources):
@@ -507,7 +517,7 @@ class Room:
                     source_parameters[5:] = admittance
                     '''
                     
-                    @bempp.api.complex_callable(jit=False)
+                    @bempp.api.callable(complex=True, jit=False)
                     def source_fun(r, n, domain_index, result):
                         result[0]=0
                         pos = np.linalg.norm(r-source.coord)
@@ -550,7 +560,7 @@ class Room:
                         #result[0] = d_val - 1j*mu[domain_index]*k*val
                     
                     #source_coord = source.coord.reshape(3)
-                    @bempp.api.complex_callable(jit=False)
+                    @bempp.api.callable(complex=True, jit=False)
                     #@bempp.api.callable(complex=True, jit=True)
                     def source_fun(r, n, domain_index, result):
                         result[0]=0
@@ -570,8 +580,9 @@ class Room:
                 #print("boundary_pressure")
                 boundary_pressure, info = bempp.api.linalg.gmres(lhs, rhs, tol=1E-5)
                                 
-                un = 1j*(mu_op_r+1j*mu_op_i)*k*boundary_pressure - source_grid
-
+                #un = 1j*(mu_op_r+1j*mu_op_i)*k*boundary_pressure - source_grid
+                un = 1j*mu_op*k*boundary_pressure - source_grid
+                   
                 self.boundary_pressure.append (boundary_pressure.coefficients)
                     
                 
