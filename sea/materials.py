@@ -333,7 +333,7 @@ class Material():
         
         self.surface_impedance = self.normalized_surface_impedance*(self.rho0*self.c0)
         #self.admittance = 1/self.normalized_surface_impedance
-        self.admittance = 1/self.surface_impedance
+        self.admittance = np.conj(1/self.normalized_surface_impedance)
         
         self.impedance2alpha()
         
