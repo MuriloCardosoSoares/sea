@@ -800,7 +800,7 @@ class Material():
                 self.third_octave_bands_statistical_alpha = np.array(data_in_bands)  
 
     
-    def plot(self, *kwargs):
+    def plot(self, **kwargs):
         """
         Plots the absorption coeffients. If it is not yet defined, it is plotted the complex surface impedance (to be implemented)
         """        
