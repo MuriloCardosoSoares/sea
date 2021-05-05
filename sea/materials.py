@@ -828,7 +828,7 @@ class Material():
                     plt.xlabel('Frequency [Hz]')
                     plt.ylabel('Normal incidence absorption coefficient [-]')
                     plt.xscale('log')
-                    plt.ylim((0,1.1))
+                    plt.ylim((0,1.2))
                     plt.show()
                 else: 
                     plt.plot (self.freq, self.statistical_alpha)
@@ -836,7 +836,7 @@ class Material():
                     plt.xlabel('Frequency [Hz]')
                     plt.ylabel('Statistical absorption coefficient [-]')
                     plt.xscale('log')
-                    plt.ylim((0,1.1))
+                    plt.ylim((0,1.2))
                     plt.show()
 
         elif self.octave_bands_statistical_alpha.size == 0 and type == "statistical in octave bands":
@@ -853,7 +853,7 @@ class Material():
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Statistical absorption coefficient [-]')
                 plt.xscale('log')
-                plt.ylim((0,1.1))
+                plt.ylim((0,1.2))
                 plt.show()
 
             else:
@@ -862,7 +862,7 @@ class Material():
                 plt.xlabel('Frequency [Hz]')
                 plt.ylabel('Statistical absorption coefficient [-]')
                 plt.xscale('log')
-                plt.ylim((0,1.1))
+                plt.ylim((0,1.2))
                 plt.show()
     
     
