@@ -774,16 +774,18 @@ class Room:
                                                             
                             if r.type == "omni":
                                 plt.plot(self.simulated_freqs, np.unwrap(np.angle(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)], deg=True), discont=360))
+                                plt.ylim(-180,180)
                                 plt.title("Phase of the frequencie response")
                                 plt.legend(["Source %s, receiver %s" % (s_i, r_i)])
                             else:                                 
                                 plt.plot(self.simulated_freqs, np.unwrap(np.angle([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]], deg=True), discont=180))
                                 plt.plot(self.simulated_freqs, np.unwrap(np.angle([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]], deg=True), discont=180))
+                                plt.ylim(-180,180)
                                 plt.title("Binaural room transfer functions for source %s, receiver %s" % (s_i, r_i))
                                 plt.legend(["left", "right"])
 
                             plt.xlabel('Frequency [Hz]')
-                            plt.ylabel('SPL [dB]')
+                            plt.ylabel('Phase [°]')
                             plt.xscale('log')
                             plt.show()
 
