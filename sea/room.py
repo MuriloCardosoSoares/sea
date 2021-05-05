@@ -773,7 +773,7 @@ class Room:
                         if s_i == source and r_i == receiver: 
                                                             
                             if r.type == "omni":
-                                plt.plot(self.simulated_freqs, np.unwrap(np.angle(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)], deg=True), discont=360))
+                                plt.plot(self.simulated_freqs, np.unwrap(np.angle(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)], deg=True), discont=180))
                                 plt.title("Phase of the frequencie response")
                                 plt.legend(["Source %s, receiver %s" % (s_i, r_i)])
                             else:                                 
