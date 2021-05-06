@@ -406,9 +406,11 @@ class Room:
             elif f <= 100:
                 factor = 10
             elif f <= 150:
-                factor = 8            
+                factor = 8 
+            elif f <= 265:
+                factor = 6 
             else:
-                factor = 6
+                factor = 4
             
             #print("Generating mesh...")
             try:
