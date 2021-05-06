@@ -197,7 +197,7 @@ class Material():
         self.absorber_type = "membrane"
 
         
-    def perforated_panel (self, parameters, theta=0):
+    def perforated_panel_old (self, parameters, theta=0):
 
         """
             Computes the surface impedance for a perforated panel absorber;
@@ -239,6 +239,59 @@ class Material():
 
         # The total impedance is the sum:
         self.surface_impedance = z_t/self.perforation_rate + z_cav
+        
+        self.normalized_surface_impedance = self.surface_impedance/(self.rho0*self.c0)
+        #self.admittance = 1/self.normalized_surface_impedance
+        self.admittance = np.conj(1/self.normalized_surface_impedance)
+        
+        self.impedance2alpha()
+        
+        self.absorber_type = "perforated panel"
+        
+        
+    def perforated_panel (self, parameters, theta=0):
+
+        """
+            Computes the surface impedance for a perforated panel absorber;
+
+            *All the parameters of the absorber should be given together in an array*
+            
+            parameters -> [h, a, p, d, rf, d_porous], where
+                h -> panel thickness [m]
+                a -> radius of the circular openings [m] 
+                p -> perforation rate
+                d -> depth of the cavity (air + porous absorber) [m]
+
+                rf -> flow resistivity of the porous absorber layer [rayl/m]
+                d_porous -> thickness of the porous absorber layer [m]
+
+            theta -> angle of incidence. Here, it is assumed to be 0 degrees. It is considered an argument just 
+                     to facilitate the interaction with another functions
+
+        """
+        
+        if self.freq.size == 0:
+            raise ValueError("Frequency vector is empty.") 
+
+        self.panel_thickness = parameters[0]
+        self.openings_radius = parameters[1]
+        self.perforation_rate = parameters[2]
+        self.cavity_depth = parameters[3]
+        self.flow_resistivity = parameters[4]
+        self.porous_layer_thickness = parameters[5]
+
+        m = self.rho0*self.perforation_rate*(self.panel_thickness + 1.7*self.openings_radius)       # superficial density of the gas in each perfuration
+        z_t = 1j*self.w*m                 # impedance of a single opening
+
+        # cavity impedance 
+        self.porous([self.flow_resistivity, self.porous_layer_thickness], 0)
+
+        z_sar = -1j*(self.rho0*self.c0) * 1/(np.tan((self.w/self.c0)*(self.cavity_depth-self.porous_layer_thickness)))
+        
+        z_si = (-1j*z_sar*self.characteristic_impedance*1/(np.tan(self.characteristic_k*(self.porous_layer_thickness))) + (self.characteristic_impedance)**2) / (z_sar - 1j*self.characteristic_impedance*1/(np.tan(self.characteristic_k*(self.porous_layer_thickness))))
+
+        # The total impedance is the sum:
+        self.surface_impedance = z_t + z_si
         
         self.normalized_surface_impedance = self.surface_impedance/(self.rho0*self.c0)
         #self.admittance = 1/self.normalized_surface_impedance
