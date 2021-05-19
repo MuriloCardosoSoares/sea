@@ -753,6 +753,12 @@ class Material():
 
         print ("Working on the solution of the constrained optimization problem :)")
 
+        if any(alpha_in) > 1:
+            validation = 0.25
+        else:
+            validation = 0.021
+        
+        print(validation)
 
         solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 1e-10, 'disp': True, 'maxiter': 1000})
         print(self.rmk1)
@@ -769,13 +775,6 @@ class Material():
         else:
             validation = 0.015
         '''
-        
-        if any(alpha_in) > 1:
-            validation = 0.25
-        else:
-            validation = 0.021
-        
-        print(validation)
         
         while cost_fun (solution.x) > validation:
 
