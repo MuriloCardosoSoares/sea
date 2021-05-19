@@ -541,7 +541,7 @@ class Material():
                 statistical_alpha[fi] = interpolate.splev(f, tck_alpha, der=0)
                 
             if np.isnan(admittance[fi]):
-                admittance[fi] = 0
+                admittance[fi] = np.cos(55*np.pi/180)*(1-(1-1)**0.5)/(1+(1-1)**0.5)
         
         self.admittance = admittance
         self.statistical_alpha = statistical_alpha
