@@ -761,15 +761,20 @@ class Material():
         for alpha in alpha_in:
             if alpha < 0.1:
                 i += 1
-
+        '''
         if any(alpha_in) > 1:
             validation = 0.25
         elif i >= 3:
             validation = 0.001
         else:
             validation = 0.015
+        '''
         
-        validation = 0.021
+        if any(alpha_in) > 1:
+            validation = 0.25
+        else:
+            validation = 0.021
+        
         print(validation)
         
         while cost_fun (solution.x) > validation:
