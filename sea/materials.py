@@ -787,6 +787,8 @@ class Material():
         
         print("The solution of the optimization problem leads to rmk+1 parameters equal to %s.\nImpedances, admittances and everything else related to it was already calculated.\n" % self.rmk1)
         
+        self.absorber_type = "Generic " + str(self.absorber_type)
+        
         
     def alpha_in_bands (self, **kwargs):
     
@@ -986,6 +988,9 @@ class Material():
         
             elif self.absorber_type == "hard":
                 return ("Generic hard material.\n")
+            
+            else:
+                return (str(self.absorber_type) + " absorber. There is no more information about it.\n")
         
         else:
             return("Generic material. Use plot method to get more information.\n")
