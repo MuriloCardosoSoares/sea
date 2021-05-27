@@ -57,8 +57,8 @@ class Air():
         self.c0 = (gam * self.p_atm/self.rho0)**0.5
     
     def __str__(self):
-        return "Air sound speed = " + str(self.c0) + " | Air density = " + str(self.rho0) + \
-                " | Temperature = " + str(self.temperature) + " | Humid = " + str(self.humid) + " | Atmospheric pressure = " + str(self.p_atm) + "\n"
+        return "Air sound speed = " + str(self.c0) + " m/s | Air density = " + str(self.rho0) + "kg/m^3" + \
+                " | Temperature = " + str(self.temperature) + " C | Humid = " + str(self.humid) + " % | Atmospheric pressure = " + str(self.p_atm) + " Pa \n"
     
     
 class Algorithm():
