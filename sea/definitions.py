@@ -56,9 +56,10 @@ class Air():
         # Air sound speed
         self.c0 = (gam * self.p_atm/self.rho0)**0.5
     
-    print ("Working on frequency = %0.3f Hz." % f)
     def __str__(self):
-        return "Air sound speed = %0.3f m/s | Air density = %0.3f kg/m^3 %0.3f | Temperature = %0.3f C | Humid = %0.3f % | Atmospheric pressure = %0.3f Pa \n" %(self.c0, self.rho0, self.temperature, self.humid, self.p_atm)
+        return "Air sound speed = " + format(self.c0, ".2f") + " m/s | Air density = " + format(self.rho0, ".2f") + " kg/m^3" + \
+                " | Temperature = " + format(self.temperature, ".2f") + " C | Humid = " + format(self.humid, ".2f") + " % | Atmospheric pressure = " + format(self.p_atm, ".2f") + " Pa \n"
+    
     '''
     def __str__(self):
         return "Air sound speed = " + str(self.c0) + " m/s | Air density = " + str(self.rho0) + " kg/m^3" + \
