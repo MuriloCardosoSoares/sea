@@ -91,7 +91,7 @@ class Algorithm():
         self.w = 2.0 * np.pi * self.freq_vec
      
     def __str__(self):
-        return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz and a step of " + str(self.freq_step) + " Hz. \n"
+        return "Simulation algotithm will run from " + str(self.freq_init) + " Hz up to " + str(self.freq_end) + " Hz. To see all frequencies, use print(self.freq_vec). \n"
 
 
 class Source():
