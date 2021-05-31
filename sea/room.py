@@ -72,11 +72,12 @@ class Room:
         self.receivers.append(Receiver(coord, type, **kwargs))
     
     
-    def del_receivers(self, *args):
+    def del_receivers(self, positions=[]):
     
-        if args:
-            for position in args:
-                del self.receivers[position]
+        positions = np.array(positions)
+        if positions.size != 0:
+            for i in sorted(positions, reverse=True):
+                del self.receivers[i]
         else:
             self.receivers.clear()
         
@@ -91,11 +92,13 @@ class Room:
         self.sources.append(Source(self.frequencies.freq_vec, coord, type, rho0 = self.air.rho0, c0 = self.air.c0, **kwargs))  
 
         
-    def del_sources(self, *args):
-    
-        if args:
-            for position in args:
-                del self.sources[position]
+    def del_sources(self, positions=[]):
+        
+        positions = np.array(positions)
+        if positions.size != 0:
+            for i in sorted(positions, reverse=True):
+                del self.sources[i]
+            
         else:
             self.sources.clear()
      
