@@ -140,12 +140,12 @@ class Source():
             try:
                 self.elevation = kwargs["elevation"] * np.pi/180
             except:
-                self.elevation = 0.0
+                self.elevation = np.array([0.0])
                 
             try:
                 self.azimuth = kwargs["azimuth"] * np.pi/180
             except:
-                self.azimuth = 0.0
+                self.azimuth = np.array([0.0])
                 
             try:
                 self.power_correction = kwargs["power_correction"] 
