@@ -758,7 +758,7 @@ class Room:
                             plt.xscale('log')
                             
                             plt.yticks(fontsize = 12)
-                            plt.xticks([20, 40, 60, 80, 100, 200, 400, 600, 800, 1000], ['20','40','60','80','100','200','400','600','800','1000',], fontsize = 12)
+                            plt.xticks([20, 40, 60, 80, 100, 200, 400, 1000], ['20','40','60','80','100','200','400','1k',], fontsize = 12)
                             
                             plt.xlim(self.simulated_freqs[0], self.simulated_freqs[-1])
         
@@ -799,7 +799,7 @@ class Room:
                             plt.ylabel('Phase [°]', fontsize = 15)
                             
                             plt.yticks([-180,-120,-60,0,60,120,180], ['-180','-120','-60','0','60','120','180'], fontsize = 12)
-                            plt.xticks([20, 40, 60, 80, 100, 200, 400, 600, 800, 1000], ['20','40','60','80','100','200','400','600','800','1000',], fontsize = 12)
+                            plt.xticks([20, 40, 60, 80, 100, 200, 400, 1000], ['20','40','60','80','100','200','400','1k',], fontsize = 12)
                             
                             plt.xscale('log')
                             plt.xlim(self.simulated_freqs[0], self.simulated_freqs[-1])
