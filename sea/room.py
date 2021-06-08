@@ -756,10 +756,11 @@ class Room:
                             plt.ylabel('SPL [dB]', fontsize = 15)
                             
                             plt.xscale('log')
-                            plt.xlim(self.simulated_freqs[0], self.simulated_freqs[-1])
                             
                             plt.yticks(fontsize = 12)
                             plt.xticks([20, 40, 60, 80, 100, 200, 400, 600, 800, 1000], ['20','40','60','80','100','200','400','600','800','1000',], fontsize = 12)
+                            
+                            plt.xlim(self.simulated_freqs[0], self.simulated_freqs[-1])
         
                             plt.savefig('FRF_LS%s_MP%s.pdf' %(s_i+1, r_i+1), bbox_inches='tight')
                             plt.show()
