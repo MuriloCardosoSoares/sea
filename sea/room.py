@@ -745,12 +745,12 @@ class Room:
                             if r.type == "omni":
                                 plt.plot(self.simulated_freqs, 20*np.log10(np.abs(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)])/2e-5))
                                 plt.title("Room transfer function")
-                                plt.legend(["Source %s, receiver %s" % (s_i+1, r_i+1)])
+                                plt.legend(["Source %s, Receiver %s" % (s_i+1, r_i+1)], fontsize = 13)
                             else:                                 
                                 plt.plot(self.simulated_freqs, 20*np.log10(np.abs([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
                                 plt.plot(self.simulated_freqs, 20*np.log10(np.abs([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
                                 plt.title("Binaural room transfer functions for source %s, receiver %s" % (s_i+1, r_i+1))
-                                plt.legend(["left", "right"])
+                                plt.legend(["left", "right"], fontsize = 13)
 
                             plt.xlabel('Frequency [Hz]', fontsize = 15)
                             plt.ylabel('SPL [dB]', fontsize = 15)
@@ -786,14 +786,14 @@ class Room:
                         if s_i == source and r_i == receiver: 
                                                             
                             if r.type == "omni":
-                                plt.plot(self.simulated_freqs, np.unwrap(np.angle(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)], deg=True), discont=180))
+                                plt.plot(self.simulated_freqs, np.rad2deg(np.angle(np.conj(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]))))
                                 plt.title("Phase of the frequencie response")
-                                plt.legend(["Source %s, receiver %s" % (s_i+1, r_i+1)])
+                                plt.legend(["Source %s, Receiver %s" % (s_i+1, r_i+1)], fontsize = 13)
                             else:                                 
                                 plt.plot(self.simulated_freqs, np.rad2deg(np.angle(np.conj([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]]))))
                                 plt.plot(self.simulated_freqs, np.rad2deg(np.angle(np.conj([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]]))))
                                 plt.title("Binaural room transfer functions for source %s, receiver %s" % (s_i+1, r_i+1))
-                                plt.legend(["left", "right"])
+                                plt.legend(["left", "right"], fontsize = 13)
 
                             plt.xlabel('Frequency [Hz]', fontsize = 15)
                             plt.ylabel('Phase [°]', fontsize = 15)
