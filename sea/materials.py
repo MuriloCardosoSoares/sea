@@ -751,7 +751,7 @@ class Material():
 
         ################################################
 
-        print ("Working on the solution of the constrained optimization problem :)")
+        print ("Working on the solution of the constrained optimization problem...")
 
         if any(alpha > 1 for alpha in alpha_in):
             validation = 0.25
