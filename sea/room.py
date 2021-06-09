@@ -268,18 +268,19 @@ class Room:
                     self.materials.append(material)
                     
             else:
-                self.materials.append(material)
+                self.materials.append(material)         
+           
             
-            
-    def del_materials(self, *args):
+    def del_materials(self, positions=[]):
     
-        if args:
-            for position in args:
-                del self.materials[position]
+        positions = np.array(positions)
+        if positions.size != 0:
+            for i in sorted(positions, reverse=True):
+                del self.materials[i]
         else:
             self.materials.clear()
             
-    
+            
     def list_materials(self):
         for material in self.materials:
             print(material)          
