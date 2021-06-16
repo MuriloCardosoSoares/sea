@@ -583,6 +583,7 @@ class Room:
                                 space, receiver.coord.T, k)
                             
                             pScat =  (slp_pot*un - dlp_pot*boundary_pressure)[0][0]
+                            print(pScat)
 
                             distance  = np.linalg.norm(receiver.coord - source.coord)
                             if source.type == "monopole":
@@ -590,9 +591,9 @@ class Room:
 
                             else:
                                 pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated_source, receiver.coord.reshape(3) - source.coord.reshape(3)))
-
+                            print(pInc)
                             pT = pScat + pInc
-                            
+                            print(pT)
                             self.incident_pressure.append(pInc)
                             self.scattered_pressure.append(pScat) 
                             self.total_pressure.append(pT) 
