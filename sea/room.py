@@ -583,17 +583,17 @@ class Room:
                                 space, receiver.coord.T, k)
                             
                             pScat =  (slp_pot*un - dlp_pot*boundary_pressure)[0][0]
-                            print(pScat)
 
+                            
                             distance  = np.linalg.norm(receiver.coord - source.coord)
                             if source.type == "monopole":
                                 pInc = (q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance))
 
                             else:
                                 pInc = (sh.spherical_basis_out_p0_only(k, sh_coefficients_rotated_source, receiver.coord.reshape(3) - source.coord.reshape(3)))[0][0]
-                            print(pInc)
+                            
                             pT = pScat + pInc
-                            print(pT)
+
                             self.incident_pressure.append(pInc)
                             self.scattered_pressure.append(pScat) 
                             self.total_pressure.append(pT) 
@@ -715,12 +715,11 @@ class Room:
                 
                 pS = -dlp_pot.evaluate(kwargs["boundary_pressure"])[0][0] + slp_pot.evaluate(kwargs["boundary_velocity"])[0][0]
                 pScat[fi] = pS
-                print(pScat)
+
                 distance  = np.linalg.norm(receiver.coord - source.coord)
                 pInc[fi] = q[0][0]*np.exp(1j*k*distance)/(4*np.pi*distance)
-                print(pInc)
+
                 pT[fi] = pScat[fi] + pInc[fi]
-                print(pT)
                 
             self.scattered_pressure.append(pScat)
             self.incident_pressure.append(pInc)
