@@ -676,10 +676,10 @@ class Room:
                             except:
                                 raise ValueError("The spherical harmonic coefficients for this receiver were not defined for frequency %0.3f Hz." % f)
 
-                            try:
-                                pass #Aqui vai entrar o ajuste dos dados do receptor
-                            except:
-                                pass
+                            # Scale BEM results as required by GRAS normalisation process:
+                            RequiredGain = 1.9599e-05  # Calculated by applying required calibration process to a hybrid simulation
+                            AnmInc  = AnmInc  * RequiredGain
+                            AnmScat = AnmScat * RequiredGain
 
                             pInc = [np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_left)[0], np.matmul(AnmInc.reshape(1, len(AnmInc)), sh_coefficients_receiver_right)[0]]
                             pScat = [np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_left)[0], np.matmul(AnmScat.reshape(1, len(AnmScat)), sh_coefficients_receiver_right)[0]]
