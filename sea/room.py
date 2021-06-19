@@ -482,7 +482,7 @@ class Room:
             #lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
             lhs = (.5 * identity + dlp - 1j*k*slp*mu_op)
             
-            del identity, dlp, slp
+            del identity, dlp
             
             for si, source in enumerate(self.sources):
                 
@@ -566,7 +566,7 @@ class Room:
                    
                 self.boundary_pressure.append (boundary_pressure.coefficients)
                 
-                del rhs, lhs 
+                del rhs, lhs, slp
                 try:
                     del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
                 except:
