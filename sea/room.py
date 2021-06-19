@@ -601,7 +601,7 @@ class Room:
                             self.scattered_pressure.append(pScat) 
                             self.total_pressure.append(pT) 
                             
-                            del dlp_pot, slp_pot, pScat, distance, pInc, pT, mu_op
+                            del dlp_pot, slp_pot, pScat, distance, pInc, pT
                                                       
                             gc.collect(generation=0)
                             gc.collect(generation=1)
@@ -710,7 +710,7 @@ class Room:
                                 
                     del boundary_pressure, un
                     
-            del space, grid
+            del space, grid, mu_op
             try:
                 del sub_spaces, spaceNumDOF, iDOF 
             except:
