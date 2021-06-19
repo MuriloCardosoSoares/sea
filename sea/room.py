@@ -366,10 +366,7 @@ class Room:
         
         
     def run(self, save=True):
-        
-        if save == True:
-            self.save()
-            
+  
         if hasattr(self, "frequencies") != True:
             print("Algorithm frequencies are not defined yet.")
             
@@ -485,6 +482,7 @@ class Room:
             #lhs = (.5 * identity + dlp - 1j*k*slp*(mu_op_r+1j*mu_op_i))
             lhs = (.5 * identity + dlp - 1j*k*slp*mu_op)
             
+            del identity, dlp, slp
             
             for si, source in enumerate(self.sources):
                 
@@ -496,9 +494,9 @@ class Room:
                         i = np.where(source.freq_vec == f)[0][0]
                         q = np.array([[source.q[i]]])    
                     except:
-                        raise ValueError("The is no information about the power of source %s for frequency %0.3f Hz." % (si, f))
+                        raise ValueError("There is no information about the power of source %s for frequency %0.3f Hz." % (si, f))
                    
-                    sh_coefficients_rotated = 1j*k/(4*np.pi)**0.5
+                    sh_coefficients_rotated_source = 1j*k/(4*np.pi)**0.5
                     
                     @bempp.api.callable(complex=True, jit=False)
                     def source_fun(r, n, domain_index, result):
@@ -567,7 +565,12 @@ class Room:
                 un = 1j*mu_op*k*boundary_pressure - source_grid
                    
                 self.boundary_pressure.append (boundary_pressure.coefficients)
-                    
+                
+                del rhs, lhs 
+                try:
+                    del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
+                except:
+                    pass                    
                 
                 if len(self.receivers) != 0:
                     for ri, receiver in enumerate(self.receivers):
@@ -597,6 +600,12 @@ class Room:
                             self.incident_pressure.append(pInc)
                             self.scattered_pressure.append(pScat) 
                             self.total_pressure.append(pT) 
+                            
+                            del dlp_pot, slp_pot, pScat, distance, pInc, pT, mu_op
+                                                      
+                            gc.collect(generation=0)
+                            gc.collect(generation=1)
+                            gc.collect(generation=2)
 
 
                         else:
@@ -656,7 +665,8 @@ class Room:
                                         OpSnm = np.conj(OpSnmGF.projections(sub_spaces[i]))
                                         #print("OpDnm")
                                         OpDnm = np.conj(OpDnmGF.projections(sub_spaces[i]))
-
+                                        
+                                        del OpSnmGF, OpDnmGF
 
                                         #AnmScat[n**2 + n + m] = 1j*k*np.sum(boundary_pressure * (OpDnm + 1j*k*mu_op * OpSnm))
 
@@ -664,6 +674,7 @@ class Room:
                                         #print("AnmScat")
                                         AnmScat[n**2 + n + m] += 1j*k*np.sum(boundary_pressure.coefficients[iDOF[i]:iDOF[i+1]] * (OpDnm + np.complex128(1j*k*admittance[i]) * OpSnm))
 
+                                        del OpSnm, OpDnm
                             
                             rotation_matrix = sh.get_rotation_matrix(0, 0, -receiver.azimuth, receiver.sh_order)
                             AnmInc = rotation_matrix * AnmInc
@@ -689,6 +700,23 @@ class Room:
                             self.scattered_pressure.append(pScat)
                             self.incident_pressure.append(pInc)
                             self.total_pressure.append(pT)  
+            
+                            del AnmInc, AnmScat, rotation_matrix, pInc, pScat, pT, sh_coefficients_receiver_left, sh_coefficients_receiver_right    
+
+                            #print("Collecting garbage...")
+                            gc.collect(generation=0)
+                            gc.collect(generation=1)
+                            gc.collect(generation=2)
+                                
+                    del boundary_pressure, un
+                    
+            del space, grid
+            try:
+                del sub_spaces, spaceNumDOF, iDOF 
+            except:
+                pass
+            
+            bempp.api.clear_fmm_cache()
             
             self.simulated_freqs.append(f)
                                         
