@@ -566,7 +566,7 @@ class Room:
                    
                 self.boundary_pressure.append (boundary_pressure.coefficients)
                 
-                del rhs, lhs, slp
+                del rhs
                 try:
                     del sh_coefficients_source, rot_mat_FPTP, rot_mat_AzEl
                 except:
@@ -710,7 +710,7 @@ class Room:
                                 
                     del boundary_pressure, un
                     
-            del space, grid, mu_op
+            del space, grid, mu_op, lhs, slp
             try:
                 del sub_spaces, spaceNumDOF, iDOF 
             except:
