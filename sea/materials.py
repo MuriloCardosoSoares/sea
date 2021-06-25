@@ -758,8 +758,6 @@ class Material():
         else:
             validation = 0.021
         
-        print(validation)
-
         solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 1e-10, 'disp': True, 'maxiter': 1000})
         print(self.rmk1)
         
