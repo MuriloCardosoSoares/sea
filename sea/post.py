@@ -26,7 +26,7 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
     compared_list = []
     for path in compared_paths:
         file_to_read = open(path, "rb")
-        compared.append(pickle.load(file_to_read))
+        compared_list.append(pickle.load(file_to_read))
         file_to_read.close()
     
     mac_list = []
