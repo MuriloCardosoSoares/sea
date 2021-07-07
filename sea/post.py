@@ -54,28 +54,7 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
                 mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
 
             mac_list.append([mac])
-'''              
-    for configuration_i in np.arange(num_materials_configurations-1): 
-        
-        plt.plot(f_range, mac[configuration_i, :])
-    
-    plt.title('MAC \n Reference $\Rightarrow$ %s' % configuration_names[ref-1])
-    legend = [x for i,x in enumerate(configuration_names) if i!=ref-1]
-    plt.legend(legend)
-    plt.xlabel('Frequency [Hz]')
-    plt.ylabel('MAC')
-    plt.ylim((0,1))
-    plt.grid()
-    plt.savefig('%s_mac.pdf' % room_name)
-    plt.show()
 
-    # Save results to a Matlab-readable.h5 file:
-    with h5py.File(file_path, "r+") as fh:
-
-        fh.create_dataset("mac", data=mac)
-
-        print ("Saved results to %s" % file_path)
-'''
     mac_list = np.array([mac_list])
     
     return mac_list
