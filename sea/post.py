@@ -32,7 +32,8 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
     mac_list = []
     for source in sources:
         for compared in compared_list:
- 
+            print(source)
+            print(compared)
             reference = []
             to_be_compared = []
             
