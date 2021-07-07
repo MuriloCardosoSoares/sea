@@ -52,7 +52,9 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
                             reference.append([ref.total_pressure[s_i*len(ref.receivers)+r_i : : len(ref.sources)*len(ref.receivers)]])
                             to_be_compared.append([compared.total_pressure[s_i*len(compared.receivers)+r_i : : len(compared.sources)*len(compared.receivers)]])
 
-
+            
+            print(reference)
+            print(to_be_compared)
             mac = []
 
             for fi, f in enumerate(ref.frequencies.freq_vec):
