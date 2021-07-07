@@ -58,7 +58,9 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
 
             
             print(reference)
+            print(np.array(reference).shape)
             print(to_be_compared)
+            print(np.array(to_be_compared).shape)
             mac = []
 
             for fi, f in enumerate(ref.frequencies.freq_vec):
