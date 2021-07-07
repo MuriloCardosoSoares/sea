@@ -24,8 +24,8 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
     file_to_read.close()
     
     compared_list = []
-    for i in enumerate(compared_paths):
-        file_to_read = open(compared_paths[i], "rb")
+    for path in compared_paths:
+        file_to_read = open(path, "rb")
         compared.append(pickle.load(file_to_read))
         file_to_read.close()
     
