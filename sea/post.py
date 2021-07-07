@@ -58,7 +58,7 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
   
             mac = []
 
-            for fi, f in enumerate(ref.frequencies.freq_vec):
+            for fi, f in enumerate(ref.simulated_freqs):
                 print(fi)
                 ref_aux = np.array(reference)[:,fi]
                 to_be_compared_aux = np.array(to_be_compared)[:,fi]
