@@ -46,8 +46,8 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
             
             for receiver in receivers:
 
-                for s_i, s in enumerate(compared[0].sources):
-                    for r_i, r in enumerate(compared[0].receivers):
+                for s_i, s in enumerate(compared.sources):
+                    for r_i, r in enumerate(compared.receivers):
                         print(s_i)
                         print(source)
                         print(r_i)
