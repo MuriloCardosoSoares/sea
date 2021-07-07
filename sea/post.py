@@ -69,8 +69,8 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
                 to_be_compared_aux = np.array(to_be_compared)[:,fi]
                 mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
 
-            mac_list.append([mac])
+            mac_list.append(mac)
 
-    mac_list = np.array([mac_list])
+    mac_list = np.array(mac_list)
     
     return mac_list
