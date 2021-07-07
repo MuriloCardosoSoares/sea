@@ -35,7 +35,7 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
     if sources.size == 0:
       sources = np.arange(len(ref.sources))
     if receivers.size == 0:
-      sources = np.arange(len(ref.receivers))
+      receivers = np.arange(len(ref.receivers))
       
     mac_list = []
     for source in sources:
