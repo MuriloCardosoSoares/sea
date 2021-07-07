@@ -40,8 +40,7 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
     mac_list = []
     for source in sources:
         for compared in compared_list:
-            print(source)
-            print(compared)
+          
             reference = []
             to_be_compared = []
             
@@ -56,8 +55,8 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
 
             mac = []
 
-            for fi, f in enumerate(reference[0].frequencies.freq_vec):
-                print("oi")
+            for fi, f in enumerate(reference.frequencies.freq_vec):
+
                 ref_aux = np.array(reference)[:,fi]
                 to_be_compared_aux = to_be_compared[i*(num_receivers) : i*(num_receivers)+num_receivers, fi]
                 mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
