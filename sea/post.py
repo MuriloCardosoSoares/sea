@@ -28,7 +28,15 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
         file_to_read = open(path, "rb")
         compared_list.append(pickle.load(file_to_read))
         file_to_read.close()
+        
+    sources = np.array(sources)
+    receivers = np.array(receivers)
     
+    if sources.size == 0:
+      sources = np.arange(len(ref.sources))
+    if receivers.size == 0:
+      sources = np.arange(len(ref.receivers))
+      
     mac_list = []
     for source in sources:
         for compared in compared_list:
