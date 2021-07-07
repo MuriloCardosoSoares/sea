@@ -55,21 +55,15 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
                         if s_i == source and r_i == receiver:
                             reference.append(ref.total_pressure[s_i*len(ref.receivers)+r_i : : len(ref.sources)*len(ref.receivers)])
                             to_be_compared.append(compared.total_pressure[s_i*len(compared.receivers)+r_i : : len(compared.sources)*len(compared.receivers)])
-
-            
-            print(reference)
-            print(np.array(reference).shape)
-            print(to_be_compared)
-            print(np.array(to_be_compared).shape)
+  
             mac = []
 
             for fi, f in enumerate(ref.frequencies.freq_vec):
-
+                print(fi)
                 ref_aux = np.array(reference)[:,fi]
                 to_be_compared_aux = np.array(to_be_compared)[:,fi]
                 mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
             
-            print(mac)
             mac_list.append(mac)
 
     mac_list = np.array(mac_list)
