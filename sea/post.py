@@ -88,7 +88,6 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
         for source in sources:
             for compared in compared_list:
 
-                reference = []
                 to_be_compared = []
 
                 for receiver in receivers:
