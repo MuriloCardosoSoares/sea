@@ -80,7 +80,7 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
         receivers = np.array(receivers)
 
         if sources.size == 0:
-            sources = np.arange(np.arange(1))
+            sources = np.arange(1)
         if receivers.size == 0:
             receivers = np.arange(reference.shape[0])
 
