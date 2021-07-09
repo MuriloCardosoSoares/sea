@@ -16,56 +16,98 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
     '''
     
     import numpy as np
-    from matplotlib import pylab as plt
-    import pickle
 
-    file_to_read = open(reference_path, "rb")
-    ref = pickle.load(file_to_read)
-    file_to_read.close()
-    
-    compared_list = []
-    for path in compared_paths:
-        file_to_read = open(path, "rb")
-        compared_list.append(pickle.load(file_to_read))
+    try:
+        import pickle
+
+        file_to_read = open(reference_path, "rb")
+        ref = pickle.load(file_to_read)
         file_to_read.close()
-        
-    sources = np.array(sources)
-    receivers = np.array(receivers)
+
+        compared_list = []
+        for path in compared_paths:
+            file_to_read = open(path, "rb")
+            compared_list.append(pickle.load(file_to_read))
+            file_to_read.close()
+
+        sources = np.array(sources)
+        receivers = np.array(receivers)
+
+        if sources.size == 0:
+            sources = np.arange(len(ref.sources))
+        if receivers.size == 0:
+            receivers = np.arange(len(ref.receivers))
+
+        mac_list = []
+        for source in sources:
+            for compared in compared_list:
+
+                reference = []
+                to_be_compared = []
+
+                for receiver in receivers:
+
+                    for s_i, s in enumerate(compared.sources):
+                        for r_i, r in enumerate(compared.receivers):
+                            if s_i == source and r_i == receiver:
+                                reference.append(ref.total_pressure[s_i*len(ref.receivers)+r_i : : len(ref.sources)*len(ref.receivers)])
+                                to_be_compared.append(compared.total_pressure[s_i*len(compared.receivers)+r_i : : len(compared.sources)*len(compared.receivers)])
+
+                mac = []
+
+                for fi, f in enumerate(ref.simulated_freqs):
+                    print(fi)
+                    ref_aux = np.array(reference)[:,fi]
+                    to_be_compared_aux = np.array(to_be_compared)[:,fi]
+                    mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
+
+                mac_list.append(mac)
+
+        mac_list = np.array(mac_list)
     
-    if sources.size == 0:
-      sources = np.arange(len(ref.sources))
-    if receivers.size == 0:
-      receivers = np.arange(len(ref.receivers))
-      
-    mac_list = []
-    for source in sources:
-        for compared in compared_list:
-          
-            reference = []
-            to_be_compared = []
-            
-            for receiver in receivers:
+    
+    except:
 
-                for s_i, s in enumerate(compared.sources):
-                    for r_i, r in enumerate(compared.receivers):
-                        print(s_i)
-                        print(source)
-                        print(r_i)
-                        print(receiver)
-                        if s_i == source and r_i == receiver:
-                            reference.append(ref.total_pressure[s_i*len(ref.receivers)+r_i : : len(ref.sources)*len(ref.receivers)])
-                            to_be_compared.append(compared.total_pressure[s_i*len(compared.receivers)+r_i : : len(compared.sources)*len(compared.receivers)])
-  
-            mac = []
+        reference = reference_path
+        
+        compared_list = []
+        for path in compared_paths:
+            file_to_read = open(path, "rb")
+            compared_list.append(pickle.load(file_to_read))
+            file_to_read.close()
 
-            for fi, f in enumerate(ref.simulated_freqs):
-                print(fi)
-                ref_aux = np.array(reference)[:,fi]
-                to_be_compared_aux = np.array(to_be_compared)[:,fi]
-                mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
-            
-            mac_list.append(mac)
+        sources = np.array(sources)
+        receivers = np.array(receivers)
 
-    mac_list = np.array(mac_list)
+        if sources.size == 0:
+            sources = np.arange(len(compared.sources))
+        if receivers.size == 0:
+            receivers = np.arange(len(compared.receivers))
+
+        mac_list = []
+        for source in sources:
+            for compared in compared_list:
+
+                reference = []
+                to_be_compared = []
+
+                for receiver in receivers:
+
+                    for s_i, s in enumerate(compared.sources):
+                        for r_i, r in enumerate(compared.receivers):
+                            if s_i == source and r_i == receiver:
+                                to_be_compared.append(compared.total_pressure[s_i*len(compared.receivers)+r_i : : len(compared.sources)*len(compared.receivers)])
+
+                mac = []
+
+                for fi, f in enumerate(ref.simulated_freqs):
+                    print(fi)
+                    ref_aux = reference[:,fi]
+                    to_be_compared_aux = np.array(to_be_compared)[:,fi]
+                    mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
+
+                mac_list.append(mac)
+
+        mac_list = np.array(mac_list)
     
     return mac_list
