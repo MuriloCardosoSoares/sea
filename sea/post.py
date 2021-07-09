@@ -98,6 +98,7 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
                             if s_i == source and r_i == receiver:
                                 to_be_compared.append(compared.total_pressure[s_i*len(compared.receivers)+r_i : : len(compared.sources)*len(compared.receivers)])
 
+                print(to_be_compared)
                 mac = []
 
                 for fi, f in enumerate(ref.simulated_freqs):
