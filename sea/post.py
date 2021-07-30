@@ -39,12 +39,12 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
             receivers = np.arange(len(ref.receivers))
 
         mac_list = []
-        for source in sources:
-            for compared in compared_list:
+        for compared in compared_list:
 
-                reference = []
-                to_be_compared = []
-
+            reference = []
+            to_be_compared = []
+            
+            for source in sources:
                 for receiver in receivers:
 
                     for s_i, s in enumerate(compared.sources):
@@ -53,15 +53,15 @@ def mac (reference_path, compared_paths, sources=[], receivers=[], plot=True):
                                 reference.append(ref.total_pressure[s_i*len(ref.receivers)+r_i : : len(ref.sources)*len(ref.receivers)])
                                 to_be_compared.append(compared.total_pressure[s_i*len(compared.receivers)+r_i : : len(compared.sources)*len(compared.receivers)])
 
-                mac = []
+            mac = []
 
-                for fi, f in enumerate(ref.simulated_freqs):
+            for fi, f in enumerate(ref.simulated_freqs):
 
-                    ref_aux = np.array(reference)[:,fi]
-                    to_be_compared_aux = np.array(to_be_compared)[:,fi]
-                    mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
+                ref_aux = np.array(reference)[:,fi]
+                to_be_compared_aux = np.array(to_be_compared)[:,fi]
+                mac.append((abs(np.matmul(ref_aux.conj(), to_be_compared_aux.transpose()))**2) / np.real((np.matmul(ref_aux.conj(), ref_aux.transpose())) * np.matmul(to_be_compared_aux.conj(), to_be_compared_aux.transpose())))
 
-                mac_list.append(mac)
+            mac_list.append(mac)
 
         mac_list = np.array(mac_list)
     
