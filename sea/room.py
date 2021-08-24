@@ -754,7 +754,7 @@ class Room:
             self.total_pressure.append(pT)  
             
     
-    def plot_frf (self, sources=[], receivers=[]):
+    def plot_spl (self, sources=[], receivers=[]):
 
         sources = np.array(sources)-1
         receivers = np.array(receivers)-1
@@ -772,12 +772,12 @@ class Room:
                         if s_i == source and r_i == receiver: 
                                                             
                             if r.type == "omni":
-                                plt.plot(self.simulated_freqs, 20*np.log10(np.abs(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)])/2e-5))
+                                plt.plot(self.simulated_freqs, 20*np.log10(np.abs(self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)])/(2e-5*np.sqrt(2))))
                                 plt.title("Room transfer function", fontsize = 15)
                                 plt.legend(["Source %s, Receiver %s" % (s_i+1, r_i+1)], fontsize = 13)
                             else:                                 
-                                plt.plot(self.simulated_freqs, 20*np.log10(np.abs([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
-                                plt.plot(self.simulated_freqs, 20*np.log10(np.abs([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/2e-5))
+                                plt.plot(self.simulated_freqs, 20*np.log10(np.abs([item[0] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/(2e-5*np.sqrt(2))))
+                                plt.plot(self.simulated_freqs, 20*np.log10(np.abs([item[1] for item in self.total_pressure[s_i*len(self.receivers)+r_i : : len(self.sources)*len(self.receivers)]])/(2e-5*np.sqrt(2))))
                                 plt.title("Binaural room transfer functions for source %s, receiver %s" % (s_i+1, r_i+1), fontsize = 15)
                                 plt.legend(["left", "right"], fontsize = 13)
 
