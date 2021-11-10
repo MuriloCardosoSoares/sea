@@ -756,7 +756,7 @@ class Material():
         if any(alpha > 1 for alpha in alpha_in):
             validation = 0.25
         else:
-            validation = 0.021
+            validation = 0.1
         
         solution = minimize(cost_fun, guesses, method='SLSQP', constraints = [ineq_cons], bounds = bounds, options={'ftol': 1e-10, 'disp': True, 'maxiter': 1000})
         print(self.rmk1)
