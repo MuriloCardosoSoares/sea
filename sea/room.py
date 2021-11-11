@@ -789,7 +789,7 @@ class Room:
                             
                             plt.xlim(self.simulated_freqs[0], self.simulated_freqs[-1])
         
-                            plt.savefig('FRF_LS%s_MP%s.pdf' %(s_i+1, r_i+1), bbox_inches='tight')
+                            plt.savefig('SPL_LS%s_MP%s.pdf' %(s_i+1, r_i+1), bbox_inches='tight')
                             plt.show()
 
                         i+=1
