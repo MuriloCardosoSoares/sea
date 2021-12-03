@@ -855,6 +855,74 @@ class Room:
         elif place == "local":
             files.download(saved_name)
             
+
+
+    def map(self, freqs=[], opacity=0.2):
+        
+        from matplotlib import style
+        style.use("seaborn-talk")
+        
+        import plotly.figure_factory as ff
+        import plotly.graph_objs as go
+        from bempp.api import GridFunction
+        from bempp.api.grid.grid import Grid
+
+        freqs = np.array(freqs)
+        if freqs.size == 0:
+            try:
+                freqs = np.array([self.frequencies.freq_vec[0]])
+            except:
+                freqs = np.array([20])
+        
+        for f in freqs:
+            '''
+            try:
+                msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
+                reorder_physical_groups(msh_path)
+                grid = bempp.api.import_grid(msh_path)
+            except:
+                raise ValueError("Mesh file for %s Hz was not found." % f)
+            '''
+            
+            
+            self.generate_mesh(self.air.c0, f, 6)
+
+            grid = bempp.api.import_grid(self.path_to_msh)
+            
+            def configure_plotly_browser_state():
+                import IPython
+                display(IPython.core.display.HTML('''
+                        <script src="/static/components/requirejs/require.js"></script>
+                        <script>
+                          requirejs.config({
+                            paths: {
+                              base: '/static/base',
+                              plotly: 'https://cdn.plot.ly/plotly-1.5.1.min.js?noext',
+                            },
+                          });
+                        </script>
+                        '''))
+
+            plotly.offline.init_notebook_mode()
+
+            vertices = grid.vertices
+            elements = grid.elements
+            fig = ff.create_trisurf(
+                x=vertices[0, :],
+                y=vertices[1, :],
+                z=vertices[2, :],
+                simplices=elements.T,
+                color_func=elements.shape[1] * ["rgb(255, 222, 173)"],
+            )
+            fig['data'][0].update(opacity=opacity)
+            fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
+
+            fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
+
+            configure_plotly_browser_state() 
+            plotly.offline.iplot(fig)
+            
+            
             
 def reorder_physical_groups(msh_path):
     """
