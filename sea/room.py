@@ -923,7 +923,7 @@ class Room:
             fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
             
             for i, node in enumerate(x):
-                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=5, color='rgb(255, 0, 0)', symbol='circle')))
+                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=1, color='rgb(255, 0, 0)', symbol='circle'), showlegend=False))
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
