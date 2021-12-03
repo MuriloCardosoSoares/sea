@@ -917,6 +917,7 @@ class Room:
                 z=z,
                 simplices=elements.T,
                 plot_edges=False,
+                show_colorbar=False,
             )
             fig['data'][0].update(opacity=opacity)
             fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
