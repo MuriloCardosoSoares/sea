@@ -927,6 +927,7 @@ class Room:
             boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[fi])/(2e-5*np.sqrt(2)))
             print(boundary_pressure)
             min_val = min(boundary_pressure)
+            mid_val = np.median(boundary_pressure)
             max_val = max(boundary_pressure)
             print(min_val)
             print(max_val)
@@ -939,7 +940,7 @@ class Room:
             #color_list = cmap(distance_list)
             
             for i, node in enumerate(x):
-                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, cmax=max_val, cmin=min_val, colorscale=[[0, 'rgb(255, 0, 0)'], [1, 'rgb(255, 255, 255)'], [1, 'rgb(0, 0, 255)']], symbol='circle'), showlegend=False))
+                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, cmax=max_val, cmid=mid_val, cmin=min_val, colorscale=[[0, 'rgb(255, 0, 0)'], [1, 'rgb(255, 255, 255)'], [1, 'rgb(0, 0, 255)']], symbol='circle'), showlegend=False))
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
