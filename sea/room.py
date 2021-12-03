@@ -911,6 +911,8 @@ class Room:
                 x=vertices[0, :],
                 y=vertices[1, :],
                 z=vertices[2, :],
+                simplices=elements.T,
+                plot_edges=False,
             )
             fig['data'][0].update(opacity=opacity)
             fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
