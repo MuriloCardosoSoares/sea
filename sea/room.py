@@ -907,15 +907,21 @@ class Room:
 
             vertices = grid.vertices
             elements = grid.elements
+            x=vertices[0, :]
+            y=vertices[1, :]
+            z=vertices[2, :]
             fig = ff.create_trisurf(
-                x=vertices[0, :],
-                y=vertices[1, :],
-                z=vertices[2, :],
+                x=x,
+                y=y,
+                z=z,
                 simplices=elements.T,
                 plot_edges=False,
             )
             fig['data'][0].update(opacity=opacity)
             fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
+            
+            for i, node in enumerate(x):
+                fig.add_trace(go.Scatter3d(x=x[i], y=y[i], z=z[i], marker=dict(size=0.1, color='rgb(0, 0, 128)', symbol='circle'),name="Receivers"))
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
