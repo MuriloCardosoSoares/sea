@@ -910,6 +910,7 @@ class Room:
             x=vertices[0, :]
             y=vertices[1, :]
             z=vertices[2, :]
+            print(x)
             fig = ff.create_trisurf(
                 x=x,
                 y=y,
