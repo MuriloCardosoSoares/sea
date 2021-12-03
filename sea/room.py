@@ -928,6 +928,8 @@ class Room:
             print(boundary_pressure)
             min_val = min(boundary_pressure)
             max_val = max(boundary_pressure)
+            print(min_val)
+            print(max_val)
             
             # use the coolwarm colormap that is built-in, and goes from blue to red
             #cmap = mpl.cm.coolwarm
