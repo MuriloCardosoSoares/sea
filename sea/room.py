@@ -939,7 +939,7 @@ class Room:
             #color_list = cmap(distance_list)
             
             for i, node in enumerate(x):
-                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=5, cmax=max_val, cmin=min_val, colorscale=[[0, 'rgb(255, 0, 0)'], [1, 'rgb(0, 0, 255)']], symbol='circle'), showlegend=False))
+                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, cmax=max_val, cmin=min_val, colorscale=[[0, 'rgb(255, 0, 0)'], [1, 'rgb(255, 255, 255)'], [1, 'rgb(0, 0, 255)']], symbol='circle'), showlegend=False))
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
