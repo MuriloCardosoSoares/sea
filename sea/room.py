@@ -858,7 +858,7 @@ class Room:
             
 
 
-    def map(self, freqs=[], opacity=0.2):
+    def map(self, freqs=[], opacity=0.5):
         
         from matplotlib import style
         style.use("seaborn-talk")
@@ -939,7 +939,7 @@ class Room:
             #color_list = cmap(distance_list)
             
             for i, node in enumerate(x):
-                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=5, cmax=max_val, cmid=None, cmin=min_val, color=np.array(['rgb(255, 0, 0)', 'rgb(0, 0, 255)']), symbol='circle'), showlegend=False))
+                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=5, cmax=max_val, cmin=min_val, color=['rgb(0, 0, 255)', 'rgb(255, 0, 0)'], symbol='circle'), showlegend=False))
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
