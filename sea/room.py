@@ -934,8 +934,8 @@ class Room:
             fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
             
             #colors
-            boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[fi])/(2e-5*np.sqrt(2)))
-            print(len(boundary_pressure[fi]))
+            boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[75])/(2e-5*np.sqrt(2))) #ajeitar o índice da pressão!!!!
+            print(len(boundary_pressure))
             min_val = min(boundary_pressure)
             mid_val = np.median(boundary_pressure)
             max_val = max(boundary_pressure)
@@ -945,7 +945,7 @@ class Room:
             norm = mpl.colors.Normalize(vmin=min_val, vmax=max_val)
 
             # convert the values to color coordinates
-            color_list = cmap(distance_list)
+            color_list = cmap(boundary_pressure)
             
             for i, node in enumerate(x):  
                 color = 'rgba(%s,%s,%s,%s)' % (color[i][0], color[i][1], color[i][2], color[i][3])
