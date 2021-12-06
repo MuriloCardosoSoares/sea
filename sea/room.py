@@ -921,7 +921,7 @@ class Room:
             x=vertices[0, :]
             y=vertices[1, :]
             z=vertices[2, :]
-            print(x)
+            print(len(x))
             fig = ff.create_trisurf(
                 x=x,
                 y=y,
@@ -935,12 +935,10 @@ class Room:
             
             #colors
             boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[fi])/(2e-5*np.sqrt(2)))
-            print(boundary_pressure)
+            print(len(boundary_pressure))
             min_val = min(boundary_pressure)
             mid_val = np.median(boundary_pressure)
             max_val = max(boundary_pressure)
-            print(min_val)
-            print(max_val)
             
             # use the coolwarm colormap that is built-in, and goes from blue to red
             #cmap = mpl.cm.coolwarm
@@ -949,8 +947,7 @@ class Room:
             # convert the values to color coordinates
             #color_list = cmap(distance_list)
             
-            for i, node in enumerate(x):
-                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, cmax=max_val, cmid=mid_val, cmin=min_val, colorscale=[[0, 'rgb(255, 0, 0)'], [0.5, 'rgb(255, 255, 255)'], [1, 'rgb(0, 0, 255)']], symbol='square'), showlegend=False))
+            fig.add_trace(go.Scatter3d(x=x, y=y, z=z, marker=dict(size=10, cmax=max_val, cmid=mid_val, cmin=min_val, colorscale=[[0, 'rgb(255, 0, 0)'], [0.5, 'rgb(255, 255, 255)'], [1, 'rgb(0, 0, 255)']], symbol='square'), showlegend=False))
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
