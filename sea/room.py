@@ -885,8 +885,18 @@ class Room:
                 raise ValueError("Mesh file for %s Hz was not found." % f)
             '''
             
-            
-            self.generate_mesh(self.air.c0, f, 6)
+            if f <= 50:
+                factor = 12
+            elif f <= 100:
+                factor = 10
+            elif f <= 150:
+                factor = 8 
+            elif f <= 265:
+                factor = 6 
+            else:
+                factor = 4
+                
+            self.generate_mesh(self.air.c0, f, factor)
 
             grid = bempp.api.import_grid(self.path_to_msh)
             
@@ -940,7 +950,7 @@ class Room:
             #color_list = cmap(distance_list)
             
             for i, node in enumerate(x):
-                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, cmax=max_val, cmid=mid_val, cmin=min_val, colorscale=[[0, 'rgb(255, 0, 0)'], [0.5, 'rgb(255, 255, 255)'], [1, 'rgb(0, 0, 255)']], symbol='circle'), showlegend=False))
+                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=(self.air.c0/f)/(2*factor), cmax=max_val, cmid=mid_val, cmin=min_val, colorscale=[[0, 'rgb(255, 0, 0)'], [0.5, 'rgb(255, 255, 255)'], [1, 'rgb(0, 0, 255)']], symbol='square'), showlegend=False))
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
