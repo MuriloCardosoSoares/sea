@@ -948,7 +948,7 @@ class Room:
             color_list = cmap(boundary_pressure)
             
             for i, node in enumerate(x):  
-                color = 'rgba(%s,%s,%s,%s)' % (color[i][0], color[i][1], color[i][2], color[i][3])
+                color = 'rgba(%s,%s,%s,%s)' % (color_list[i][0], color_list[i][1], color_list[i][2], color_list[i][3])
                 fig.add_trace(go.Scatter3d(x=x[i], y=y[i], z=z[i], marker=dict(size=10, color=color, symbol='square'), showlegend=False)) 
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
