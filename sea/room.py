@@ -934,7 +934,7 @@ class Room:
             fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
             
             #colors
-            boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[75])/(2e-5*np.sqrt(2))) #ajeitar o índice da pressão!!!!
+            boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[55])/(2e-5*np.sqrt(2))) #ajeitar o índice da pressão!!!!
             print(len(boundary_pressure))
             min_val = min(boundary_pressure)
             mid_val = np.median(boundary_pressure)
@@ -949,7 +949,7 @@ class Room:
             
             for i, node in enumerate(x):  
                 color = 'rgba(%s,%s,%s,%s)' % (color_list[i][0], color_list[i][1], color_list[i][2], color_list[i][3])
-                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, color=color, symbol='square'), showlegend=False)) 
+                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, color='rgba(0.34832334, 0.46571115, 0.88834616, 1.)', symbol='diamond'), showlegend=False)) 
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
