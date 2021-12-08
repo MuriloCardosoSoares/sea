@@ -901,6 +901,9 @@ class Room:
 
             grid = bempp.api.import_grid(self.path_to_msh)
             
+            space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos               
+            print(len(space.global_dof_count))
+            
             def configure_plotly_browser_state():
                 import IPython
                 display(IPython.core.display.HTML('''
@@ -955,7 +958,7 @@ class Room:
                 color_list_rgb.append(mcolors.to_rgb(color))
             
             for i, node in enumerate(x):  
-                color = 'rgb(%s,%s,%s)' % (color_list[i][0], color_list[i][1], color_list[i][2])
+                color = 'rgb(%s,%s,%s)' % (color_list_rgb[i][0], color_list_rgb[i][1], color_list_rgb[i][2])
                 fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, color=color, symbol='diamond'), showlegend=False)) 
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
