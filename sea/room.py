@@ -923,6 +923,8 @@ class Room:
             y=vertices[1, :]
             z=vertices[2, :]
             print(len(x))
+            print(len(vertices))
+            print(len(elements))
             fig = ff.create_trisurf(
                 x=x,
                 y=y,
@@ -946,8 +948,11 @@ class Room:
             norm = mpl.colors.Normalize(vmin=min_val, vmax=max_val)
 
             # convert the values to color coordinates
-            color_list = cmap(boundary_pressure)
-            mcolors.to_rgb(color_list)
+            color_list_rgba = cmap(boundary_pressure)
+            
+            color_list_rgb = []
+            for color in color_list_rgba:
+                color_list_rgb.append(mcolors.to_rgb(color))
             
             for i, node in enumerate(x):  
                 color = 'rgb(%s,%s,%s)' % (color_list[i][0], color_list[i][1], color_list[i][2])
