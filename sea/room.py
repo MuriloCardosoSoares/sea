@@ -902,7 +902,7 @@ class Room:
             grid = bempp.api.import_grid(self.path_to_msh)
             
             space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos               
-            print(len(space.global_dof_count))
+            print(space.global_dof_count)
             
             def configure_plotly_browser_state():
                 import IPython
