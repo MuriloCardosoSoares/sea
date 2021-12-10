@@ -936,10 +936,9 @@ class Room:
             
             #colors
             boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[55])/(2e-5*np.sqrt(2))) #ajeitar o índice da pressão!!!!
-            print(boundary_pressure)
+            boundary_pressure = boundary_pressure.tolist()
 
             min_val = min(boundary_pressure)
-            mid_val = np.median(boundary_pressure)
             max_val = max(boundary_pressure)
             
             # use the coolwarm colormap that is built-in, and goes from blue to red
