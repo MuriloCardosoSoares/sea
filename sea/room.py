@@ -927,7 +927,7 @@ class Room:
             z=vertices[2, :]
             print(len(x))
             print(len(vertices))
-            print(len(elements))
+            print(len(elements[0]))
             print(elements)
             fig = ff.create_trisurf(
                 x=x,
