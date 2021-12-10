@@ -860,6 +860,8 @@ class Room:
 
     def map(self, freqs=[], opacity=0.5):
         
+        global elements
+        
         from matplotlib import style
         import matplotlib.colors as mcolors
         style.use("seaborn-talk")
