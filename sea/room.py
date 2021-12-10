@@ -901,9 +901,6 @@ class Room:
 
             grid = bempp.api.import_grid(self.path_to_msh)
             
-            space = bempp.api.function_space(grid, "DP", 0)  # como nos code antigos               
-            print(space.global_dof_count)
-            
             def configure_plotly_browser_state():
                 import IPython
                 display(IPython.core.display.HTML('''
@@ -925,10 +922,7 @@ class Room:
             x=vertices[0, :]
             y=vertices[1, :]
             z=vertices[2, :]
-            print(len(x))
-            print(len(vertices))
-            print(len(elements[0]))
-            print(elements)
+
             fig = ff.create_trisurf(
                 x=x,
                 y=y,
@@ -942,7 +936,8 @@ class Room:
             
             #colors
             boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[55])/(2e-5*np.sqrt(2))) #ajeitar o índice da pressão!!!!
-            print(len(boundary_pressure))
+            print(boundary_pressure)
+
             min_val = min(boundary_pressure)
             mid_val = np.median(boundary_pressure)
             max_val = max(boundary_pressure)
