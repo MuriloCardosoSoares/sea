@@ -859,9 +859,7 @@ class Room:
 
 
     def map(self, freqs=[], opacity=0.5):
-        
-        global elements
-        
+                
         from matplotlib import style
         import matplotlib.colors as mcolors
         style.use("seaborn-talk")
@@ -960,9 +958,9 @@ class Room:
             for color in color_list_rgba:
                 color_list_rgb.append(mcolors.to_rgb(color))
             
-            for i, node in enumerate(x):  
+            for i, element in enumerate(elements):  
                 color = 'rgb(%s,%s,%s)' % (color_list_rgb[i][0], color_list_rgb[i][1], color_list_rgb[i][2])
-                fig.add_trace(go.Scatter3d(x=[x[i]], y=[y[i]], z=[z[i]], marker=dict(size=10, color=color, symbol='diamond'), showlegend=False)) 
+                fig.add_trace(go.Scatter3d(x=[x[elements[0][i]]], y=[y[elements[1][i]]], z=[zelements[2][i]]], marker=dict(size=10, color=color, symbol='diamond'), showlegend=False)) 
 
             fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
 
