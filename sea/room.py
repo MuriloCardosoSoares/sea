@@ -884,8 +884,6 @@ class Room:
             
         for f in freqs:
             
-            print("estive aq f")
-
             if f <= 50:
                 factor = 12
             elif f <= 100:
@@ -902,7 +900,6 @@ class Room:
             grid = bempp.api.import_grid(self.path_to_msh)
             
             for source in sources:
-                print("estive aq s")
                 
                 def configure_plotly_browser_state():
                     import IPython
