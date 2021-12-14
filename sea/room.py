@@ -942,7 +942,7 @@ class Room:
             val_min, val_max = min(boundary_pressure), max(boundary_pressure)
             val_center = np.average(boundary_pressure)
 
-            offset = mcolors.TwoSlopeNorm(vmin=val_min, vcenter=val_center, vmax=val_max))
+            offset = mcolors.TwoSlopeNorm(vmin=val_min, vcenter=val_center, vmax=val_max)
             
             boundary_pressure_scale = offset(boundary_pressure)
 
