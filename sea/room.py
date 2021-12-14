@@ -940,11 +940,13 @@ class Room:
             boundary_pressure = boundary_pressure.tolist()
 
             val_min, val_max = min(boundary_pressure), max(boundary_pressure)
-            boundary_pressure_scale = np.zeros_like(boundary_pressure)
-            for i, val in enumerate(boundary_pressure):
-              boundary_pressure_scale[i] = (val-val_min) / (val_max-val_min)
+            val_center = np.average(boundary_pressure)
 
-            color_list_rgba = [cm.bwr(x) for x in boundary_pressure_scale]
+            offset = mcolors.TwoSlopeNorm(vmin=val_min, vcenter=val_center, vmax=val_max))
+            
+            boundary_pressure_scale = offset(boundary_pressure)
+
+            color_list_rgba = [cm.rainbow(x) for x in boundary_pressure_scale]
             
             color_list_rgb = []
             for color in color_list_rgba:
