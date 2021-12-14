@@ -858,7 +858,7 @@ class Room:
             
 
 
-    def map(self, sources =[], freqs=[], opacity=0.5):
+    def map(self, sources=[], freqs=[], opacity=0.5):
                 
         from matplotlib import style
         import matplotlib.colors as mcolors
@@ -930,7 +930,7 @@ class Room:
             z=vertices[2, :]
             
             for source in sources:
-                
+                print("estive aq")
                 fig = ff.create_trisurf(
                     x=x,
                     y=y,
