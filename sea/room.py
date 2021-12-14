@@ -862,6 +862,7 @@ class Room:
                 
         from matplotlib import style
         import matplotlib.colors as mcolors
+        import matplotlib.cm as cm
         style.use("seaborn-talk")
         
         import plotly.figure_factory as ff
