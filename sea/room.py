@@ -943,7 +943,7 @@ class Room:
             for i, val in enumerate(boundary_pressure):
               boundary_pressure_scale[i] = (val-val_min) / (val_max-val_min)
 
-            color_list_rgba = [cm.bwr(x) for x in evenly_spaced_interval]
+            color_list_rgba = [cm.bwr(x) for x in boundary_pressure_scale]
             
             color_list_rgb = []
             for color in color_list_rgba:
