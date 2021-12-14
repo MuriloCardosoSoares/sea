@@ -858,7 +858,7 @@ class Room:
             
 
 
-    def map(self, freqs=[], opacity=0.5):
+    def map(self, sources =[], freqs=[], opacity=0.5):
                 
         from matplotlib import style
         import matplotlib.colors as mcolors
@@ -876,8 +876,13 @@ class Room:
                 freqs = np.array([self.frequencies.freq_vec[0]])
             except:
                 freqs = np.array([20])
-        
-        for fi, f in enumerate(freqs):
+                
+        sources = np.array(sources)
+        if freqs.size == 0:
+            sources = np.array([0])
+
+            
+        for f in freqs:
             '''
             try:
                 msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
@@ -886,7 +891,7 @@ class Room:
             except:
                 raise ValueError("Mesh file for %s Hz was not found." % f)
             '''
-            
+
             if f <= 50:
                 factor = 12
             elif f <= 100:
@@ -897,11 +902,11 @@ class Room:
                 factor = 6 
             else:
                 factor = 4
-                
+
             self.generate_mesh(self.air.c0, f, factor)
 
             grid = bempp.api.import_grid(self.path_to_msh)
-            
+
             def configure_plotly_browser_state():
                 import IPython
                 display(IPython.core.display.HTML('''
@@ -923,44 +928,49 @@ class Room:
             x=vertices[0, :]
             y=vertices[1, :]
             z=vertices[2, :]
-
-            fig = ff.create_trisurf(
-                x=x,
-                y=y,
-                z=z,
-                simplices=elements.T,
-                plot_edges=False,
-                show_colorbar=False,
-            )
-            fig['data'][0].update(opacity=opacity)
-            fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
             
-            #colors
-            boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[55])/(2e-5*np.sqrt(2))) #ajeitar o índice da pressão!!!!
-            boundary_pressure = boundary_pressure.tolist()
+            for source in sources:
+                
+                fig = ff.create_trisurf(
+                    x=x,
+                    y=y,
+                    z=z,
+                    simplices=elements.T,
+                    plot_edges=False,
+                    show_colorbar=False,
+                )
+                fig['data'][0].update(opacity=opacity)
+                fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
 
-            val_min, val_max = min(boundary_pressure), max(boundary_pressure)
-            val_center = np.average(boundary_pressure)
+                #colors
+                simulated_freqs = np.array(self.simulated_freqs)
+                fi = np.where(self.simulated_freqs == f)[0][0]
+                
+                boundary_pressure = 20*np.log10(np.abs(self.boundary_pressure[fi*len(self.sources) + source])/(2e-5*np.sqrt(2))) 
+                boundary_pressure = boundary_pressure.tolist()
 
-            offset = mcolors.TwoSlopeNorm(vmin=val_min, vcenter=val_center, vmax=val_max)
-            
-            boundary_pressure_scale = offset(boundary_pressure)
+                val_min, val_max = min(boundary_pressure), max(boundary_pressure)
+                val_center = np.average(boundary_pressure)
 
-            color_list_rgba = [cm.rainbow(x) for x in boundary_pressure_scale]
-            
-            color_list_rgb = []
-            for color in color_list_rgba:
-                color = [round(num, 5) for num in color]
-                color_list_rgb.append(mcolors.to_rgb(color))
-                            
-            for i, element in enumerate(elements[0]):  
-                color = 'rgb(%s,%s,%s)' % (color_list_rgb[i][0], color_list_rgb[i][1], color_list_rgb[i][2])
-                fig.add_trace(go.Scatter3d(x=[x[elements[0][i]]], y=[y[elements[1][i]]], z=[z[elements[2][i]]], marker=dict(size=10, color=color, symbol='diamond'), showlegend=False)) 
+                offset = mcolors.TwoSlopeNorm(vmin=val_min, vcenter=val_center, vmax=val_max)
 
-            fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
+                boundary_pressure_scale = offset(boundary_pressure)
 
-            configure_plotly_browser_state() 
-            plotly.offline.iplot(fig)
+                color_list_rgba = [cm.rainbow(x) for x in boundary_pressure_scale]
+
+                color_list_rgb = []
+                for color in color_list_rgba:
+                    color = [round(num, 5) for num in color]
+                    color_list_rgb.append(mcolors.to_rgb(color))
+
+                for i, element in enumerate(elements[0]):  
+                    color = 'rgb(%s,%s,%s)' % (color_list_rgb[i][0], color_list_rgb[i][1], color_list_rgb[i][2])
+                    fig.add_trace(go.Scatter3d(x=[x[elements[0][i]]], y=[y[elements[1][i]]], z=[z[elements[2][i]]], marker=dict(size=10, color=color, symbol='diamond'), showlegend=False)) 
+
+                fig.add_trace(go.Mesh3d(x=[-6,6,-6,6], y=[-6,6,-6,6], z=0 * np.zeros_like([-6,6,-6,6]), color='red', opacity=0.5, showscale=False))
+
+                configure_plotly_browser_state() 
+                plotly.offline.iplot(fig)
             
             
             
