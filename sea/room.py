@@ -883,14 +883,8 @@ class Room:
 
             
         for f in freqs:
-            '''
-            try:
-                msh_path = "meshs/msh_%s_%sHz.msh" %(self.room_name, f)
-                reorder_physical_groups(msh_path)
-                grid = bempp.api.import_grid(msh_path)
-            except:
-                raise ValueError("Mesh file for %s Hz was not found." % f)
-            '''
+            
+            print("estive aq f")
 
             if f <= 50:
                 factor = 12
@@ -930,7 +924,7 @@ class Room:
             z=vertices[2, :]
             
             for source in sources:
-                print("estive aq")
+                print("estive aq s")
                 fig = ff.create_trisurf(
                     x=x,
                     y=y,
