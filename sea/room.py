@@ -878,7 +878,7 @@ class Room:
                 freqs = np.array([20])
                 
         sources = np.array(sources)
-        if freqs.size == 0:
+        if sources.size == 0:
             sources = np.array([0])
 
             
@@ -900,31 +900,32 @@ class Room:
             self.generate_mesh(self.air.c0, f, factor)
 
             grid = bempp.api.import_grid(self.path_to_msh)
-
-            def configure_plotly_browser_state():
-                import IPython
-                display(IPython.core.display.HTML('''
-                        <script src="/static/components/requirejs/require.js"></script>
-                        <script>
-                          requirejs.config({
-                            paths: {
-                              base: '/static/base',
-                              plotly: 'https://cdn.plot.ly/plotly-1.5.1.min.js?noext',
-                            },
-                          });
-                        </script>
-                        '''))
-
-            plotly.offline.init_notebook_mode()
-
-            vertices = grid.vertices
-            elements = grid.elements
-            x=vertices[0, :]
-            y=vertices[1, :]
-            z=vertices[2, :]
             
             for source in sources:
                 print("estive aq s")
+                
+                def configure_plotly_browser_state():
+                    import IPython
+                    display(IPython.core.display.HTML('''
+                            <script src="/static/components/requirejs/require.js"></script>
+                            <script>
+                              requirejs.config({
+                                paths: {
+                                  base: '/static/base',
+                                  plotly: 'https://cdn.plot.ly/plotly-1.5.1.min.js?noext',
+                                },
+                              });
+                            </script>
+                            '''))
+                
+                plotly.offline.init_notebook_mode()
+
+                vertices = grid.vertices
+                elements = grid.elements
+                x=vertices[0, :]
+                y=vertices[1, :]
+                z=vertices[2, :]
+                
                 fig = ff.create_trisurf(
                     x=x,
                     y=y,
