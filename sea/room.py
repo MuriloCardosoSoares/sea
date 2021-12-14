@@ -951,6 +951,8 @@ class Room:
             color_list_rgb = []
             for color in color_list_rgba:
                 color_list_rgb.append(mcolors.to_rgb(color))
+                
+            color_list_rgb = [round(num, 5) for num in color_list_rgb]
             
             for i, element in enumerate(elements[0]):  
                 color = 'rgb(%s,%s,%s)' % (color_list_rgb[i][0], color_list_rgb[i][1], color_list_rgb[i][2])
